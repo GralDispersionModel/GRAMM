@@ -513,7 +513,7 @@ namespace GRAMM_CSharp_Test
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info = "+  > >         G R A M M VERSION: 20.01          < <   +";
+            string Info = "+  > >         G R A M M VERSION: 21.01Alpha     < <   +";
             Console.WriteLine(Info);
             if (unix)
             {

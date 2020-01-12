@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;_ECMWF_</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
