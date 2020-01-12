@@ -1,0 +1,259 @@
+Jänner 2010:
+K-EPS Modell wurde im impliziten Schema integriert und für Gebäudeumströmungen erfolgreich getestet.
+
+5.2.2010:
+Viskosität wird relaxiert mit gleichem Faktor wie TKE,DISS
+
+Juni 2011:
+Für GRAMM ONLINE Auswertungen über die Benutzeroberfläche wurde die Subroutine GRAMMONLINE programmiert (Aufruf von mmain.for nach
+jedem Zeitschritt)
+
+November 2011:
+Bei klassifizierten Wetterlagen wird die Windrichtung zufällig innerhalb des festgelegten Sektors ausgewürfelt (tempint.for).
+Die Files ggeom.dat und landuse.dat wurden auf ggeom.asc und landuse.asc umgeändert.
+
+Jänner 2012:
+Die Windfelder werden getrennt für jede Wetterlage fuenfstellig ausgegeben.
+
+Juni 2012:
+Die meisten Schleifen im impliziten Verfahren wurden parallelisiert (OpenMP).
+
+November 2012:
+Die initialen Temperaturprofile bei Eingabe über meteopgt.all wurden geändert. Die Integrationszeiten bei
+neutraler Schichtung wurden auf maximal 400 s gesetzt (unabhängig von der Eingabe des Users) bei labiler Schichtung wurden
+maximal 12000 s vorgegeben.
+Der Sonnenstand wurde bei AKLA=3 von 15:00 h auf 12:00 h geändert.
+Die Emissivität wurde für Waldgebiete generell von 0,95 auf 0,4 reduziert, um die nächtliche, langwellige
+ Ausstrahlung zu reduzieren und damit auch den sensiblen Wärmefluss zu verringern.
+ Die Topographie wurde an den äußersten 5-6 Zellen kontinuierlich auf die minimale Modellhöhe gesetzt.
+ Bei Randbedingung 6 (Standard) wurden die Dämpfungsschichtung von 3 auf 6 erhöht und eine Exponentialfunktion
+ statt der bisherigen TANH Funktion eingeführt.
+
+ Juni 2013:
+ Uhrner hat die Version der TU-Graz mit unserer zusammengeführt. GRAMM wurde um eine Reinitialisierungsroutine ergänzt (Eingabefiel
+ reinit.dat). Es gibt nun noch mehrere verschiedene Randbedingungen. Das Eingabefile IIN.dat wurde zum Teil neu struktiert. Zusätzlich
+ gibt es weitere Optionen für die Initialisierung der Temperaturprofile in tempint.for bzw. können nun auch die sensiblen Wärmeflüsse
+ in Abhängigkeit von der AKLA fix vorgegeben werden (CATABATIC Forcing).
+
+ Juli 2013:
+ Für den Fall, dass CATABATIC Forcing ausgeschaltet wird, wird die Energiebilanz am Erdboden berechnet. Folgende Änderungen wurden vorgenommen:
+ ppranneu.for: Die minimale Geschwindigkeit für u* wurde von 0,02 auf 0,05 erhöht.
+ tempint.for: Bei AKLA 7 wird eine Bodeninversion bis 400 m vorgegeben. Bei allen anderen AKLA eine neutrale Schichtung. Bei AKLA 6 wird
+ die initiale Bodentemp. TINIT um 5 K angehoben, bei AKLA 7 um 10 K abgesenkt. Zudem wird für alle AKLA (ausser 7) mit einem einheitlichen
+ Temperaturgradient von -0,0065 K/m gerechnet. Die Bodentemperatur wird in Abhängigkeit vom Breitengrad und der Seehöhe berechnet.
+ Weiters wurden die Rechenzeiten für den Fall, dass CATABATIC Forcing nicht aktiviert ist, angepasst.
+ iinit.for: keine Änderung.
+ ccalctb.for: Der Wärmestrom in Wasser wird nun mitgerechnet.
+ bbords.for: Die Randbedingung 5 wurde neu formuliert.
+
+ Oktober 2013:
+ Im File tempint.for wurden für stabile Schichtung die Obergrenzen für den Windexponenten gelöscht, da
+ bei Simulationen für Graz die WG am Plabutsch und am Schöckl deutlich unterschätzt wurden.
+
+ Dezember 2013:
+ Bodenenergiebilanz wird bei den äußersten Randzellen aufgrund der geglätteten Topographie nicht mehr gerechnet.
+
+ Juni 2014:
+ GRAMM stürzt beim Testfalls Sophienhöhe ab, egal ob mit meteopgt.all oder mit einer anderen Eingabedatei gerechnet wird.
+ 1. Fehler: tempint.for Zeile 1765: Uli hat die Berechnung des Hintergrundprofils TBZN auskommentiert - diese wird aber benötigt.
+ 2. Fehler: bbords.for Zeile 307ff: Uli hat die Zeile für I=2 auskommentiert und mit I1=2 ersetzt, aber nicht alle I Indizes durch I1 ersetzt.
+ 3. Fehler: mmain.for Zeile 1148ff: Uli hat die Variable rcritlowWS eingeführt, aber nie definiert. Diese wurde durch die Variable rcritWS ersetzt.
+
+ Oktober 2014:
+ Problemreport.txt wird nun beim Überschreiten der folgenden Geschwindigkeiten am Ende einer Wetterlage
+ ausgeschrieben: u,v > 55m/s und w > 20m/s
+ Die Dämpfungsrandbedingung am Ostrand war nicht konsistent mit jener am Westrand (Randbedingung 6).
+ Die obere Randbedingung (bisher: homogene Neumann-RB) wurde auf Dämpfungsschichten geändert.
+ Die Ausgabe der Windfelder für GRAL erfolgt nun nicht mehr über USRHOA usw. sondern direkt UN, VN und WN.
+ Ursache waren unplausible w-Werte am Oberrand. Achtung-> könnte Auswirkungen auf GRAL Berechnungen haben!
+ Alle Zeilen mit einem "D" am Anfang wurden auf "C" geändert. Alle !OMP Statements wurden in die erste Spalte vorgerückt.
+ Die Schleife in calcpr.for mit RSTEIGUNG wurde auf eine Integerschleife ISTEIGUNG abgeändert.
+
+ Februar 2015:
+ Die Corioliskraft war fälschlicherweise in den Files uuimp.for und vvimp.for teilweise auf null gesetzt.
+
+ Juni 2015:
+ Die Bodentemperatur in 1m Tiefe wird mit einer feuchtadiabatischen Abnahme mit der Höhe und einer
+ Abhängigkeit vom Breitengrad berechnet - gleich wie bisher nun auch beim Antrieb ohne meteopgt.all.
+ Wenn die Berechnungen nicht mit meteopgt.all gestartet werden kann eine intermediate Ausgabe alle xxx Sekunden
+ erzwungen werden. Die Angabe der Sekunden erfolgt ueber das File IIN.dat (BUFFERING AFTER TIMESTEPS).
+
+ Die Dämpfungsschichten am Oberrand wurden für alle Windkomponenten implementiert. Am Oberrand wird fix der großskalige Wind vorgeschrieben.
+
+ Die Subroutinen ccalpr.for und ssimple.for wurden umgebaut, sodass die seitlichen Randbedingungen direkt nach dem Berechnen der u,v,w-Komponenten erfolgt, also noch vor der Druckgleichung.
+
+ Juli 2015:
+ Stabilitätscheck für Massendivergenz wurde eingeführt (muss am Schluss niedriger sein als der erste Wert).
+ Prüfkritereium für quasi-steady-state (VDI 3783-7) wurde eingeführt: Vergleich der finalen Bodenwindfelder mit den nach 75% der Gesamtzeit berechneten
+ müssen eine Trefferquote von mind. 95% erreichen. Ansonsten kommt eine Meldung in den Problemreport.
+
+ August 2015:
+ Die Ausgabe der wnd-Files erfolgt nun beim Setzen des Output-Flags auf Null im Stream-Format mit definiertem Header. Platzersparnis gegenüber normalem
+ ASCII-Output ca. 75%.
+
+ September - November 2015:
+ Randbedingung für TKE und DISS war bisher versehentlich auf null -> wurde auf homogene Von Neumann RB geändert.
+ Allerdings wurde standardmaessig vom k-eps Modell auf ein algebraisches Mischungswegmodell umgestellt, da dieses
+ numerisch stabiler läuft, praktisch gleich gute Ergebnisse liefert und enorm an Rechenzeit einspart.
+ Die zusätzlichen Diffusionsterme des Eddy-Viscosity Modells in den Impulserhaltungsgleichungen werden nun als
+ Quellterm berücksichtigt (wurden bisher vergessen).
+ Corioliskraft für v-Komponente war vom Vorzeichen falsch im Code.
+ Die Diffusions- bzw. Advektionsterme waren in Bezug auf die Dichte nicht richtig berechnet.
+ Um Auswirkungen von Rundungsfehlern in der Druckgleichung hintanzuhalten, wurden die Divergenzterme nur mehr auf 5 Kommastellen
+ berechnet.
+ In den Erhaltungsgleichungen wurden Terme wie die Corioliskraft und die Auftriebskraft vor dem Durchlaufen aller Schleifen berechnet.
+ Damit kann einiges an Rechenzeit gewonnen werden.
+ Die Berechnung aller passiven Erhaltungsgrößen (Feuchte, pot. Temp., TKE, DISS) erfolgt nun für die ganzen Zellen und nicht mehr für
+ die beiden Halbzellen.
+ Die Diffusionsterme in den Impulserhaltungsgleichungen werden ebenfalls auf Basis der Gesamtzelle berechnet und werden nun
+ im entsprechenden Quellterm berücksichtigt. Damit konnte eine Assymetrie in Bezug auf die Anstroemrichtung bei den Halbzellen
+ vermieden werden. Der einfache Grenzschichtfall (Winddrehung durch Coroliskraft im ebenen Gelaende) kann nun erfolgreich gerechnet werden.
+
+ November 2015:
+ Portierung des gesamten Codes nach C#, da einfache Benchmarks gezeigt haben, dass C# offenbar deutlich schneller Array-Zugriffe
+ ermöglicht als Fortran. Zudem gibt es seit der Umstellung auf den INTEL Compiler Version 14-16 immer wieder Probleme mit nicht
+ nachvollziehbaren Fehlermeldungen.
+ Es werden nur noch die Randbedingungen 1 und 6 unterstützt.
+ Re-Initialisierung wird nicht mehr unterstützt.
+ Debbuging wird nicht mehr unterstützt.
+ Nesting mit MM5 und GRAMM in GRAMM wird nicht mehr unterstützt.
+ In Abhängigkeit von der Landnutzung, charakterisiert durch die Wärmeleitfähigkeit und der Rauigkeit wird ein anthropogener Wärmefluss
+ in Anlehnung an Hurley 2005 berechnet, führt aber noch zu Abstürzen und wird daher noch nicht aktiviert.
+
+ Dezember 2015 (Kuntner):
+ Um die Variablenzugriffe zu beschleunigen wurden Pointer eingerichtet.
+
+ Dezember 2015 (Öttl):
+ In der Druckgleichung wurde anstelle von AP0 fälschlicherweise die Variable AIM (ähnlich große Zahlenwerte) verwendet.
+
+ Jänner 2016 (Öttl):
+ Die Diffusionsterme in den Impulserhaltungsgleichungen wurden nochmals überarbeitet, da teils fehlerhaft implementiert.
+
+ März 2016 (Öttl):
+ Das Eingabefile GRAMMin.dat wurde im Format geändert. Es werden nun auch die Anzahl der Zellen, die für die Glättung der
+ Orographie benutzt wurden gespeichert. Diese Randbereiche werden zur Berechnung der Hitrates nicht mehr herangezogen.
+
+
+ März 2016 (Kuntner)
+ Alternative Ausgabe des steady-state Kriteriums; dazu ein "yes" als zusätzliche Zeile in der GRAMMin.dat angeben. Das Ausgabefile kann in der GUI wie eine ISO-Linie eingelesen werden.
+ Zusätzliche Ausgaben beim Programmstart, Warten auf "ESC" Taste behoben
+ In RADIAT erster Aufruf von CLThet(i, j, Program.AH[i][j], Omega, DOmega, ref Theta) entfernt, da keine Auswirkung auf das Programm bestehen, Parallelisierung in Radiat korrigiert
+ Zusammenfassung von Variablen, Änderung in der Parallelisierung, zusätzliche Pointer
+
+ April2016 (Kuntner)
+ Abfrage der MaxProc.dat und der GRAMMin.dat (Ausschreibhen der "steady_state.txt"?) am Ende jeder fertig berechneten Wettersituation
+ Kleine Fehlebehebungen in INITB.cs: Absturz durch fehlerhafte Parallelisierung (Variable TBZNINT);
+ Mikro-Optimierungen in der PRANDTL.cs; Abbruchkriterium auf 800 Durchläufe gesetzt, weil ansonsten nachweislicher Absturz bei stabiler Situation;
+ GCConcurrent auf false gesetzt in app.config
+ Alle Klassen als Unterklassen von Program gesetzt
+ Auschreiben der PercentGramm.txt nur jedes 10. mal (%10d) und suchen, ob GRAMMOnline erforderlich, auch nur jedes 10.mal
+ Umstellung auf ParallelForEach() für kurze Schleifen und bei mehr als 6 Kernen Parallel.Invoke für UImp/Vimp/Wimp
+ Zusammengefasste Parametern in vertikalen Schleifen nur 1x pro k-Wert (nicht alle kn) berechnen
+ Mikro-Optimierungen auf Basis von ANTS - Profiler-Messungen 
+ 
+
+**************************************************************************************************
+*
+*                                      OFFICIAL RELEASE 16.1
+*
+**************************************************************************************************
+
+Juli 2016 (Öttl)
+Ausbreitungsklassen werden im Prandtl.cs berechnet und können online ausgegeben werden. Außerdem werden die Felder Ausbreitungsklasse,
+Schubspannungsgeschwindigkeit und Obukhovlänge immer ausgeschrieben.
+Bei den labilen/ neutralen Klassen wird der Sonnenstand in Abhängigkeit vom Breitengrad, der Windgeschwindigkeit und der Ausbreitungsklasse
+entsprechend dem Schema der AKL-Klassifizierung in GRAL bestimmt. Dadurch erhöht sich die Variablität der Sonnenstände von 4 auf 10 Zuständen.
+
+September 2016 (Kuntner)
+Die Ausgabe der *.scl, *.obl, *.ust Files erfolgt nun komprimiert.
+
+13.Februar 2017 (Öttl)
+Da die Feuchte nicht mehr mitgerechnet wird, ergab sich für die potentielle Temperatur durch die Verwendung eines
+feucht-adiabatischen Temperaturgradienten eine stabile Schichtung, daher wird die Feuchte nun wieder mitgerechnet.
+Dadurch werden auch Kaltluftabflüsse wieder gut berechnet.
+Die Integrationsszeiten wurden für alle Klassen neu festgelegt.
+Dadurch können Kaltluftabflüsse aus längeren Seitentälern besser abgebildet werden. Dies ist den immer größer werdenden
+Modellgebieten geschuldet.
+
+16.2.2017 (Öttl)
+Wird in der letzten Zeile in GRAMMin.dat die Anzahl der originalen Wetterlagen angegeben, dann werden jede Stunde (gesteuert
+über den Wert in IIN.dat) Zwischenergebnisse von Windfeldern zusätzlich gespeichert, die für das Matchen zur Verfügung stehen.
+Außerdem wird in diesen Fällen der Sonnenstand dynamisch und nicht mehr statisch berechnet. Daher werden bei den labilen Fällen
+die Simulationszeiten auf 6 h gesetzt.
+
+22.3.2017 (Kuntner)
+In Radiation den Sonnenstand für die südliche Hemisphäre richtigerweise nach Norden gestellt (in ClMyEt()).
+Q[] wird jetzt wieder (richtig) in neuer Funktion CLQ() berechnet und gespeichert. Wenn "albeq.dat" vorhanden, wird dieses File geladen und die Geometrie nicht neu berechnet. "albeq.dat" wird beim Start von GRAMM gelöscht, damit neu gerechnet.
+Berechnung von Program.Wrad in ClYrWc() korrigiert.
+
+4.4. - 13.4.2017 (Kuntner)
+In Zeitschema schwach wirkende Regelung eingebaut, die nur bei stark ansteigender Divergenz die Zeitschritte senkt und bei Bedarf auch die Relax-Faktoren absenkt
+Übergabeparameter für die Start- und die Endsituation eingebaut und File-Zugriffe auf Share umgestellt, damit GRAMM in einem Ornder mehrfach gestartet werden kann.
+DTMAX Steruerung in Tempint() zusammengefasst um in allen Fällen eine richtige Steuerung des max. Zeitschritts zu erhalten
+Bei Prüfung auf Überschreitung eines Maximalwerts der Divergenz jetzt auch Prüfung auf starken Anstieg vom kleinsten Divergenzwert (min * 50)
+Beim 3. Versuch auch Reduktion der Relax-Faktoren um 15%
+
+**************************************************************************************************
+*
+*                                      OFFICIAL RELEASE 17.1
+*
+**************************************************************************************************
+
+Mai - Juni 2018 (Kuntner)
+Umstellung zahlreicher Arrays auf float()
+Am den RelaxV Faktor abschwächen, in Abhängigkeit der Höhendifferenz der äußersten Randzelle zur ersten Zelle nach der Höheninterpolation am Randbedingung
+Parallelisierung der Summenbildung der Divergenz 
+Konsolenausgabeintervall in Abhängigkeit der Rechengebietsgröße
+
+Juli 2018 (Kuntner)
+Tal- und Beckenerkennung (TPI) eingebaut
+Änderung der Initialisierungen für 
+  AK7: bis 0.35 m/s weitgehend wie bisher, mit pos. Temperaturgradienten bis zur Inversionsschicht
+  AK7: über 0.35 m/s ähnlich wie AK6, aber Boden im Tal um einige Grad kälter gestellt 
+  AK6: Boden im Tal um einige Grad kälter gestellt 
+  AK4: Strahlungsberechnung auf dicke Wolken umgestellt und Strahlung um Faktor 0,1 reduziert -> AK4 bleibt besser erhalten
+Berechnung der mittleren Einstrahlung von 3x3 Zellen auf NX/4 x NY/4 bzw. 100 x 100 Zellen umgestellt
+
+14.11.2018 (Öttl)
+Berechnung der AKL und Sonnenstände in Abhängigkeit von AKL auf Basis der Globalstrahlung korrigiert.
+
+13.12.2018 (Öttl)
+In der Berechnung des Bodenwärmeflusses lag ein Fehler bei der Temperaturgradientberechnung.
+In der Berechnung der langwelligen Strahlungsbilanz wurde die Horizontüberhöhung falsch eingebaut.
+Zudem wurde die Emissivität der Atmosphäre fälschlicherweise gleich jener des Erdbodens gesetzt.
+Die Landnutzungsparameter für Rauigkeit und Emissivität wurden für Wald auf Literaturwerte zurückgesetzt.
+Die Landnutzungsparameter für die Bodenleitfähigkeit wurden generell entsprechend Literaturangaben stark reduziert.
+Die Schubspannungsgeschwindigkeit wird nun minimal mit 0.15 m/s statt 0.05 m/s festgelegt.
+Die minimale vertikale Diffusivität wurde von 0.5 auf 0.05 m²/s² gesetzt.
+Der latente Wärmefluss wird mit max. 30 W/m² begrenzt, anstelle von 300 W/m².
+Der sensible Wärmefluss wird mit max. +200 und -500 W/m² begrenzt, anstelle von +/-2000 W/m².
+Die Berechnung der Feuchte erfolgt so, dass über Land immer die Bodenfeuchte gleich der atm. Feuchte ist und damit der latenten Wärmefluss null ist. 
+Nur über Wasser wird der latente Wärmefluss berechnet.
+Wenn der Zeitschritt erhöht wird, werden auch die Relaxations-Faktoren bis max. 0,15 erhöht (nur im transienten Modus).
+max. Begrenzung von ust auf 2m/s festgelegt.
+Der Einfluss von Bewölkung und Schneebedeckung wurde eingebaut.
+Für stationäre Berechnungen wurde bei den stabilen AKLs die Simulationszeit von 21.3./1h auf 21.12./18h gesetzt, damit auch nach 12 Std. Simulationszeit noch
+keine Sonne aufgeht.
+Tal- und Beckenerkennung (TPI) auskommentiert.
+Bei AKL6 wird nun bei WG <=2m/s die SImulationszeit x3 genommen.
+Bei AKL1 wird die initiale Lufttemperatur bei der niedrigsten Höhe auf 22°C gesetzt, da ansonsten starke Gewitter entstehen.
+Bei AKL2 und 3 wird die initiale Lufttemperatur bei der niedrigsten Höhe auf 12°C gesetzt.
+Bei AKL6 wird die initiale Lufttemperatur bei der niedrigsten Höhe auf 17°C gesetzt, damit eine stärkere Abkühlung entsteht.
+Die Werte der relativen Feuchte in Tempint.cs wurden erhöht. Es wurden offenbar spezifische mit relativer Feuchte verwechselt.
+Die initiale Berechnung der pot. Temperatur berücksichtigt nun auch den feucht-adiabatischen Temperaturgradient. Damit wird die Atmosphäre eher neutral.
+
+**************************************************************************************************
+*
+*                                      OFFICIAL RELEASE 19.1
+*
+**************************************************************************************************
+
+7.1.20 (Öttl)
+GRAMM wurde für das Zielframework .NETCore 3.1 kompiliert.
+
+**************************************************************************************************
+*
+*                                      OFFICIAL RELEASE 20.1
+*
+**************************************************************************************************
+
