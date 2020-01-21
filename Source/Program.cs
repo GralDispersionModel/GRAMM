@@ -677,7 +677,7 @@ namespace GRAMM_CSharp_Test
             //INQUIRE IF RECEPTOR POINTS ARE SET
             Read_Receptor_Dat();
 
-            Analyze_Topography(); // find U valleys and bassins
+            //Analyze_Topography(); // find U valleys and bassins
 
             Relaxv_ori = RELAXV;
             Relaxt_ori = RELAXT;
