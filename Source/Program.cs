@@ -581,7 +581,8 @@ namespace GRAMM_CSharp_Test
             //When using ERA5 data GRAMM automatically starts with a number for the weather situation based on the existing *wnd files
             if (ISTAT >= 2)
             {
-                DirectoryInfo d = new DirectoryInfo(@"..\Computation");
+                string wdir = Directory.GetCurrentDirectory();
+                DirectoryInfo d = new DirectoryInfo(wdir);
                 FileInfo[] Files = d.GetFiles("*.wnd");
                 IWETTER = Files.Length;
             }
