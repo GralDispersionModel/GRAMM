@@ -226,6 +226,7 @@ namespace GRAMM_CSharp_Test
             DZB = new float[NZB + 1];
             RHOB = CreateArray<float[]>(NX1, () => new float[NY1]);
             ALAMBDA = CreateArray<float[]>(NX1, () => new float[NY1]);
+            DRY_AREA = CreateArray<bool[]>(NX1, () => new bool[NY1]);
             ALPHA = new double[NZ1];
             Console.Write(".");
             A_PS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
