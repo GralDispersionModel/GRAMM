@@ -1097,7 +1097,21 @@ namespace GRAMM_CSharp_Test
                                     n++;
                                 }
                             }
+                            //the default soil wetness based on CORINE is read and it is determined, whether this is a dry area or not
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            n = 0;
+                            for (int j = 1; j < Program.NY + 1; j++)
+                            {
+                                for (int i = 1; i < Program.NX + 1; i++)
+                                {
+                                    Program.DRY_AREA[i][j] = false;
+                                    if (Convert.ToSingle(text[n].Replace(".", Program.decsep)) < 0.05)
+                                    {
+                                        Program.DRY_AREA[i][j] = true;
+                                    }
+                                    n++;
+                                }
+                            }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
                             n = 0;
                             for (int j = 1; j < Program.NY + 1; j++)
@@ -1235,7 +1249,7 @@ namespace GRAMM_CSharp_Test
                 }
             }
 
-            //set wetness for water bodies (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies)
+            //set wetness for water bodies and dry areas (due to the coarse ERA5 data resolution, this is necessary to better account for these areas)
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
             {
                 for (int j = 1; j <= Program.NY; j++)
@@ -1255,6 +1269,10 @@ namespace GRAMM_CSharp_Test
                                 Program.TBA[i][j][kb] = Program.TB[i][j][kb] + 0.1F;
                             }
                         }
+                    }
+                    if (Program.DRY_AREA[i][j] == true)
+                    {
+                        Program.FW[i][j] = 0.001;
                     }
                 }
             });
@@ -2033,9 +2051,9 @@ namespace GRAMM_CSharp_Test
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
                     */
                 }
-            });
+            });            
 
-            //set wetness for water bodies (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies)
+            //set wetness for water bodies and dry areas (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies and dry areas)
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
             {
                 for (int j = 1; j <= Program.NY; j++)
@@ -2046,6 +2064,10 @@ namespace GRAMM_CSharp_Test
                         {
                             Program.FW[i][j] = 1.0;
                         }
+                    }
+                    if (Program.DRY_AREA[i][j] == true)
+                    {
+                        Program.FW[i][j] = 0.001;
                     }
                 }
             });
@@ -2299,9 +2321,9 @@ namespace GRAMM_CSharp_Test
 
                     Program.VSEN[j][k] = Vinterim[i][j][k];
                 }
-            });
+            });            
 
-            //set wetness for water bodies (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies)
+            //set wetness for water bodies and dry areas (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies and dry areas )
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
             {
                 for (int j = 1; j <= Program.NY; j++)
@@ -2312,6 +2334,10 @@ namespace GRAMM_CSharp_Test
                         {
                             Program.FW[i][j] = 1.0;
                         }
+                    }
+                    if (Program.DRY_AREA[i][j] == true)
+                    {
+                        Program.FW[i][j] = 0.001;
                     }
                 }
             });
