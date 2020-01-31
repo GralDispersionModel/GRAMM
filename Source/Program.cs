@@ -100,6 +100,7 @@ namespace GRAMM_CSharp_Test
         public static int[][] KST = CreateArray<int[]>(1, () => new int[1]);                                                   //Defines the cell in vertical direction from which onward the radiation model is computed
         public static float[] ZZ = new float[1];                                                                                  //Average value of two neighbouring cell heights
         public static double[][] ALBEDO = CreateArray<double[]>(1, () => new double[1]);                                          //Surface albedo
+        public static bool[][] DRY_AREA = CreateArray<bool[]>(1, () => new bool[1]);                                              //Flag characterizing dry areas
         public static double[][] CLOUDS = CreateArray<double[]>(1, () => new double[1]);                                          //Cloudyness 0 < x < 1
         public static double[][] SNOW = CreateArray<double[]>(1, () => new double[1]);                                            //Snow cover 0/1
         public static double[] ZPROF = new double[1];                                                                             //Cell heights for the radiation model
