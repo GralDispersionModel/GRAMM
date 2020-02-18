@@ -547,6 +547,7 @@ namespace GRAMM_CSharp_Test
             if(File.Exists("chemistry.txt"))
             {
                 Read_Chemistry();
+		//@Johannes: at this place call the chemical mechanism, that feeds back the number of spezies to be computed
             }
 
             // Write to "Logfile_GRAMMCore"
