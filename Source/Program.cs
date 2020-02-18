@@ -182,7 +182,9 @@ namespace GRAMM_CSharp_Test
         public static double[][] FW = CreateArray<double[]>(1, () => new double[1]);                                              //Specific soil moisture parameter (e.g. water = 1)
         public static double[][][] T = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));           //Potential temperature of air at time t
         public static double[][][] TN = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));          //Potential temperature of air at time t+1
-        public static float[][][] FACTOR = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));          //Conversion factor between potential and absolute temperature of air
+        public static double[][][][] PS = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));          //Passive scalar at time t
+        public static double[][][][] PSN = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]> (1, () => new double[1])));         //Passive scalar at time t+1
+	public static float[][][] FACTOR = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));          //Conversion factor between potential and absolute temperature of air
         public static double[][][] DISS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));        //Turbulent dissipation rate at time t
         public static double[][][] DISSN = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));       //Turbulent dissipation rate at time t+1
         public static double[][][] TE = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));          //Turbulent kinetic energy at time t
@@ -489,6 +491,9 @@ namespace GRAMM_CSharp_Test
         public static float REINITIALIZATION;                //Defines the time interval in seconds after which GRAMM is completely re-initialized with ERA5 data
         public static float REINITIALIZATION_Threshold;      //Counter for re-initialization
 
+        public static bool chemistry = false;                       //flag determining whether chemistry is computed or not
+        public static string chemistry_mechanism;                   //chemical mechanism
+
         static void Main(string[] args)
         {
             #if __ECMWF__
@@ -537,6 +542,12 @@ namespace GRAMM_CSharp_Test
 
             //read number of grid cells stored in the file "GRAMM.geb"
             Read_Gramm_Geb();
+
+            //check if chemistry is envoked
+            if(File.Exists("chemistry.txt"))
+            {
+                Read_Chemistry();
+            }
 
             // Write to "Logfile_GRAMMCore"
             try
