@@ -184,7 +184,8 @@ namespace GRAMM_CSharp_Test
         public static double[][][] TN = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));          //Potential temperature of air at time t+1
         public static double[][][][] PS = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));          //Passive scalar at time t
         public static double[][][][] PSN = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]> (1, () => new double[1])));         //Passive scalar at time t+1
-	public static float[][][] FACTOR = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));          //Conversion factor between potential and absolute temperature of air
+	public static double[][][] PStemp = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));          //temporary field for a passive scalar
+        public static float[][][] FACTOR = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));          //Conversion factor between potential and absolute temperature of air
         public static double[][][] DISS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));        //Turbulent dissipation rate at time t
         public static double[][][] DISSN = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));       //Turbulent dissipation rate at time t+1
         public static double[][][] TE = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));          //Turbulent kinetic energy at time t
