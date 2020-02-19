@@ -127,8 +127,9 @@ namespace GRAMM_CSharp_Test
                 }
 
                 //advection/diffusion of passive scalars for the chmemical reaction mechanism + call chemistry subroutine
-                if (Program.ISTAT == 2 && chemistry == true)
+                if (Program.ISTAT == 2 && chemistry == true && REALTIME > Update_Chemistry_Threshold)
                 {
+                    Update_Chemistry_Threshold += Update_Chemistry;
                     Parallel.For(0, Program.NSPEZ, Program.pOptions, n =>
                     {
                         PSimp_calculate(NI, NJ, NK, n);
