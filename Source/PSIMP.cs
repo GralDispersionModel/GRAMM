@@ -502,6 +502,18 @@ namespace GRAMM_CSharp_Test
                     }
                 }
             });
+
+            //write temporary field into array 
+            Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
+            {
+                for (int j = 1; j <= Program.NY; j++)
+                {
+                    for (int k = 1; k <= Program.NZ; k++)
+                    {
+                        Program.PSN[i][j][k][spez] = Program.PSNtemp[i][j][k];
+                    }
+                }
+            });
         }
     }
 }
