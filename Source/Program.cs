@@ -497,6 +497,7 @@ namespace GRAMM_CSharp_Test
         public static string chemistry_mechanism;                   //chemical mechanism
         public static int NSPEZ = 20;                               //number of chemical species for which advection and diffusion has to be computed
         public static float Update_Chemistry = 60;                  //time interval, after which the chemical solver is called
+        public static float Update_Chemistry_Threshold = 0;         //counter for calling chemical solver
 
         static void Main(string[] args)
         {
