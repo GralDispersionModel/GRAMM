@@ -225,10 +225,13 @@ namespace GRAMM_CSharp_Test
             FW = CreateArray<double[]>(NX1, () => new double[NY1]);
             T = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             TN = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            PS = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
-            PSN = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
-            PStemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            PSNtemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            if (Program.ISTAT == 2 && chemistry == true)
+            {
+                PS = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
+                PSN = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
+                PStemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+                PSNtemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            }
             TBZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             FACTOR = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             DISS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
