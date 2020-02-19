@@ -83,6 +83,11 @@ namespace GRAMM_CSharp_Test
                         text = myreader.ReadLine().Split(new char[] { '!' });
                         text[0] = text[0].Trim();
                         Program.chemistry_mechanism = text[0];
+
+                        text = myreader.ReadLine().Split(new char[] { '!' });
+                        text[0] = text[0].Trim();
+                        Program.Update_Chemistry = Convert.ToSingle(text[0]);
+
                         Program.chemistry = true;
                     }
                 }
