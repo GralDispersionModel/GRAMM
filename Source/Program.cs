@@ -1540,63 +1540,63 @@ namespace GRAMM_CSharp_Test
         public static double PRTE;
 
         ///<summary>
-        ///Flag switching the compuation of the u-component on/off 
+        ///Flag switching the computation of the u-component on/off 
         ///</summary>
         public static Boolean ICU;
         ///<summary>
-        ///Flag switching the compuation of the v-component on/off 
+        ///Flag switching the computation of the v-component on/off 
         ///</summary>
         public static Boolean ICV;
         ///<summary>
-        ///Flag switching the compuation of the w-component on/off 
+        ///Flag switching the computation of the w-component on/off 
         ///</summary>
         public static Boolean ICW;
         ///<summary>
-        ///Flag switching the compuation of the non-hydrostatic pressure on/off 
+        ///Flag switching the computation of the non-hydrostatic pressure on/off 
         ///</summary>
         public static Boolean ICPN;
         ///<summary>
-        ///Flag switching the compuation of the pot. temperature on/off 
+        ///Flag switching the computation of the pot. temperature on/off 
         ///</summary>
         public static Boolean ICT;
         ///<summary>
-        ///Flag switching the compuation of the hydrostatic pressure on/off (not used) 
+        ///Flag switching the computation of the hydrostatic pressure on/off (not used) 
         ///</summary>
         public static Boolean ICPH;
         ///<summary>
-        ///Flag switching the compuation of the Fourier-Transformed upper boundary conditions on/off (not used) 
+        ///Flag switching the computation of the Fourier-Transformed upper boundary conditions on/off (not used) 
         ///</summary>
         public static Boolean IFOU;
         ///<summary>
-        ///Flag switching the compuation of the spec. humidity on/off 
+        ///Flag switching the computation of the spec. humidity on/off 
         ///</summary>
         public static Boolean ICQU;
         ///<summary>
-        /// Flag switching the compuation of a passive scalar on/off (not used) 
+        /// Flag switching the computation of a passive scalar on/off (not used) 
         ///</summary>
         public static Boolean ICPSI;
         ///<summary>
-        ///Flag switching the compuation of the turbulent kinetic energy on/off 
+        ///Flag switching the computation of the turbulent kinetic energy on/off 
         ///</summary>
         public static Boolean ICTE;
         ///<summary>
-        /// Flag switching the compuation of the radiation model on/off 
+        /// Flag switching the computation of the radiation model on/off 
         ///</summary>
         public static Boolean ICSTR;
         ///<summary>
-        ///Flag switching the compuation of the surface layer model on/off 
+        ///Flag switching the computation of the surface layer model on/off 
         ///</summary>
         public static Boolean ICPR;
         ///<summary>
-        ///Flag switching the compuation of the boundary conditions on/off 
+        ///Flag switching the computation of the boundary conditions on/off 
         ///</summary>
         public static Boolean ICBR;
         ///<summary>
-        ///Flag switching the compuation of the surface temperature on/off 
+        ///Flag switching the computation of the surface temperature on/off 
         ///</summary>
         public static Boolean ICTB;
         ///<summary>
-        ///Flag switching the compuation of the geostrophic winds from the large scale model when run in nesting mode on/off (not used) 
+        ///Flag switching the computation of the geostrophic winds from the large scale model when run in nesting mode on/off (not used) 
         ///</summary>
         public static Boolean ICGW;
         ///<summary>
@@ -1626,15 +1626,15 @@ namespace GRAMM_CSharp_Test
         public static int nr_cell_smooth = 0;
 
         ///<summary>
-        /// 
+        /// Write online data
         ///</summary>
         public static bool GRAMM_Online_flag = true;
         ///<summary>
-        /// 
+        /// Running in linux?
         ///</summary>
         public static bool unix = false;
         ///<summary>
-        /// flag, if a compuatation is repeated caused by numerical instabilities 
+        /// flag, if a computation is repeated caused by numerical instabilities 
         ///</summary>
         public static int computation_retry = 0;
         ///<summary>
@@ -1737,7 +1737,7 @@ namespace GRAMM_CSharp_Test
         ///</summary>
         public static double Relaxt_ori;
         ///<summary>
-        /// 
+        /// Min divergence 
         ///</summary>
         public static double Divergence_Min = 10e9;
         ///<summary>
