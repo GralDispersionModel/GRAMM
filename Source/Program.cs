@@ -51,6 +51,7 @@ namespace GRAMM_CSharp_Test
         //global variables declaration block
         //note that arrays are defined as jagged-arrays as they have a much better computational performance than matrices
 
+
         ///<summary>
         ///sets the maximum number of cores to be used in the parallelisation 
         ///</summary>
@@ -1628,6 +1629,7 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         /// Write online data
         ///</summary>
+
         public static bool GRAMM_Online_flag = true;
         ///<summary>
         /// Running in linux?
@@ -1775,6 +1777,12 @@ namespace GRAMM_CSharp_Test
         ///</summary>
         public static float REINITIALIZATION_Threshold;
 
+        public static bool chemistry = false;                       //flag determining whether chemistry is computed or not
+        public static string chemistry_mechanism;                   //chemical mechanism
+        public static int NSPEZ = 20;                               //number of chemical species for which advection and diffusion has to be computed
+        public static float Update_Chemistry = 60;                  //time interval, after which the chemical solver is called
+        public static float Update_Chemistry_Threshold = 60;        //counter for calling chemical solver
+
         static void Main(string[] args)
         {
 #if __ECMWF__
@@ -1823,6 +1831,13 @@ namespace GRAMM_CSharp_Test
 
             //read number of grid cells stored in the file "GRAMM.geb"
             Read_Gramm_Geb();
+
+            //check if chemistry is envoked
+            if(File.Exists("chemistry.txt"))
+            {
+                Read_Chemistry();
+		//@Johannes: at this place call the chemical mechanism, that feeds back the number of spezies to be computed
+            }
 
             // Write to "Logfile_GRAMMCore"
             try

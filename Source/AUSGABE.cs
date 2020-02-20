@@ -327,6 +327,41 @@ namespace GRAMM_CSharp_Test
 				} // Zip File
 			} // catch
 			catch {}
+
+			//write concentration fields of chemical spezies
+			if (Program.ISTAT == 2 && Program.chemistry == true)
+			{
+				string pollutantfilename = stabclassfilename.Replace("scl", "pol");
+				try
+				{
+					using (FileStream zipToOpen = new FileStream(pollutantfilename, FileMode.Create))
+					{
+						using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+						{
+							for (int n = 0; n <= Program.NSPEZ; n++)
+							{
+								string pollfilename = (Convert.ToString(Program.IWETTER).PadLeft(5, '0') + ".p" + n.ToString());
+								ZipArchiveEntry write_entry1 = archive.CreateEntry(pollutantfilename);
+								using (writer = new BinaryWriter(write_entry1.Open()))
+								{
+									writer.Write(header);
+									writer.Write(NI);
+									writer.Write(NJ);
+									writer.Write(NK);
+									writer.Write(GRAMMhorgridsize);
+									for (int i = 1; i <= NI; i++)
+										for (int j = 1; j <= NJ; j++)
+											for (int k = 1; k <= NK; k++)
+											{
+												writer.Write(Program.PSN[i][j][j][n]);
+											}
+								}
+							}
+						} // archive
+					} // Zip File
+				}
+				catch { }
+			}
 			
 			Program.Max_Proc_File_Read(); // read number of max. Processors
 

@@ -126,6 +126,17 @@ namespace GRAMM_CSharp_Test
                     () => Epsimp_calculate(NI, NJ, NK));
                 }
 
+                //advection/diffusion of passive scalars for the chmemical reaction mechanism + call chemistry subroutine
+                if (Program.ISTAT == 2 && chemistry == true && REALTIME > Update_Chemistry_Threshold)
+                {
+                    Update_Chemistry_Threshold += Update_Chemistry;
+                    Parallel.For(0, Program.NSPEZ, Program.pOptions, n =>
+                    {
+                        PSimp_calculate(NI, NJ, NK, n);
+                    });
+                    //@Johannes: insert here the call for the chemical reaction mechanism 
+                }
+
 
                 //time-step adjustion
                 if (Program.ISTAT == 0)
