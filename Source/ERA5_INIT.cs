@@ -116,7 +116,9 @@ namespace GRAMM_CSharp_Test
                         foreach (GribMessage msg in file)
                         {
                             DateTime date = msg.ReferenceTime;
-                            if (DateTime.Compare(dateref, date) < 0)
+                            span = date.Subtract(dateref);
+                            timeint = Math.Abs((float)span.TotalMinutes);
+                            if (DateTime.Compare(dateref, date) < 0 && timeint < 400)
                             {
                                 date2 = date;
                                 found = true;
