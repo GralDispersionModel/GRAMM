@@ -106,6 +106,7 @@ namespace GRAMM_CSharp_Test
             //determining the dates before and after the reference date
             string fname = Files[0].Name;
             bool found = false;
+            TimeSpan span = new TimeSpan();
             for (int i = 0; i < Files.Length; i++)
             {
                 fname = Files[i].Name;
@@ -116,7 +117,9 @@ namespace GRAMM_CSharp_Test
                         foreach (GribMessage msg in file)
                         {
                             DateTime date = msg.ReferenceTime;
-                            if (DateTime.Compare(dateref, date) < 0)
+                            span = date.Subtract(dateref);
+                            timeint = Math.Abs((float)span.TotalMinutes);
+                            if (DateTime.Compare(dateref, date) < 0 && timeint < 400)
                             {
                                 date2 = date;
                                 found = true;
