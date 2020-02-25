@@ -106,6 +106,7 @@ namespace GRAMM_CSharp_Test
             //determining the dates before and after the reference date
             string fname = Files[0].Name;
             bool found = false;
+            TimeSpan span = new TimeSpan();
             for (int i = 0; i < Files.Length; i++)
             {
                 fname = Files[i].Name;
