@@ -1062,7 +1062,8 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         ///influence of clouds on the solar incoming radiation
         ///</summary>
-        public static double[][][][] W1rad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
+        public static double[][] W1rad = CreateArray<double[]>(1, () => new double[1]);
+        //public static double[][][][] W1rad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
         ///<summary>
         /// influence of rain on the solar incoming radiation
         ///</summary>
@@ -1070,7 +1071,8 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         ///? something in the radiation model
         ///</summary>
-        public static double[][][][] Wrad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
+        public static double[][] Wrad = CreateArray<double[]>(1, () => new double[1]);
+        //public static double[][][][] Wrad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
         ///<summary>
         ///Temporary Radiation in TIMP
         ///</summary>
@@ -1094,11 +1096,13 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         ///Cloud parameter
         ///</summary>
-        public static double[][][] eS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] eS = new double[1];
+        //public static double[][][] eS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         /// Cloud parameter
         ///</summary>
-        public static double[][][] eSeS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] eSeS = new double[1];
+        //public static double[][][] eSeS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         ///Shortwave solar radiation
         ///</summary>
@@ -1118,15 +1122,18 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         ///Transmission function
         ///</summary>
-        public static double[][][] nS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] nS = new double[1]; 
+        //public static double[][][] nS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         ///Transmission function
         ///</summary>
-        public static double[][][] nD = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] nD = new double[1];
+        //public static double[][][] nD = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         ///Temporary array for cloud
         ///</summary>
-        public static double[][][] Tau = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] Tau = new double[1];
+        //public static double[][][] Tau = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         /// Temporary array in the radiation model
         ///</summary>
@@ -1146,7 +1153,8 @@ namespace GRAMM_CSharp_Test
         ///<summary>
         /// Downward terrestrial radiation
         ///</summary>
-        public static double[][][] L_Strich = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        public static double[] L_Strich = new double[1];
+        //public static double[][][] L_Strich = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         ///Total incoming terrestrial radiation
         ///</summary>
