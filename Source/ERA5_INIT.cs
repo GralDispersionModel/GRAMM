@@ -128,7 +128,7 @@ namespace GRAMM_CSharp_Test
                             date1 = date;
                         }
                         file.Rewind();
-                        TimeSpan span = date2.Subtract(date1);
+                        span = date2.Subtract(date1);
                         timeint = (float)span.TotalSeconds;
                         span = dateref.Subtract(date1);
                         timepoint = (float)span.TotalSeconds;
