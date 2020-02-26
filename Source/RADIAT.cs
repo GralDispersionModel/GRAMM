@@ -725,7 +725,8 @@ namespace GRAMM_CSharp_Test
             double[] QCp = new double[Program.NPROFMAX];       //Intermediate value for calculating Cp F50b
             double[] Vnz = new double[Program.NPROFMAX];       //Intermediate value
             double[] QVapz = new double[Program.NPROFMAX];     //Intermediate value
-            double[][][] QCldz = CreateArray<double[][]>(Program.NX1, () => CreateArray<double[]>(Program.NY1, () => new double[Program.NPROFMAX]));     //Intermediate value
+            double[] QCldz = new double[Program.NPROFMAX];     //Intermediate value
+            //double[][][] QCldz = CreateArray<double[][]>(Program.NX1, () => CreateArray<double[]>(Program.NY1, () => new double[Program.NPROFMAX]));     //Intermediate value
             double[] QIcez = new double[Program.NPROFMAX];     //Intermediate value
 
             
@@ -736,9 +737,10 @@ namespace GRAMM_CSharp_Test
                 QCp[N] = Rhop[N] * QCo2 * Program.PPROF[N] / p0;               //F50b
                 Vnz[N] = 570 * (1 / Math.Pow(Program.VNORM[N], 1.5));          //F13a
                 QVapz[N] = Rhop[N] * Program.QVAP[N];                          //F13b
-                //QCldz[N] = Rhop[N] * (Program.QCLD[N] + Program.QRAIN[N]);     //F13c
+                QCldz[N] = Rhop[N] * (Program.QCLD[N] + Program.QRAIN[N]);     //F13c
                 QIcez[N] = Rhop[N] * (Program.QICE[N] + Program.QSNOW[N]);     //F13d
 
+                /*
                 Program.ZPROF[1] = Math.Max(Program.AHMIN, 0);
                 double UNTO;
                 double UNTU;
@@ -798,6 +800,7 @@ namespace GRAMM_CSharp_Test
                         QCldz[i][j][N] = 0 * Rhop[N] * (Math.Max(Program.QCLD[N], 0) * 0.001 + Program.QRAIN[N]);     //F13c
                     }
                 }
+                */
             }
  			
             // it seems, that there is a dependency, so parallelisation is not possible!
@@ -840,19 +843,28 @@ namespace GRAMM_CSharp_Test
                 Program.Rp[K][2] = rInteg(Program.ZPROF, QRp, Program.NPROFMAX, Program.Dz1[K], Program.Dz2[K]);
                 Program.CGp[K][2] = rInteg(Program.ZPROF, QCp, Program.NPROFMAX, Program.Dz1[K], Program.Dz2[K]);
 
+                Program.W1rad[K][3] = rInteg(Program.ZPROF, QCldz, Program.NPROFMAX, Program.ZZ[K], Program.ZPROF[30]);
+                Program.W1rad[K][1] = Program.W1rad[1][3] - Program.W1rad[K][3];
+                Program.W1rad[K][2] = rInteg(Program.ZPROF, QCldz, Program.NPROFMAX, Program.Dz1[K], Program.Dz2[K]);
+                Program.Wrad[K][3] = Program.W1rad[K][3] + 0.5F * Program.W2rad[K][3]; // F13e
+                Program.Wrad[K][1] = Program.W1rad[K][1] + 0.5F * Program.W2rad[K][1];
+                Program.Wrad[K][2] = Program.W1rad[K][2] + 0.5F * Program.W2rad[K][2];
+
+                /*
                 for (int i = 1; i <= Program.NX; i++)
                 {
                     for (int j = 1; j <= Program.NY; j++)
                     {
-                        Program.W1rad[i][j][K][3] = rInteg(Program.ZPROF, QCldz[i][j], Program.NPROFMAX, Program.ZZ[K], Program.ZPROF[30]);
+                        Program.W1rad[i][j][K][3] = rInteg(Program.ZPROF, QCldz, Program.NPROFMAX, Program.ZZ[K], Program.ZPROF[30]);
                         Program.W1rad[i][j][K][1] = Program.W1rad[i][j][1][3] - Program.W1rad[i][j][K][3];
-                        Program.W1rad[i][j][K][2] = rInteg(Program.ZPROF, QCldz[i][j], Program.NPROFMAX, Program.Dz1[K], Program.Dz2[K]);
+                        Program.W1rad[i][j][K][2] = rInteg(Program.ZPROF, QCldz, Program.NPROFMAX, Program.Dz1[K], Program.Dz2[K]);
 
                         Program.Wrad[i][j][K][3] = Program.W1rad[i][j][K][3] + 0.5F * Program.W2rad[K][3]; // F13e
                         Program.Wrad[i][j][K][1] = Program.W1rad[i][j][K][1] + 0.5F * Program.W2rad[K][1];
                         Program.Wrad[i][j][K][2] = Program.W1rad[i][j][K][2] + 0.5F * Program.W2rad[K][2];
                     }
                 }
+                */
              } 
             
             return 0d;   
@@ -902,19 +914,28 @@ namespace GRAMM_CSharp_Test
                     (8.0 * p0 / Program.PBZZ[k]) * (Program.YG[k][3] + 0.1F * Program.PBZZ[k] / p0 + 0.02);
                 Program.IG[k] = GPhi * IG0 * Solar_reduction_factor * Math.Exp(-1 * ((Program.Tstern[k] / My) * a0));
 
+                if (Math.Log(1000 * Program.W1rad[k][3] + 1) == 0)
+                {
+                    Tau1 = 0;
+                }
+                else
+                {
+                    Tau1 = 0.07 * Math.Pow(Math.Log(1000 * Program.W1rad[k][3] + 1), 3.95);
+                }
+                Tau2 = 56.6 * Program.W2rad[k][3];
+                Program.Tau[k] = Tau1 + Tau2;
+                TauS = Math.Min(32, Program.Tau[k]);
+                Program.eS[k] = Math.Pow(1 - TauS / 32, 4);
+                Program.eSeS[k] = Math.Max(0.1, Program.eS[k]);
+
+                Program.nS[k] = 0.346 * (Program.eSeS[k] - 0.1) + 0.85 * Math.Pow(Program.eSeS[k] - 0.1, 2);
+                Program.nD[k] = 0.3 * Math.Sin(Math.PI * (Program.eS[k] + 0.25)) + 0.36 * Program.eS[k] - 0.15;
+                
+                /*
                 for (int i = 1; i <= Program.NX; i++)
                 {
                     for (int j = 1; j <= Program.NY; j++)
                     {
-                        if (Math.Log(1000 * Program.W1rad[i][j][k][3] + 1) == 0)
-                        {
-                            Tau1 = 0;
-                        }
-                        else
-                        {
-                            Tau1 = 0.07 * Math.Pow(Math.Log(1000 * Program.W1rad[i][j][k][3] + 1), 3.95);
-                        }
-
                         Tau2 = 56.6 * Program.W2rad[k][3];
                         Program.Tau[i][j][k] = Tau1 + Tau2;
                         TauS = Math.Min(32, Program.Tau[i][j][k]);
@@ -925,6 +946,7 @@ namespace GRAMM_CSharp_Test
                         Program.nD[i][j][k] = 0.3 * Math.Sin(Math.PI * (Program.eS[i][j][k] + 0.25)) + 0.36 * Program.eS[i][j][k] - 0.15;
                     }
                 }
+                */
              }
             
             return 0d;
@@ -949,8 +971,8 @@ namespace GRAMM_CSharp_Test
 		   
 		   double WUnt, TClearUP, TClearDown, TCUp, TCDown, Ac, AgMod, AcZw;
 
-		   Program.Myx[k] = My * Program.eS[i][j][k] + 0.5F * (1 - Program.eS[i][j][k]);
-		   WUnt = Program.Wrad[i][j][KSti][3] - Program.Wrad[i][j][k][3];
+		   Program.Myx[k] = My * Program.eS[k] + 0.5F * (1 - Program.eS[k]);
+		   WUnt = Program.Wrad[KSti][3] - Program.Wrad[k][3];
 		   TClearUP = Math.Pow(Program.PBZZ[k] / Program.PBZZ[KSti], 0.25);
 		   TClearDown = TClearUP;
 		   TCDown = 1.2 * Math.Pow(Program.Myx[k] + 0.2, 0.5F) * (1.3 * Math.Pow(1000 * WUnt + 0.1, -0.33) - 0.06);
@@ -967,9 +989,9 @@ namespace GRAMM_CSharp_Test
 		   	Ac = 0.42 * Math.Log(Math.Log(AcZw));
 		   
 		   if ((SinIe < 0) || (He < Theta))
-		   	AgMod = Program.Ag[i][j] * (1 - Program.eS[i][j][KSti]);
+		   	AgMod = Program.Ag[i][j] * (1 - Program.eS[KSti]);
 		   else
-		   	AgMod = Program.Ag[i][j] * (1 - Program.eS[i][j][KSti] + Program.eS[i][j][KSti] * SinI / My);
+		   	AgMod = Program.Ag[i][j] * (1 - Program.eS[KSti] + Program.eS[KSti] * SinI / My);
 		   
 		   Program.Arad[i][j][k] = Ac + (TClearUP * TClearDown * TCUp * TCDown * AgMod) / (1 - Ac * AgMod);
 
@@ -990,16 +1012,16 @@ namespace GRAMM_CSharp_Test
             double Tauj, fA, jzw, j32;
             jzw = 0;
 
-            fA = 1 + (1 - 0.5F * Program.eS[i][j][k]) * (Program.Arad[i][j][k] - 0.2);
+            fA = 1 + (1 - 0.5F * Program.eS[k]) * (Program.Arad[i][j][k] - 0.2);
             
-            if(Program.Tau[i][j][k]<2)
+            if(Program.Tau[k]<2)
             {
                 jzw = ((0.07 * Program.Tstern[k] - 0.115) / My) * (Program.PBZZ[k] / p0);
                 j32 = Math.Max(0, jzw);
             }
             else
             {
-                Tauj = Math.Max(32, Program.Tau[i][j][k]);
+                Tauj = Math.Max(32, Program.Tau[k]);
                 j32 = 45.25 * Math.Pow(Tauj, -1.5);
             }
             
@@ -1009,10 +1031,10 @@ namespace GRAMM_CSharp_Test
             }
             else
             {
-                Program.SG[i][j][k] = Program.IG[k] * Mye * Program.nS[i][j][k] * (Program.PBZZ[k] / p0) * (1 - 0.233 * Program.CLOUDS[i][j] - 0.415 * Pow2(Program.CLOUDS[i][j]));
+                Program.SG[i][j][k] = Program.IG[k] * Mye * Program.nS[k] * (Program.PBZZ[k] / p0) * (1 - 0.233 * Program.CLOUDS[i][j] - 0.415 * Pow2(Program.CLOUDS[i][j]));
             }
 
-            Program.DG[i][j][k] = Program.IG[k] * My * (Program.nD[i][j][k] + j32) * fA * (Program.PBZZ[k] / p0) * (1 - 0.233 * Program.CLOUDS[i][j] - 0.415 * Pow2(Program.CLOUDS[i][j]));
+            Program.DG[i][j][k] = Program.IG[k] * My * (Program.nD[k] + j32) * fA * (Program.PBZZ[k] / p0) * (1 - 0.233 * Program.CLOUDS[i][j] - 0.415 * Pow2(Program.CLOUDS[i][j]));
             Program.EG[i][j][k] = Program.SG[i][j][k] + Program.DG[i][j][k];
 
             return jzw;
@@ -1035,8 +1057,8 @@ namespace GRAMM_CSharp_Test
 
             jzw = ((0.07 * Program.Tstern[k] - 0.115) / My) * (Program.PBZZ[k] / p0);
             j38 = Math.Max(0, jzw);
-            fAE = 1 + (1 - 0.9 * Program.eS[i][j][k]) * (Program.Arad[i][j][k] - 0.2);
-            Tc = 1.2 * Math.Pow(Mye + 0.2, 0.5F) * (1.3 * Math.Pow(1000 * Program.Wrad[i][j][k][3] + 0.1, -0.33) - 0.06);
+            fAE = 1 + (1 - 0.9 * Program.eS[k]) * (Program.Arad[i][j][k] - 0.2);
+            Tc = 1.2 * Math.Pow(Mye + 0.2, 0.5F) * (1.3 * Math.Pow(1000 * Program.Wrad[k][3] + 0.1, -0.33) - 0.06);
             Tc = Math.Min(1, Tc);
             Tc = Math.Max(0, Tc);
 
@@ -1058,7 +1080,7 @@ namespace GRAMM_CSharp_Test
             }
             else
             {
-                Program.SG[i][j][k] = 0.8 * Program.EG[i][j][k] * (Program.eSeS[i][j][k] - 0.1) / 0.9;
+                Program.SG[i][j][k] = 0.8 * Program.EG[i][j][k] * (Program.eSeS[k] - 0.1) / 0.9;
             }
 
             Program.DG[i][j][k] = Program.EG[i][j][k] - Program.SG[i][j][k];
@@ -1080,7 +1102,7 @@ namespace GRAMM_CSharp_Test
             */
             double XH, SGG, DGSG, DGDG, BGG;
             
-            XH = 1.5 * My * Program.eS[i][j][k] * (0.65 + 0.04 * Program.Tstern[k] * Program.PBZZ[k] / p0 - 0.6 * Program.eS[i][j][k]);
+            XH = 1.5 * My * Program.eS[k] * (0.65 + 0.04 * Program.Tstern[k] * Program.PBZZ[k] / p0 - 0.6 * Program.eS[k]);
             
             if((SinIe<0)||(He<Theta))
             {
@@ -1129,7 +1151,7 @@ namespace GRAMM_CSharp_Test
             {
                 Dz = (Program.Dz2[k] - Program.Dz1[k]);
                 IceDens = Program.W2rad[k][2] / Dz;
-                WatDens = Program.W1rad[i][j][k][2] / Dz;
+                WatDens = Program.W1rad[k][2] / Dz;
                 AzMin = Program.Arad[i][j][k];
                 
                 if(Program.SG[i][j][k]!=0)
@@ -1149,8 +1171,8 @@ namespace GRAMM_CSharp_Test
                 }
                 else
                 {
-                    AcDown = 0.025 * Math.Pow((Program.Myx[k] + Program.Myx[k + 1]) * 0.5F + 0.1, 0.5F) * Math.Log(1 + 1000 * Program.Wrad[i][j][k][2]);
-                    AcUp = 0.0194 * Math.Log(1 + 1000 * Program.Wrad[i][j][k][2]);
+                    AcDown = 0.025 * Math.Pow((Program.Myx[k] + Program.Myx[k + 1]) * 0.5F + 0.1, 0.5F) * Math.Log(1 + 1000 * Program.Wrad[k][2]);
+                    AcUp = 0.0194 * Math.Log(1 + 1000 * Program.Wrad[k][2]);
                     Program.DT_SOL[i][j][k] = 1 / (Program.RHOBZZ[k] * cp * Dz) * Math.Abs(EzPlus * AcDown + EzMin * AzMin * AcUp);
                 }
             }
@@ -1183,61 +1205,55 @@ namespace GRAMM_CSharp_Test
             double EpsPlus = 0;
             double EpsMin = 0;
 
-            for (int i = 1; i <= Program.NX; i++)
+            for (int k = 1; k <= KStMax; k++)
             {
-                for (int j = 1; j <= Program.NY; j++)
+                kk = k;
+                Program.L_Strich[k] = 0;
+                W_Last = 0;
+                while ((kk <= Program.NZ) && (W_Last < Wcrit))
                 {
-                    for (int k = 1; k <= KStMax; k++)
+                    if (kk == k)
                     {
-                        kk = k;
-                        Program.L_Strich[i][j][k] = 0;
-                        W_Last = 0;
-                        while ((kk <= Program.NZ) && (W_Last < Wcrit))
-                        {
-                            if (kk == k)
-                            {
-                                WMin = Program.Wrad[i][j][kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.Wrad[i][j][kk + 1][1] - Program.Wrad[i][j][kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
-                                CGpMin = Program.CGp[kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.CGp[kk + 1][1] - Program.CGp[kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
-                                RpMin = Program.Rp[kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.Rp[kk + 1][1] - Program.Rp[kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
-                            }
-                            else
-                            {
-                                WMin = Program.Wrad[i][j][kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.Wrad[i][j][kk][1] - Program.Wrad[i][j][kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                                CGpMin = Program.CGp[kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.CGp[kk][1] - Program.CGp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                                RpMin = Program.Rp[kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.Rp[kk][1] - Program.Rp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                            }
-
-                            if (kk == Program.NZ)
-                            {
-                                WPlus = Program.Wrad[i][j][kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.Wrad[i][j][kk][1] - Program.Wrad[i][j][kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                                CGpPlus = Program.CGp[kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.CGp[kk][1] - Program.CGp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                                RpPlus = Program.Rp[kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.Rp[kk][1] - Program.Rp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
-                            }
-                            else
-                            {
-                                WPlus = Program.Wrad[i][j][kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.Wrad[i][j][kk + 1][1] - Program.Wrad[i][j][kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
-                                CGpPlus = Program.CGp[kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.CGp[kk + 1][1] - Program.CGp[kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
-                                RpPlus = Program.Rp[kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.Rp[kk + 1][1] - Program.Rp[kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
-                            }
-
-                            WPlus -= Program.Wrad[i][j][k][1];
-                            CGpPlus -= Program.CGp[k][1];
-                            RpPlus -= Program.Rp[k][1];
-                            WMin -= Program.Wrad[i][j][k][1];
-                            CGpMin -= Program.CGp[k][1];
-                            RpMin -= Program.Rp[k][1];
-
-                            EpsPlus = Cl_Eps(EpsPlus, RpPlus, CGpPlus, WPlus);
-                            EpsMin = Cl_Eps(EpsMin, RpMin, CGpMin, WMin);
-
-                            Program.L_Strich[i][j][k] += Program.SIGMA * Math.Pow(Program.TABS[1][1][kk], 4) * (EpsPlus - EpsMin);
-                            W_Last = Program.Wrad[i][j][kk][2];
-                            kk++;
-                        }
+                        WMin = Program.Wrad[kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.Wrad[kk + 1][1] - Program.Wrad[kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
+                        CGpMin = Program.CGp[kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.CGp[kk + 1][1] - Program.CGp[kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
+                        RpMin = Program.Rp[kk][1] + (Program.Dz1[kk] - Program.ZZ[kk + 1]) * ((Program.Rp[kk + 1][1] - Program.Rp[kk][1]) / (Program.ZZ[kk] - Program.ZZ[kk + 1]));
                     }
+                    else
+                    {
+                        WMin = Program.Wrad[kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.Wrad[kk][1] - Program.Wrad[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                        CGpMin = Program.CGp[kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.CGp[kk][1] - Program.CGp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                        RpMin = Program.Rp[kk - 1][1] + (Program.Dz1[kk] - Program.ZZ[kk - 1]) * ((Program.Rp[kk][1] - Program.Rp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                    }
+
+                    if (kk == Program.NZ)
+                    {
+                        WPlus = Program.Wrad[kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.Wrad[kk][1] - Program.Wrad[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                        CGpPlus = Program.CGp[kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.CGp[kk][1] - Program.CGp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                        RpPlus = Program.Rp[kk - 1][1] + (Program.Dz2[kk] - Program.ZZ[kk - 1]) * ((Program.Rp[kk][1] - Program.Rp[kk - 1][1]) / (Program.ZZ[kk] - Program.ZZ[kk - 1]));
+                    }
+                    else
+                    {
+                        WPlus = Program.Wrad[kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.Wrad[kk + 1][1] - Program.Wrad[kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
+                        CGpPlus = Program.CGp[kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.CGp[kk + 1][1] - Program.CGp[kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
+                        RpPlus = Program.Rp[kk][1] + (Program.Dz2[kk] - Program.ZZ[kk]) * ((Program.Rp[kk + 1][1] - Program.Rp[kk][1]) / (Program.ZZ[kk + 1] - Program.ZZ[kk]));
+                    }
+
+                    WPlus -= Program.Wrad[k][1];
+                    CGpPlus -= Program.CGp[k][1];
+                    RpPlus -= Program.Rp[k][1];
+                    WMin -= Program.Wrad[k][1];
+                    CGpMin -= Program.CGp[k][1];
+                    RpMin -= Program.Rp[k][1];
+
+                    EpsPlus = Cl_Eps(EpsPlus, RpPlus, CGpPlus, WPlus);
+                    EpsMin = Cl_Eps(EpsMin, RpMin, CGpMin, WMin);
+
+                    Program.L_Strich[k] += Program.SIGMA * Math.Pow(Program.TABS[1][1][kk], 4) * (EpsPlus - EpsMin);
+                    W_Last = Program.Wrad[kk][2];
+                    kk++;
                 }
             }
-            
+
             return WMin;
         }
 
@@ -1317,7 +1333,7 @@ namespace GRAMM_CSharp_Test
             
             while((kk <= Program.NZ) && (WSearch < Wcrit))
             {
-                WSearch += Program.Wrad[i][j][kk][2];
+                WSearch += Program.Wrad[kk][2];
                 CGpSearch += Program.CGp[kk][2];
                 RpSearch += Program.Rp[kk][2];
                 kk++;
@@ -1325,25 +1341,25 @@ namespace GRAMM_CSharp_Test
             
             if(WSearch >= Wcrit)
             {
-                if(Program.Wrad[i][j][kk-1][2] < Wcrit)
+                if(Program.Wrad[kk-1][2] < Wcrit)
                 {
                     WOutp = 0;
                 }
                 else
                 {
-                    WOutp = WSearch - Program.Wrad[i][j][kk - 1][2];
+                    WOutp = WSearch - Program.Wrad[kk - 1][2];
                     CGpOutp = CGpSearch - Program.CGp[kk - 1][2];
                     RpOutp = RpSearch - Program.Rp[kk - 1][2];
                 }
             }
             else
             {
-                WOutp = Program.Wrad[i][j][k][3] - Program.Wrad[i][j][k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
+                WOutp = Program.Wrad[k][3] - Program.Wrad[k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
                 CGpOutp = Program.CGp[k][3] - Program.CGp[k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
                 RpOutp = Program.Rp[k][3] - Program.Rp[k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
             }
             
-            WOutm = WOutp + Program.Wrad[i][j][k][2];
+            WOutm = WOutp + Program.Wrad[k][2];
             CGpOutm = CGpOutp + Program.CGp[k][2];
             RpOutm = RpOutp + Program.Rp[k][2];
             
@@ -1372,7 +1388,7 @@ namespace GRAMM_CSharp_Test
             //emissivity of the atmosphere in dependence on the cloudyness -> Master theses Manzl, Uni Innsbruck, 2010
             double EpsAtm = 0.7 * (1 - Math.Pow(Program.CLOUDS[i][j], 2.0)) + 0.90 * Math.Pow(Program.CLOUDS[i][j], 2.0);
 
-            Program.RL[i][j] = Program.L_Strich[i][j][Program.KST[i][j] - 1] * (Program.Q[i][j] + 0.03 * Math.Sin(Program.Alfa[i][j])) +               ////ACHTUNG Q statt 1-Q; Öttl, Dez 18
+            Program.RL[i][j] = Program.L_Strich[Program.KST[i][j] - 1] * (Program.Q[i][j] + 0.03 * Math.Sin(Program.Alfa[i][j])) +               ////ACHTUNG Q statt 1-Q; Öttl, Dez 18
                 EpsAtm * Program.SIGMA * Math.Pow(0.5 * (Program.TABS[i][j][1] + Program.TABS[i][j][10]), 4) * (1 - Program.Q[i][j]);                                                      ////ACHTUNG 1-Q statt Q; Öttl, Dez 18
             Program.RTerrG[i][j] = Program.EPSG[i][j] * (Program.RL[i][j] - Program.SIGMA * Math.Pow(Program.TG[i][j], 4));
 
@@ -1448,20 +1464,20 @@ namespace GRAMM_CSharp_Test
             WOutm = 0;
             while ((kk >= (Program.KST[i][j]-1)) && (WSearch < Wcrit))
             {
-                WSearch += Program.Wrad[i][j][kk][2];
+                WSearch += Program.Wrad[kk][2];
                 CGpSearch += Program.CGp[kk][2];
                 RpSearch += Program.Rp[kk][2];
                 kk--;
             }
             if (WSearch >= Wcrit)
             {
-                if (Program.Wrad[i][j][kk + 1][2] < Wcrit)
+                if (Program.Wrad[kk + 1][2] < Wcrit)
                 {
                     WOutp = 0;
                 }
                 else
                 {
-                    WOutp = WSearch - Program.Wrad[i][j][kk + 1][2];
+                    WOutp = WSearch - Program.Wrad[kk + 1][2];
                     CGpOutp = CGpSearch - Program.CGp[kk + 1][2];
                     RpOutp = RpSearch - Program.Rp[kk + 1][2];
                 }
@@ -1472,7 +1488,7 @@ namespace GRAMM_CSharp_Test
                 CGpOutp = CGpSearch;
                 RpOutp = RpSearch;
             }
-            WOutm = WOutp + Program.Wrad[i][j][k][2];
+            WOutm = WOutp + Program.Wrad[k][2];
             CGpOutm = CGpOutp + Program.CGp[k][2];
             RpOutm = RpOutp + Program.Rp[k][2];
 
