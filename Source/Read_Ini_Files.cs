@@ -71,6 +71,36 @@ namespace GRAMM_CSharp_Test
             }
         }
 
+        private static void Read_Chemistry()
+        {
+            try
+            {
+                using (FileStream fs = new FileStream("chemistry.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (StreamReader myreader = new StreamReader(fs))
+                    {
+                        string[] text = new string[10];
+                        text = myreader.ReadLine().Split(new char[] { '!' });
+                        text[0] = text[0].Trim();
+                        Program.chemistry_mechanism = text[0];
+
+                        text = myreader.ReadLine().Split(new char[] { '!' });
+                        text[0] = text[0].Trim();
+                        Program.Update_Chemistry = Convert.ToSingle(text[0]);
+                        Program.Update_Chemistry_Threshold = Program.Update_Chemistry;
+
+                        Program.chemistry = true;
+                    }
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Error when reading file 'chemistry.txt' - Execution stopped - press ESC to continue");
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                Environment.Exit(0);
+            }
+        }
+
         private static void Define_Arrays()
         {
             NX1 = NX + 1;
@@ -201,6 +231,13 @@ namespace GRAMM_CSharp_Test
             FW = CreateArray<double[]>(NX1, () => new double[NY1]);
             T = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             TN = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            if (Program.ISTAT == 2 && chemistry == true)
+            {
+                PS = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
+                PSN = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[NSPEZ])));
+                PStemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+                PSNtemp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            }
             TBZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             FACTOR = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             DISS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
@@ -226,6 +263,7 @@ namespace GRAMM_CSharp_Test
             DZB = new float[NZB + 1];
             RHOB = CreateArray<float[]>(NX1, () => new float[NY1]);
             ALAMBDA = CreateArray<float[]>(NX1, () => new float[NY1]);
+            DRY_AREA = CreateArray<bool[]>(NX1, () => new bool[NY1]);
             ALPHA = new double[NZ1];
             Console.Write(".");
             A_PS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
@@ -322,32 +360,40 @@ namespace GRAMM_CSharp_Test
             WSSN = CreateArray<double[]>(NX1, () => new double[NZ1]);
             TSSN = CreateArray<double[]>(NX1, () => new double[NZ1]);
             QUSSN = CreateArray<double[]>(NX1, () => new double[NZ1]);
-            Alfa = CreateArray<double[]>(NX1, () => new double[NY1]);
-            Beta = CreateArray<double[]>(NX1, () => new double[NY1]);
+            Alfa = CreateArray<float[]>(NX1, () => new float[NY1]);
+            Beta = CreateArray<float[]>(NX1, () => new float[NY1]);
             Q = CreateArray<double[]>(NX1, () => new double[NY1]);
             YG = CreateArray<double[]>(NZ1, () => new double[4]);
             R = CreateArray<double[]>(NZ1, () => new double[4]);
-            W1rad = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[4])));
+            W1rad = CreateArray<double[]>(NZ1, () => new double[4]);
+            Wrad = CreateArray<double[]>(NZ1, () => new double[4]);
+            //W1rad = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[4])));
             W2rad = CreateArray<double[]>(NZ1, () => new double[4]);
-            Wrad = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[4])));
+            //Wrad = CreateArray<double[][][]>(NX1, () => CreateArray<double[][]>(NY1, () => CreateArray<double[]>(NZ1, () => new double[4])));
             Dz1 = new double[NZ1];
             Dz2 = new double[NZ1];
             Ag = CreateArray<double[]>(NX1, () => new double[NY1]);
             Tstern = new double[NZ1];
-            eS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            eSeS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            CloudES = new float[NZ1];
+            CloudESeS = new float[NZ1];
+            //eS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            //eSeS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             IG = new double[NZ1];
             EG = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             SG = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             DG = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            nS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            nD = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            Tau = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            nS = new double[NZ1];
+            nD = new double[NZ1];
+            Tau = new double[NZ1];
+            //nS = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            //nD = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            //Tau = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             Arad = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             Myx = new double[NZ1];
             Rp = CreateArray<double[]>(NZ1, () => new double[4]);
             CGp = CreateArray<double[]>(NZ1, () => new double[4]);
-            L_Strich = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            L_Strich = new double[NZ1];
+            //L_Strich = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             RTerrG = CreateArray<double[]>(NX1, () => new double[NY1]);
             EpsAp = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             EpsAm = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
