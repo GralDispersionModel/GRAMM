@@ -34,7 +34,6 @@ namespace GRAMM_CSharp_Test
             double WINDGE2 = 0;
 
             //transient boundary conditions using ECMWF ERA 5 GRIB2 DATA
-            //if (REALTIME > Intermed_Threshold && DTI > 3602)
             if (REALTIME > REINITIALIZATION_Threshold && (Program.ISTAT == 2 || Program.ISTAT == 4))
             {
                 REINITIALIZATION_Threshold += REINITIALIZATION;
@@ -42,7 +41,7 @@ namespace GRAMM_CSharp_Test
 
                 if (Program.ISTAT == 2 || Program.ISTAT == 4)
                 {
-                    DateTime dateref = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
+                    DateTime dateref = Program.dateUTC;
                     dateref = dateref.AddSeconds(REALTIME);
                     List<float> XERA5 = new List<float>();
                     List<float> YERA5 = new List<float>();
@@ -65,18 +64,17 @@ namespace GRAMM_CSharp_Test
                     List<float> MSLPERA5 = new List<float>();
                     List<float> SEATEMPERA5 = new List<float>();
 
-#if _ECMWF_
                     //read ERA5 grib2 files
                     ERA5_Read(dateref, ref ERA5_date1, ref ERA5_date2, ref XERA5, ref YERA5, ref ZERA5, ref OROERA5, ref UERA5, ref VERA5, ref WERA5, ref TERA5,
                         ref QERA5, ref SDERA5, ref CCERA5, ref PERA5, ref STERA5, ref SWERA5, ref MSLPERA5, ref LCCERA5, ref MCCERA5, ref HCCERA5, ref WATERCLOUDERA5, ref SEATEMPERA5);
 
-                    //calculate boundary conditions using ERA5 data
-                    //ERA5_BoundaryConditions(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);
-
+                    //re-initialization using ERA5 data
                     ERA5_InitializeOntoGRAMMgrid(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);
-#endif
+
                     if (ICSTR)
                     {
+                        dateref = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
+                        dateref = dateref.AddSeconds(REALTIME);
                         int IMON_RAD = dateref.Month;
                         int ITAG_RAD = dateref.Day;
                         int ISTUD = dateref.Hour;
@@ -97,7 +95,7 @@ namespace GRAMM_CSharp_Test
 
                 if (Program.ISTAT == 2 || Program.ISTAT == 4)
                 {
-                    DateTime dateref = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
+                    DateTime dateref = Program.dateUTC;
                     dateref = dateref.AddSeconds(REALTIME);
                     List<float> XERA5 = new List<float>();
                     List<float> YERA5 = new List<float>();
@@ -120,15 +118,12 @@ namespace GRAMM_CSharp_Test
                     List<float> MSLPERA5 = new List<float>();
                     List<float> SEATEMPERA5 = new List<float>();
 
-#if _ECMWF_
                     //read ERA5 grib2 files
                     ERA5_Read(dateref, ref ERA5_date1, ref ERA5_date2, ref XERA5, ref YERA5, ref ZERA5, ref OROERA5, ref UERA5, ref VERA5, ref WERA5, ref TERA5,
                         ref QERA5, ref SDERA5, ref CCERA5, ref PERA5, ref STERA5, ref SWERA5, ref MSLPERA5, ref LCCERA5, ref MCCERA5, ref HCCERA5, ref WATERCLOUDERA5, ref SEATEMPERA5);
 
                     //calculate boundary conditions using ERA5 data
-                    ERA5_BoundaryConditions2(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);
-#endif
-                    
+                    ERA5_BoundaryConditions2(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);                   
                 }
             }
 

@@ -1734,6 +1734,10 @@ namespace GRAMM_CSharp_Test
         public static float GRAMM_South = 0;
 
         ///<summary>
+        ///UTC date used for interpolation ERA5 data to force/initialize GRAMM
+        ///</summary>
+        public static DateTime dateUTC = new DateTime();
+        ///<summary>
         ///first date used for interpolation ERA5 data to force/initialize GRAMM
         ///</summary>
         public static DateTime ERA5_date1 = new DateTime();

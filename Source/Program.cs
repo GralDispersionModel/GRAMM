@@ -269,6 +269,8 @@ Console.WriteLine("| .Net Core Version |");
 
             if (ISTAT >= 2)
             {
+                //setting UTC time for reading ERA5 data
+                dateUTC = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
                 //GRAMM uses sun time -> UTC has to be transferred
                 if (Longitude > 180.0)
                     Longitude -= 180;
