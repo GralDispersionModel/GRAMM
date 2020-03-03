@@ -130,7 +130,7 @@ namespace GRAMM_CSharp_Test
                         float HX = (float) ((ZE - ZW) / (XE - XW)); // inclination gradients of the ground
                         float HY = (float) ((ZN - ZS) / (YN - YS));
                         
-                        Program.Alfa[i][j] = MathF.Atan(MathF.Sqrt(HX * HX + HY * HY)); //inclination of the ground cell 
+                        Program.Alfa[i][j] = MathF.Atan(MathF.Sqrt(HX * HX + HY * HY)); //inclination of the ground cell
                         
                         if (Math.Abs(Program.Alfa[i][j]) < Eps)
                             Program.Beta[i][j] = 0; // direction of the ground cell 0 = north
@@ -931,7 +931,6 @@ namespace GRAMM_CSharp_Test
 
                 Program.nS[k] = 0.346 * (Program.CloudESeS[k] - 0.1) + 0.85 * MathF.Pow((float) Program.CloudESeS[k] - 0.1F, 2);
                 Program.nD[k] = 0.3 * MathF.Sin(MathF.PI * (Program.CloudES[k] + 0.25F)) + 0.36F * Program.CloudES[k] - 0.15F;
-
                 /*
                 for (int i = 1; i <= Program.NX; i++)
                 {
@@ -949,7 +948,6 @@ namespace GRAMM_CSharp_Test
                 }
                 */
             }
-
             return 0d;
         }
 

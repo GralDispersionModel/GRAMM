@@ -310,6 +310,12 @@ namespace GRAMM_CSharp_Test
 			double x = x1; // avoid "starg" optocode
 			return (x * x);
 		}
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // [MethodImpl(MethodImplOptions.NoInlining)]
+        public static float Pow2(float x1)
+        {
+            return (x1 * x1);
+        }
     }
 }
