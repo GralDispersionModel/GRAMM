@@ -12,13 +12,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -37,7 +36,7 @@ namespace GRAMM_CSharp_Test
             Program.FH = Math.PI / 21600 * Math.Cos(Program.BGRAD * Math.PI / 180) * 0;
 
             //Inital values for the saturation pressure
-            Program.PSAT=new double[212]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            Program.PSAT = new double[212]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,102.9,113.3,
             124.7,136.9,150.4,165.1,180.9,198.1,216.9,237.3,259.4,283.3,309.0,338.0,368.0,
@@ -53,7 +52,7 @@ namespace GRAMM_CSharp_Test
             60110,62490,64950,67490,70110};
 
             //Saturation temperature
-            for(int n=1;n<=161;n++)
+            for (int n = 1; n <= 161; n++)
             {
                 double TSAT = 149.95 + (float)n;
                 double PSATN = 100000 * Math.Exp(B0 - B1 / TSAT + B2 * Math.Log(TSAT) + B3 * TSAT);
@@ -173,8 +172,8 @@ namespace GRAMM_CSharp_Test
         private static void Analyze_Topography()
         {
             Console.Write("Analyzing topography....  ");
-         
-            List<float> TPI_300  = new List<float>();
+
+            List<float> TPI_300 = new List<float>();
             List<float> TPI_2000 = new List<float>();
 
             float Radius_inner = 1.5F * DDX[1];
@@ -182,26 +181,26 @@ namespace GRAMM_CSharp_Test
             float Radius_outer_2 = 4000;
 
             Read_TPI_Settings(ref Radius_inner, ref Radius_outer_1, ref Radius_outer_2);
-            
-            if (Radius_inner < DDX[1] || Radius_outer_1 < DDX[1] || Radius_outer_2 < 4* DDX[1]) // if settings not valid
+
+            if (Radius_inner < DDX[1] || Radius_outer_1 < DDX[1] || Radius_outer_2 < 4 * DDX[1]) // if settings not valid
             {
                 Set_Bassins_to_AHmin();
                 Console.WriteLine("failed");
                 return;
             }
 
-            int Radius_300  = (int) Math.Max(1,  Radius_inner / DDX[1] + 0.5F);
-            int Radius_2000 = (int) Math.Max(1, Radius_outer_2 / DDX[1] + 0.5F);
+            int Radius_300 = (int)Math.Max(1, Radius_inner / DDX[1] + 0.5F);
+            int Radius_2000 = (int)Math.Max(1, Radius_outer_2 / DDX[1] + 0.5F);
 
-            float[][] TPI300    = CreateArray<float[]>(NX1, () => new float[NY1]);
-            float[][] TPI2000   = CreateArray<float[]>(NX1, () => new float[NY1]);
-            float[][] Slope300_Max  = CreateArray<float[]>(NX1, () => new float[NY1]);
-            float[][] Slope300_Min  = CreateArray<float[]>(NX1, () => new float[NY1]);
+            float[][] TPI300 = CreateArray<float[]>(NX1, () => new float[NY1]);
+            float[][] TPI2000 = CreateArray<float[]>(NX1, () => new float[NY1]);
+            float[][] Slope300_Max = CreateArray<float[]>(NX1, () => new float[NY1]);
+            float[][] Slope300_Min = CreateArray<float[]>(NX1, () => new float[NY1]);
 
             int x_start = Math.Max(nr_cell_smooth, Radius_300);
-            int x_end   = Math.Min(NX - nr_cell_smooth, NX - Radius_300) + 1;
-            int y_end   = Math.Min(NY - nr_cell_smooth, NY - Radius_300) + 1;
-            
+            int x_end = Math.Min(NX - nr_cell_smooth, NX - Radius_300) + 1;
+            int y_end = Math.Min(NY - nr_cell_smooth, NY - Radius_300) + 1;
+
             object obj = new object();
             Parallel.For(x_start, x_end, Program.pOptions, i =>
             {
@@ -210,9 +209,9 @@ namespace GRAMM_CSharp_Test
                     float slopemax = 0;
                     float slopemin = 0;
                     TPI300[i][j] = TPI_Calc(0F, Radius_inner, i, j, ref slopemax, ref slopemin);
-                    Slope300_Max[i][j] = (float) (Math.Round(slopemax));
-                    Slope300_Min[i][j] = (float) (Math.Round(slopemin));
-                    lock(obj)
+                    Slope300_Max[i][j] = (float)(Math.Round(slopemax));
+                    Slope300_Min[i][j] = (float)(Math.Round(slopemin));
+                    lock (obj)
                     {
                         TPI_300.Add(TPI300[i][j]);
                     }
@@ -220,9 +219,9 @@ namespace GRAMM_CSharp_Test
             });
 
             x_start = Math.Max(nr_cell_smooth, Radius_2000);
-            x_end   = Math.Min(NX - nr_cell_smooth, NX - Radius_2000) + 1;
-            y_end   = Math.Min(NY - nr_cell_smooth, NY - Radius_2000) + 1;
-             
+            x_end = Math.Min(NX - nr_cell_smooth, NX - Radius_2000) + 1;
+            y_end = Math.Min(NY - nr_cell_smooth, NY - Radius_2000) + 1;
+
             Parallel.For(x_start, x_end, Program.pOptions, i =>
             {
                 for (int j = x_start; j < y_end; j++)
@@ -230,7 +229,7 @@ namespace GRAMM_CSharp_Test
                     float slopemax = 0;
                     float slopemin = 0;
                     TPI2000[i][j] = TPI_Calc(Radius_outer_1, Radius_outer_2, i, j, ref slopemax, ref slopemin);
-                    lock(obj)
+                    lock (obj)
                     {
                         TPI_2000.Add(TPI2000[i][j]);
                     }
@@ -239,29 +238,29 @@ namespace GRAMM_CSharp_Test
             });
 
             obj = null;
-            
+
             double TPI300_Mean = 0;
-            double STDev300    = StdDev(TPI_300, ref TPI300_Mean); 
+            double STDev300 = StdDev(TPI_300, ref TPI300_Mean);
 
             double TPI2000_Mean = 0;
-            double STDev2000    = StdDev(TPI_2000, ref TPI2000_Mean); 
+            double STDev2000 = StdDev(TPI_2000, ref TPI2000_Mean);
 
             Console.WriteLine("mean near " + Math.Round(TPI300_Mean, 2).ToString() + " mean large " + Math.Round(TPI2000_Mean, 2).ToString());
 
-            float[][] TPI  = CreateArray<float[]>(NX1, () => new float[NY1]);
-            
-           // Write_ASRII("TPI_SlopeMax.txt", Slope300_Max);
+            float[][] TPI = CreateArray<float[]>(NX1, () => new float[NY1]);
+
+            // Write_ASRII("TPI_SlopeMax.txt", Slope300_Max);
 
             Parallel.For(1, NX, Program.pOptions, i =>
             {
                 for (int j = 1; j < NY; j++)
                 {
-                    TPI300[i][j]  = (int) ((TPI300[i][j]  - TPI300_Mean)  / STDev300  * 100F + 0.5F); // normalize TPI300
-                    TPI2000[i][j] = (int) ((TPI2000[i][j] - TPI2000_Mean) / STDev2000 * 100F + 0.5F); // normalize TPI2000
-                    
-                    int TPI_300_Stdi = (int) (TPI300[i][j]);
-                    int TPI_2000_Stdi = (int) (TPI2000[i][j]);
-                    
+                    TPI300[i][j] = (int)((TPI300[i][j] - TPI300_Mean) / STDev300 * 100F + 0.5F); // normalize TPI300
+                    TPI2000[i][j] = (int)((TPI2000[i][j] - TPI2000_Mean) / STDev2000 * 100F + 0.5F); // normalize TPI2000
+
+                    int TPI_300_Stdi = (int)(TPI300[i][j]);
+                    int TPI_2000_Stdi = (int)(TPI2000[i][j]);
+
                     float slope = Slope300_Max[i][j];
 
                     // classify TPI values
@@ -318,20 +317,20 @@ namespace GRAMM_CSharp_Test
             {
                 for (int j = 2; j < NY - 2; j++)
                 {
-                    double temp = 0.06321 * (0.354 * TPI2000[i - 2][ j + 2] + 
-                    0.354 * TPI2000[i - 2][j - 2] + 0.354 * TPI2000[i + 2][ j + 2] + 
-                    0.354 * TPI2000[i + 2][ j - 2] + 0.447 * TPI2000[i - 2][ j + 1] + 
-                    0.447 * TPI2000[i - 2][ j - 1] + 0.447 * TPI2000[i + 2][ j + 1] + 
-                    0.447 * TPI2000[i + 2][ j - 1] + 0.447 * TPI2000[i - 1][ j + 2] + 
-                    0.447 * TPI2000[i - 1][ j - 2] + 0.447 * TPI2000[i + 1][ j + 2] + 
-                    0.447 * TPI2000[i + 1][ j - 2] + 0.5 * TPI2000[i][ j + 2] + 
-                    0.5 * TPI2000[i][ j - 2] + 0.5 * TPI2000[i + 2][ j] + 
-                    0.5 * TPI2000[i - 2][ j] + TPI2000[i - 1][ j] + 
-                    TPI2000[i + 1][ j] + TPI2000[i][ j + 1] + 
-                    TPI2000[i][ j - 1] + 
-                    0.707 * TPI2000[i - 1][ j + 1] + 0.707 * TPI2000[i + 1][ j + 1] + 0.707 * TPI2000[i - 1][ j - 1] + 0.707 * TPI2000[i + 1][ j - 1] +
-                    2 * TPI2000[i][ j]);
-                    Slope300_Min[i][ j] = (float) Math.Round(temp, 1);
+                    double temp = 0.06321 * (0.354 * TPI2000[i - 2][j + 2] +
+                    0.354 * TPI2000[i - 2][j - 2] + 0.354 * TPI2000[i + 2][j + 2] +
+                    0.354 * TPI2000[i + 2][j - 2] + 0.447 * TPI2000[i - 2][j + 1] +
+                    0.447 * TPI2000[i - 2][j - 1] + 0.447 * TPI2000[i + 2][j + 1] +
+                    0.447 * TPI2000[i + 2][j - 1] + 0.447 * TPI2000[i - 1][j + 2] +
+                    0.447 * TPI2000[i - 1][j - 2] + 0.447 * TPI2000[i + 1][j + 2] +
+                    0.447 * TPI2000[i + 1][j - 2] + 0.5 * TPI2000[i][j + 2] +
+                    0.5 * TPI2000[i][j - 2] + 0.5 * TPI2000[i + 2][j] +
+                    0.5 * TPI2000[i - 2][j] + TPI2000[i - 1][j] +
+                    TPI2000[i + 1][j] + TPI2000[i][j + 1] +
+                    TPI2000[i][j - 1] +
+                    0.707 * TPI2000[i - 1][j + 1] + 0.707 * TPI2000[i + 1][j + 1] + 0.707 * TPI2000[i - 1][j - 1] + 0.707 * TPI2000[i + 1][j - 1] +
+                    2 * TPI2000[i][j]);
+                    Slope300_Min[i][j] = (float)Math.Round(temp, 1);
                 }
             });
 
@@ -350,7 +349,7 @@ namespace GRAMM_CSharp_Test
             });
 
             // 2nd remove islands
-            for(int i = 0; i < NX; i++)
+            for (int i = 0; i < NX; i++)
             {
                 for (int j = 0; j < NY; j++)
                 {
@@ -385,7 +384,7 @@ namespace GRAMM_CSharp_Test
                             }
                         }
                     }
-                    Program.TPI[i][j] =  TPI[i][j];
+                    Program.TPI[i][j] = TPI[i][j];
                 }
             }
 
@@ -399,9 +398,9 @@ namespace GRAMM_CSharp_Test
                     for (int j = 1; j < NY; j++)
                     {
                         float _TPI = TPI[i][j];
-                        if ((_TPI == 1  || _TPI == 4 || _TPI == 5) && Slope300_Min[i][j] < 10) // flat V valleys, U-valleys, broad flat aereas
+                        if ((_TPI == 1 || _TPI == 4 || _TPI == 5) && Slope300_Min[i][j] < 10) // flat V valleys, U-valleys, broad flat aereas
                         //if ((_TPI == 4 || _TPI == 5) && Slope300_Min[i][j] < 5) // U-valleys, broad flat aereas
-                        {   
+                        {
                             AH_Bassins[i][j] = AH[i][j] + frac; // take the original height for that cells
                             frac += 0.01F;
                         }
@@ -416,11 +415,11 @@ namespace GRAMM_CSharp_Test
 
                 // now enlarge the cells 
                 bool finish = false; // flag, that all cells are modified
-                float AH_upper = (float) AHMIN; // upper limit to enlarge the arrays -> increase slowly
+                float AH_upper = (float)AHMIN; // upper limit to enlarge the arrays -> increase slowly
                 bool[][] enlarged = CreateArray<bool[]>(NX1, () => new bool[NY1]);
 
                 while (finish == false) // as long, as some cells are not modified
-                { 
+                {
                     finish = true;
                     AH_upper += DDX[1] / 6F;
 
@@ -442,16 +441,16 @@ namespace GRAMM_CSharp_Test
                                 {
                                     for (int jj = j - 1; jj < j + 2; jj++)
                                     {
-                                       if (AH_Bassins[ii][jj] < -900F && enlarged[ii][jj] == true 
-                                       /*&& (AH[ii][jj] < (AH_Bassins[i][j] + 250))  // influence up to 250 m
-                                       && (AH[ii][jj] > (AH_Bassins[i][j] - 50))   // limit the influence of an higher bassin to a lower valley
-                                       && (TPI[ii][jj] < 9)*/)                       // do not enlarge at hilltops
-                                       {
-                                           if (AH_Bassins[ii][jj] < -900F)
-                                           {
+                                        if (AH_Bassins[ii][jj] < -900F && enlarged[ii][jj] == true
+                                        /*&& (AH[ii][jj] < (AH_Bassins[i][j] + 250))  // influence up to 250 m
+                                        && (AH[ii][jj] > (AH_Bassins[i][j] - 50))   // limit the influence of an higher bassin to a lower valley
+                                        && (TPI[ii][jj] < 9)*/)                       // do not enlarge at hilltops
+                                        {
+                                            if (AH_Bassins[ii][jj] < -900F)
+                                            {
                                                 enlarged[ii][jj] = false; // do not enlarge this cell once more in this loop 
-                                           }
-                                           AH_Bassins[ii][jj] = AH_Bassins[i][j];
+                                            }
+                                            AH_Bassins[ii][jj] = AH_Bassins[i][j];
                                         }
                                     }
                                 }
@@ -469,35 +468,35 @@ namespace GRAMM_CSharp_Test
                 {
                     for (int j = 2; j < NY - 2; j++)
                     {
-                        double temp = 0.06321 * (0.354 * AH_Bassins[i - 2][ j + 2] + 
-                        0.354 * AH_Bassins[i - 2][j - 2] + 0.354 * AH_Bassins[i + 2][ j + 2] + 
-                        0.354 * AH_Bassins[i + 2][ j - 2] + 0.447 * AH_Bassins[i - 2][ j + 1] + 
-                        0.447 * AH_Bassins[i - 2][ j - 1] + 0.447 * AH_Bassins[i + 2][ j + 1] + 
-                        0.447 * AH_Bassins[i + 2][ j - 1] + 0.447 * AH_Bassins[i - 1][ j + 2] + 
-                        0.447 * AH_Bassins[i - 1][ j - 2] + 0.447 * AH_Bassins[i + 1][ j + 2] + 
-                        0.447 * AH_Bassins[i + 1][ j - 2] + 0.5 * AH_Bassins[i][ j + 2] + 
-                        0.5 * AH_Bassins[i][ j - 2] + 0.5 * AH_Bassins[i + 2][ j] + 
-                        0.5 * AH_Bassins[i - 2][ j] + AH_Bassins[i - 1][ j] + 
-                        AH_Bassins[i + 1][ j] + AH_Bassins[i][ j + 1] + 
-                        AH_Bassins[i][ j - 1] + 
-                        0.707 * AH_Bassins[i - 1][ j + 1] + 0.707 * AH_Bassins[i + 1][ j + 1] + 0.707 * AH_Bassins[i - 1][ j - 1] + 0.707 * AH_Bassins[i + 1][ j - 1] +
-                        2 * AH_Bassins[i][ j]);
+                        double temp = 0.06321 * (0.354 * AH_Bassins[i - 2][j + 2] +
+                        0.354 * AH_Bassins[i - 2][j - 2] + 0.354 * AH_Bassins[i + 2][j + 2] +
+                        0.354 * AH_Bassins[i + 2][j - 2] + 0.447 * AH_Bassins[i - 2][j + 1] +
+                        0.447 * AH_Bassins[i - 2][j - 1] + 0.447 * AH_Bassins[i + 2][j + 1] +
+                        0.447 * AH_Bassins[i + 2][j - 1] + 0.447 * AH_Bassins[i - 1][j + 2] +
+                        0.447 * AH_Bassins[i - 1][j - 2] + 0.447 * AH_Bassins[i + 1][j + 2] +
+                        0.447 * AH_Bassins[i + 1][j - 2] + 0.5 * AH_Bassins[i][j + 2] +
+                        0.5 * AH_Bassins[i][j - 2] + 0.5 * AH_Bassins[i + 2][j] +
+                        0.5 * AH_Bassins[i - 2][j] + AH_Bassins[i - 1][j] +
+                        AH_Bassins[i + 1][j] + AH_Bassins[i][j + 1] +
+                        AH_Bassins[i][j - 1] +
+                        0.707 * AH_Bassins[i - 1][j + 1] + 0.707 * AH_Bassins[i + 1][j + 1] + 0.707 * AH_Bassins[i - 1][j - 1] + 0.707 * AH_Bassins[i + 1][j - 1] +
+                        2 * AH_Bassins[i][j]);
 
                         if (temp < AH_Bassins[i][j])
                         {
-                            AH_Bassins[i][j] = (float) (temp);
+                            AH_Bassins[i][j] = (float)(temp);
                         }
                     }
                 });
 
-                                
+
                 Parallel.For(1, NX + 1, Program.pOptions, i =>
                 {
                     for (int j = 1; j <= NY; j++)
                     {
                         if (AH_Bassins[i][j] < AHMIN)
                         {
-                            AH_Bassins[i][j] = (float) AHMIN;
+                            AH_Bassins[i][j] = (float)AHMIN;
                         }
                         else if (AH_Bassins[i][j] > AH[i][j]) // AH_Bassin must not be higher than AH[][]
                         {
@@ -526,20 +525,20 @@ namespace GRAMM_CSharp_Test
 
             TPI_300.Clear();
             TPI_2000.Clear();
-            TPI300    = null;
-            TPI2000   = null;
-            Slope300_Max  = null;
+            TPI300 = null;
+            TPI2000 = null;
+            Slope300_Max = null;
         }
 
         static private float TPI_Calc(float R_in, float R_out, int xm, int ym, ref float slopemax, ref float slopemin)
         {
             float Mean_inner = 0; int Count_inner = 0;
             float Mean_outer = 0; int Count_outer = 0;
-            float AH_max = -100000; int ind_xmax = 0; int  ind_ymax = 0;
+            float AH_max = -100000; int ind_xmax = 0; int ind_ymax = 0;
             float AH_min = 100000; int ind_xmin = 0; int ind_ymin = 0;
-            
-            int r_out_ind =  Math.Max(1, (int) (R_out / DDX[1] + 1.5F)); // outer donut circle
-            
+
+            int r_out_ind = Math.Max(1, (int)(R_out / DDX[1] + 1.5F)); // outer donut circle
+
             for (int xi = xm - r_out_ind; xi <= xm + r_out_ind; xi++)
             {
                 for (int yi = ym - r_out_ind; yi <= ym + r_out_ind; yi++)
@@ -554,24 +553,24 @@ namespace GRAMM_CSharp_Test
                             {
                                 AH_max = AH[xi][yi];
                                 ind_xmax = xi;
-                                ind_ymax = yi;    
+                                ind_ymax = yi;
                             }
                             if (AH[xi][yi] < AH_min)
                             {
                                 AH_min = AH[xi][yi];
                                 ind_xmin = xi;
-                                ind_ymin = yi;    
+                                ind_ymin = yi;
                             }
                         }
                     }
                     else // outer circle
                     {
-                    
-                       float r = Distance_between_cells(xm, ym, xi, yi);
-                    
-                       if (r > R_in && r < R_out) // inside circle?
-                       {
-                           if (xi > 0 && yi > 0 && xi < NX1 && yi < NY1)
+
+                        float r = Distance_between_cells(xm, ym, xi, yi);
+
+                        if (r > R_in && r < R_out) // inside circle?
+                        {
+                            if (xi > 0 && yi > 0 && xi < NX1 && yi < NY1)
                             {
                                 Mean_outer += AH[xi][yi];
                                 Count_outer++;
@@ -594,7 +593,7 @@ namespace GRAMM_CSharp_Test
                 }
             }
 
-            float TPI = 0; 
+            float TPI = 0;
             //Console.Write(Count_outer.ToString() + " ");
             if (Count_outer > 0)
             {
@@ -607,19 +606,19 @@ namespace GRAMM_CSharp_Test
                 float sl1 = 0;
                 if (rmin > 1)
                 {
-                    sl1 = (float) (Math.Atan(Math.Abs(AH[xm][ym] - AH_min) / rmin) * 180F / Math.PI);
+                    sl1 = (float)(Math.Atan(Math.Abs(AH[xm][ym] - AH_min) / rmin) * 180F / Math.PI);
                 }
-                float rmax= Distance_between_cells(xm, ym, ind_xmax, ind_ymax);
+                float rmax = Distance_between_cells(xm, ym, ind_xmax, ind_ymax);
                 float sl2 = 0;
                 if (rmax > 1)
                 {
-                    sl2 = (float) (Math.Atan(Math.Abs(AH[xm][ym] - AH_max) / rmax) * 180F / Math.PI);
+                    sl2 = (float)(Math.Atan(Math.Abs(AH[xm][ym] - AH_max) / rmax) * 180F / Math.PI);
                 }
-                
+
                 slopemax = Math.Max(sl1, sl2);
                 slopemin = Math.Min(sl1, sl2);
             }
-            
+
             return TPI;
         }
 
@@ -627,14 +626,14 @@ namespace GRAMM_CSharp_Test
         {
             float dx = (x1 - x2) * DDX[1];
             float dy = (y1 - y2) * DDX[1];
-            return (float) (Math.Sqrt(Pow2(dx) + Pow2(dy))); 
+            return (float)(Math.Sqrt(Pow2(dx) + Pow2(dy)));
         }
 
         static private float Mean_TPI_Value(int x, int y, float[][] TPI, int TPI_Check)
         {
             float TPI_mean = 0;
             int count = 0;
-            int dx = (int) (Math.Max(1, 300 / DDX[1] + 0.5));
+            int dx = (int)(Math.Max(1, 300 / DDX[1] + 0.5));
 
             for (int i = x - dx; i < x + dx; i++)
             {
@@ -660,7 +659,7 @@ namespace GRAMM_CSharp_Test
             {
                 mean = TPI_mean / count;
             }
-            return (float) (mean);
+            return (float)(mean);
         }
         static private double StdDev(List<float> Height, ref double Avg)
         {
@@ -677,8 +676,8 @@ namespace GRAMM_CSharp_Test
         }
 
         //optional: write ASRII txt file
-		static private void Write_ASRII(string filename, float[][] values)
-		{
+        static private void Write_ASRII(string filename, float[][] values)
+        {
             try
             {
                 CultureInfo ic = CultureInfo.InvariantCulture;
@@ -702,7 +701,7 @@ namespace GRAMM_CSharp_Test
                 }
             }
             catch { }
-		}//optional: write ASRII txt file
+        }//optional: write ASRII txt file
 
         static private bool Read_TPI_Settings(ref float r1, ref float r2, ref float r3)
         {
@@ -718,11 +717,11 @@ namespace GRAMM_CSharp_Test
                             text = myreader.ReadLine().Split(new char[] { ' ', ';', '!', '\t' });
                             text[0] = text[0].Replace(".", decsep);
                             r1 = Convert.ToSingle(text[0]);
-                            
+
                             text = myreader.ReadLine().Split(new char[] { ' ', ';', '!', '\t' });
                             text[0] = text[0].Replace(".", decsep);
                             r2 = Convert.ToSingle(text[0]);
-                            
+
                             text = myreader.ReadLine().Split(new char[] { ' ', ';', '!', '\t' });
                             text[0] = text[0].Replace(".", decsep);
                             r3 = Convert.ToSingle(text[0]);

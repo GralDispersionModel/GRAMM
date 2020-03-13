@@ -11,695 +11,692 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
         public static void Epsimp_calculate(int NI, int NJ, int NK)
         {
-        	int range_parallel = (int) (NI/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-        	range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-        	//computation of the new turbulent kinetic energy
-        	// Parallel.For(2, NI, Program.pOptions, i =>
-        	Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int i = range.Item1; i < range.Item2; i++)
-        		{
-        			for (int j = 2; j <= NJ - 1; j++)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+            int range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
+            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
+                                                           //computation of the new turbulent kinetic energy
+                                                           // Parallel.For(2, NI, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                for (int i = range.Item1; i < range.Item2; i++)
+                {
+                    for (int j = 2; j <= NJ - 1; j++)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        				}
-        			}
-        		}
-        	});
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        	range_parallel = (int) (NI/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-        	range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-        	// Parallel.For(2, NI, Program.pOptions, i1 =>
-        	Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int i1 = range.Item1; i1 < range.Item2; i1++)
-        		{
-        			int i = NI - i1 + 1;
-        			for (int j = NJ - 1; j >= 2; j--)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                        }
+                    }
+                }
+            });
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+            range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
+            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
+                                                           // Parallel.For(2, NI, Program.pOptions, i1 =>
+            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                for (int i1 = range.Item1; i1 < range.Item2; i1++)
+                {
+                    int i = NI - i1 + 1;
+                    for (int j = NJ - 1; j >= 2; j--)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        				}
-        			}
-        		}
-        	});
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        	range_parallel = (int) (NI/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 6);
-        	range_parallel = Math.Max(36 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-        	//Parallel.For(2, NI, Program.pOptions, i1 =>
-        	Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int i1 = range.Item1; i1 < range.Item2; i1++)
-        		{
-        			int i = NI - i1 + 1;
-        			for (int j = 2; j <= NJ - 1; j++)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                        }
+                    }
+                }
+            });
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+            range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 6);
+            range_parallel = Math.Max(36 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
+                                                           //Parallel.For(2, NI, Program.pOptions, i1 =>
+            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                for (int i1 = range.Item1; i1 < range.Item2; i1++)
+                {
+                    int i = NI - i1 + 1;
+                    for (int j = 2; j <= NJ - 1; j++)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        				}
-        			}
-        		}
-        	});
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        	range_parallel = (int) (NI/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 3);
-        	range_parallel = Math.Max(33 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-        	//Parallel.For(2, NI, Program.pOptions, i =>
-        	Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int i = range.Item1; i < range.Item2; i++)
-        		{
-        			for (int j = NJ - 1; j >= 2; j--)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                        }
+                    }
+                }
+            });
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+            range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 3);
+            range_parallel = Math.Max(33 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
+                                                           //Parallel.For(2, NI, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                for (int i = range.Item1; i < range.Item2; i++)
+                {
+                    for (int j = NJ - 1; j >= 2; j--)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        				}
-        			}
-        		}
-        	});
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        	range_parallel = (int) (NJ/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-        	range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-        	//Parallel.For(2, NJ, Program.pOptions, j =>
-        	Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int j = range.Item1; j < range.Item2; j++)
-        		{
-        			for (int i = 2; i <= NI - 1; i++)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                        }
+                    }
+                }
+            });
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
+            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
+                                                           //Parallel.For(2, NJ, Program.pOptions, j =>
+            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                for (int j = range.Item1; j < range.Item2; j++)
+                {
+                    for (int i = 2; i <= NI - 1; i++)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        				}
-        			}
-        		}
-        	});
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        	range_parallel = (int) (NJ/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-        	range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-        	//Parallel.For(2, NJ, Program.pOptions, j1 =>
-        	Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int j1 = range.Item1; j1 < range.Item2; j1++)
-        		{
-        			int j = NJ - j1 + 1;
-        			for (int i = NI - 1; i >= 2; i--)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                        }
+                    }
+                }
+            });
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
+            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
+                                                           //Parallel.For(2, NJ, Program.pOptions, j1 =>
+            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                for (int j1 = range.Item1; j1 < range.Item2; j1++)
+                {
+                    int j = NJ - j1 + 1;
+                    for (int i = NI - 1; i >= 2; i--)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        				}
-        			}
-        		}
-        	});
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        	range_parallel = (int) (NJ/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 6);
-        	range_parallel = Math.Max(36 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-        	// Parallel.For(2, NJ, Program.pOptions, j =>
-        	Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int j = range.Item1; j < range.Item2; j++)
-        		{
-        			for (int i = NI - 1; i >= 2; i--)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                        }
+                    }
+                }
+            });
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 6);
+            range_parallel = Math.Max(36 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
+                                                           // Parallel.For(2, NJ, Program.pOptions, j =>
+            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
 
-        				}
-        			}
-        		}
-        	});
+                for (int j = range.Item1; j < range.Item2; j++)
+                {
+                    for (int i = NI - 1; i >= 2; i--)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
 
-        	range_parallel = (int) (NJ/Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 3);
-        	range_parallel = Math.Max(33 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
-        	range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-        	//Parallel.For(2, NJ, Program.pOptions, j1 =>
-        	Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
-        	{
-        		double[] PIM = new double[NK + 1];
-        		double[] QIM = new double[NK + 1];
-        		double help;
-        		
-        		for (int j1 = range.Item1; j1 < range.Item2; j1++)
-        		{
-        			int j = NJ - j1 + 1;
-        			
-        			for (int i = 2; i <= NI - 1; i++)
-        			{
-        				for (int k = 1; k <= NK - 1; k++)
-        				{
-        					//Production-terms of turbulent kinetic energy
-        					double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
-        					double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
-        					double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
 
-        					double DUDZ = 0;
-        					double DVDZ = 0;
-        					double DWDZ = 0;
-        					double DTDZ = 0;
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
 
-        					if (k > 1)
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
-        					}
-        					else
-        					{
-        						DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-        						DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
-        					}
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
-        					//production-terms for the dissipation rate
-        					double PSTRESS = Program.VISV[i][j][k] *
-        						(0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
-        						 (DUDY + DVDX) * (DUDY + DVDX) +
-        						 (DUDZ + DWDX) * (DUDZ + DWDX) +
-        						 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-        					double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
 
-        					double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
-        						Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
-        						Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-        						(Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
 
-        					//Recurrence formula
-        					if (k > 1)
-        					{
-        						help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
-        					}
-        					else
-        					{
-        						help = 1 / Program.A_PS[i][j][k];
-        						PIM[k] = Program.B_PS[i][j][k] * help;
-        						QIM[k] = DIM * help;
-        					}
-        				}
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
 
-        				//Obtain new TKE-components
-        				for (int k = NK - 1; k >= 1; k--)
-        				{
-        					help = Program.DISSN[i][j][k];
-        					help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
-        					Program.DISSN[i][j][k] = help;
+                        }
+                    }
+                }
+            });
 
-        				}
-        			}
-        		}
-        	});
+            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 3);
+            range_parallel = Math.Max(33 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
+                                                           //Parallel.For(2, NJ, Program.pOptions, j1 =>
+            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            {
+                double[] PIM = new double[NK + 1];
+                double[] QIM = new double[NK + 1];
+                double help;
+
+                for (int j1 = range.Item1; j1 < range.Item2; j1++)
+                {
+                    int j = NJ - j1 + 1;
+
+                    for (int i = 2; i <= NI - 1; i++)
+                    {
+                        for (int k = 1; k <= NK - 1; k++)
+                        {
+                            //Production-terms of turbulent kinetic energy
+                            double DUDX = (Program.U[i + 1][j][k] - Program.U[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DVDX = (Program.V[i + 1][j][k] - Program.V[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DWDX = (Program.W[i + 1][j][k] - Program.W[i - 1][j][k]) / (Program.ZAX[i] + Program.ZAX[i - 1]);
+                            double DUDY = (Program.U[i][j + 1][k] - Program.U[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DVDY = (Program.V[i][j + 1][k] - Program.V[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+                            double DWDY = (Program.W[i][j + 1][k] - Program.W[i][j - 1][k]) / (Program.ZAY[j] + Program.ZAY[j - 1]);
+
+                            double DUDZ = 0;
+                            double DVDZ = 0;
+                            double DWDZ = 0;
+                            double DTDZ = 0;
+
+                            if (k > 1)
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                            }
+                            else
+                            {
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                            }
+
+                            //production-terms for the dissipation rate
+                            double PSTRESS = Program.VISV[i][j][k] *
+                                (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
+                                 (DUDY + DVDX) * (DUDY + DVDX) +
+                                 (DUDZ + DWDX) * (DUDZ + DWDX) +
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+
+                            double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
+                                Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
+                                Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (Program.A_PS[i][j][k] - Program.C_PS[i][j][k] * PIM[k - 1]);
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = (DIM + Program.C_PS[i][j][k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / Program.A_PS[i][j][k];
+                                PIM[k] = Program.B_PS[i][j][k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
+
+                        //Obtain new TKE-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = Program.DISSN[i][j][k];
+                            help += (Program.RELAXT * (PIM[k] * Program.DISSN[i][j][k + 1] + QIM[k] - help));
+                            Program.DISSN[i][j][k] = help;
+
+                        }
+                    }
+                }
+            });
         }
     }
 }

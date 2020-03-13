@@ -12,22 +12,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
-        public static void INIT_Radiation(ref bool LGEOM, ref bool LGEOMW, ref bool LGEOMR, ref int ISTUD, ref double AMIND, 
+        public static void INIT_Radiation(ref bool LGEOM, ref bool LGEOMW, ref bool LGEOMR, ref int ISTUD, ref double AMIND,
         ref int IMIND, ref double ASECD, ref int ISECD, List<int>[] Month_List)
         {
-            int NX_Radiat_Guess =  Math.Max(NX / 4, 3 * nr_cell_smooth);
-            int NY_Radiat_Guess =  Math.Max(NY / 4, 3 * nr_cell_smooth);
+            int NX_Radiat_Guess = Math.Max(NX / 4, 3 * nr_cell_smooth);
+            int NY_Radiat_Guess = Math.Max(NY / 4, 3 * nr_cell_smooth);
             Program.ISOL = 1; // thin clouds -> default value
             Solar_reduction_factor = 1.0F; // full solar radiation = default value
-            
+
             if (((METEO == "Y") || (METEO == "y")) && (Program.ISTAT == 0))
             {
                 if (IMETSTR == 1)
@@ -81,7 +79,7 @@ namespace GRAMM_CSharp_Test
                                         RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
-                                    
+
                                         float rsolg_mean = Mean_Array_Value(GLOBRAD, NX_Radiat_Guess, NY_Radiat_Guess);
                                         rsolg_daymax = Math.Max(rsolg_daymax, rsolg_mean);
 
@@ -110,7 +108,7 @@ namespace GRAMM_CSharp_Test
                                             }
                                         }
                                     }
-                                    
+
                                     // find the day with the max. radiation
                                     rsolg_max = Math.Max(rsolg_max, rsolg_daymax);
                                     if ((rsolg_daymax + 1) < rsolg_max)
@@ -156,7 +154,7 @@ namespace GRAMM_CSharp_Test
                                         RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
-                                    
+
                                         float rsolg_mean = Mean_Array_Value(GLOBRAD, NX_Radiat_Guess, NY_Radiat_Guess);
 
                                         if (Windspeed_meteopgt <= 2)
@@ -185,7 +183,7 @@ namespace GRAMM_CSharp_Test
                                         }
                                         else if (Windspeed_meteopgt > 3)
                                         {
-                                           if (rsolg_mean > 690)
+                                            if (rsolg_mean > 690)
                                             {
                                                 ISTU = istu_var;
                                                 ITAG = iday_var;
@@ -324,7 +322,7 @@ namespace GRAMM_CSharp_Test
                                         RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
-                                    
+
                                         float rsolg_mean = Mean_Array_Value(GLOBRAD, NX_Radiat_Guess, NY_Radiat_Guess);
                                         rsolg_daymax = Math.Max(rsolg_daymax, rsolg_mean);
 
@@ -351,9 +349,9 @@ namespace GRAMM_CSharp_Test
                                                 exit = true;
                                                 break;
                                             }
-                                        }    
+                                        }
                                     }
-                                    
+
                                     // find the day with the max. radiation
                                     rsolg_max = Math.Max(rsolg_max, rsolg_daymax);
                                     if ((rsolg_daymax + 1) < rsolg_max)
@@ -397,7 +395,7 @@ namespace GRAMM_CSharp_Test
                                         RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
-                                    
+
                                         float rsolg_mean = Mean_Array_Value(GLOBRAD, NX_Radiat_Guess, NY_Radiat_Guess);
 
                                         if (Windspeed_meteopgt <= 2)
@@ -535,10 +533,10 @@ namespace GRAMM_CSharp_Test
                         IMIN = 0;
                         Program.ISOL = 2; // 04/07/2018 Kuntner: thick clouds + lower solar radiation
                         Solar_reduction_factor = 0.1F; // try with reduced solar radiation
-                        
+
                         int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
                         bool exit = false;
-                        
+
                         //find the month and time of the year, where the radiation equals 100 W/m? as required by SC 4
                         foreach (int imonth_var in Month_List[month_setting])
                         {
@@ -555,9 +553,9 @@ namespace GRAMM_CSharp_Test
                                     RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                     Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                     Console.SetCursorPosition(0, Console.CursorTop);
-                                     
+
                                     float rsolg_mean = Mean_Array_Value(GLOBRAD, NX_Radiat_Guess, NY_Radiat_Guess);
-                                    
+
                                     if ((rsolg_mean > 45) && (rsolg_mean <= 150))
                                     {
                                         ISTU = istu_var;
@@ -617,27 +615,27 @@ namespace GRAMM_CSharp_Test
         public static float Mean_Array_Value(double[][] Array, int NX, int NY)
         {
             float mean = 0;
-            int count  = 0;
+            int count = 0;
             int startx = nr_cell_smooth;
             if (startx > (NX - 5))
             {
-                startx = Math.Max (1, (NX - 5));
+                startx = Math.Max(1, (NX - 5));
             }
             int starty = nr_cell_smooth;
             if (starty > (NY - 5))
             {
-                starty = Math.Max (1, (NY - 5));
+                starty = Math.Max(1, (NY - 5));
             }
 
-            for (int i = startx; i < NX; i++)    
+            for (int i = startx; i < NX; i++)
             {
-                for (int j = starty; j < NY; j++)    
+                for (int j = starty; j < NY; j++)
                 {
                     count++;
-                    mean += (float) Array[i][j];
+                    mean += (float)Array[i][j];
                 }
             }
-            return (float) (mean / count);
+            return (float)(mean / count);
         }
 
     }

@@ -13,10 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Grib.Api
 {
@@ -56,7 +52,7 @@ namespace Grib.Api
         /// </summary>
         /// <param name="that">The that.</param>
         /// <returns></returns>
-        public bool Equals (GeoCoordinate that)
+        public bool Equals(GeoCoordinate that)
         {
             return (this.Latitude == that.Latitude) &&
                    (this.Longitude == that.Longitude);
@@ -69,7 +65,7 @@ namespace Grib.Api
         /// <returns>
         ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals (object obj)
+        public override bool Equals(object obj)
         {
             return (obj is GeoCoordinate) && this.Equals((GeoCoordinate)obj);
         }
@@ -93,7 +89,7 @@ namespace Grib.Api
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator == (GeoCoordinate a, GeoCoordinate b)
+        public static bool operator ==(GeoCoordinate a, GeoCoordinate b)
         {
             if (System.Object.ReferenceEquals(a, b))
             {
@@ -111,7 +107,7 @@ namespace Grib.Api
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator != (GeoCoordinate a, GeoCoordinate b)
+        public static bool operator !=(GeoCoordinate a, GeoCoordinate b)
         {
             return !(a.Equals(b));
         }

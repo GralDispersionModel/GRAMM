@@ -11,15 +11,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Collections.Concurrent;
 //using System.Diagnostics;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -27,63 +22,63 @@ namespace GRAMM_CSharp_Test
         {
             //Check for numerical problems using overall massdivergence
             if (Program.MASSOURCE[Program.IDIV] > 1000) // 13.4.2017 Ku Check if Divergence increased to a very high value 
-            	Program.Divergence_Min = Math.Min(Program.Divergence_Min, Program.MASSOURCE[Program.IDIV]);
-           
-            if((Program.MASSOURCE[Program.IDIV]*0.001 >= 500000) || (Program.MASSOURCE[Program.IDIV] > Program.Divergence_Min * 50))
+                Program.Divergence_Min = Math.Min(Program.Divergence_Min, Program.MASSOURCE[Program.IDIV]);
+
+            if ((Program.MASSOURCE[Program.IDIV] * 0.001 >= 500000) || (Program.MASSOURCE[Program.IDIV] > Program.Divergence_Min * 50))
             {
-            	if (Program.computation_retry >= 3) // try 4 times
-            	{
-            		try
-            		{
+                if (Program.computation_retry >= 3) // try 4 times
+                {
+                    try
+                    {
                         string err = "Numerical instabilities detected for flow field: " + Program.IWETTER.ToString();
                         ProgramWriters.LogfileProblemreportWrite(err);
-            		}
-            		catch { }
-            		
-            		Program.REALTIME = Program.TLIMIT; // exit this situation
-            	}
-                for (int i = 0; i < 11;i++ )
+                    }
+                    catch { }
+
+                    Program.REALTIME = Program.TLIMIT; // exit this situation
+                }
+                for (int i = 0; i < 11; i++)
                     Program.MASSOURCE[i] = 0;
                 return false; // error
             }
-  
+
             //Calculation of several terms for the implicit scheme according to Patankar, 1980
             //Note that the wind speeds and the non-hydrostatic pressure are calculated using half-cells,
             //while pot. temperature, humidity, turbulent-kinetic energy and dissipation are modelled based on the full-cell
             if (Program.REALTIME < Program.DTI)
-            {            	
-  				TERMIVterms(NI, NJ, NK);
-            	
+            {
+                TERMIVterms(NI, NJ, NK);
+
                 TERMIPSterms(NI, NJ, NK);
-            					
-        		TERMIPterms(NI, NJ, NK); 
+
+                TERMIPterms(NI, NJ, NK);
 
                 //Prandtl-layer quantities
-                if(Program.ICPR) Prandtl_calculate(NI, NJ, NK);
+                if (Program.ICPR) Prandtl_calculate(NI, NJ, NK);
 
                 //Soil temperature (as the last 5 cells near the borders are not calculated, the routine just makes sense if model domains have more than 10 grid cells in the horizontal directions
                 if ((NI > 10) && (NJ > 10) && (Program.ICTB)) Calctb_calculate(NI, NJ, NK);
 
                 //Solve momentum equations
-				if (Program.pOptions.MaxDegreeOfParallelism > 5) // more cores - divide the work -> try to avoid false sharing             	
+                if (Program.pOptions.MaxDegreeOfParallelism > 5) // more cores - divide the work -> try to avoid false sharing             	
                 {
-//                	int cores = Program.pOptions.MaxDegreeOfParallelism;
-//                	Program.pOptions.MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling(cores / 3.0f));
-                	
-                	Parallel.Invoke(Program.pOptions,
+                    //                	int cores = Program.pOptions.MaxDegreeOfParallelism;
+                    //                	Program.pOptions.MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling(cores / 3.0f));
+
+                    Parallel.Invoke(Program.pOptions,
                     () => UIMPcalculate(NI, NJ, NK),
                     () => VIMPcalculate(NI, NJ, NK),
                     () => WVELcalculate(NI, NJ, NK));
 
-//                	Program.pOptions.MaxDegreeOfParallelism = cores; // reset core-count
+                    //                	Program.pOptions.MaxDegreeOfParallelism = cores; // reset core-count
                 }
                 else
                 {
-                	UIMPcalculate(NI, NJ, NK);
-                	VIMPcalculate(NI, NJ, NK);
-                	WVELcalculate(NI, NJ, NK);
+                    UIMPcalculate(NI, NJ, NK);
+                    VIMPcalculate(NI, NJ, NK);
+                    WVELcalculate(NI, NJ, NK);
                 }
-                 
+
                 //Boundary conditions
                 Bords_calculate(NI, NJ, NK);
 
@@ -96,10 +91,10 @@ namespace GRAMM_CSharp_Test
                     Program.MASSOURCE_FIRST = Program.SUMG;
                 }
 
-                
+
                 if (Program.ICT == true && Program.ICQU == true)
                 {
-                	Parallel.Invoke(Program.pOptions,
+                    Parallel.Invoke(Program.pOptions,
                     () => Timp_calculate(NI, NJ, NK),
                     () => Fimp_calculate(NI, NJ, NK));
                     //computation of water vapour content
@@ -107,21 +102,21 @@ namespace GRAMM_CSharp_Test
                 }
                 else
                 {
-                	//computation of pot. temperature
-                	if (Program.ICT == true) Timp_calculate(NI, NJ, NK);
-					//computation of humidity
-                	if (Program.ICQU == true) Fimp_calculate(NI, NJ, NK);
+                    //computation of pot. temperature
+                    if (Program.ICT == true) Timp_calculate(NI, NJ, NK);
+                    //computation of humidity
+                    if (Program.ICQU == true) Fimp_calculate(NI, NJ, NK);
                     //computation of water vapour content
                     if (Program.ICQU == true && Program.ISTAT != 0) WatVap_calculate(NI, NJ, NK);
                 }
 
                 //computation of thermal pressure
                 //if (Program.ICPSI == true) THERMPRESScalculate(NI, NJ, NK);
-                
+
                 //computation of turbulent kinetic energy and dissipation rate
                 if (Program.ICTE == true)
                 {
-                	Parallel.Invoke(Program.pOptions,
+                    Parallel.Invoke(Program.pOptions,
                     () => Tkeimp_calculate(NI, NJ, NK),
                     () => Epsimp_calculate(NI, NJ, NK));
                 }
@@ -187,7 +182,7 @@ namespace GRAMM_CSharp_Test
                     }
                 }
                 //5.4.2017 Ku
-                
+
 
                 //2.9.2019 Öt
                 //dynamic time step and relaxation factor adjustments for GRAMM full transient simulations
@@ -218,30 +213,30 @@ namespace GRAMM_CSharp_Test
                 Program.TerminalOut++;
                 if (Program.TerminalOut >= TerminalThreshold) // if Counter is even
                 {
-                	//output to screen
-                	string LOGT = "-";
-                	string LOGH = "-";
-                	string LOGU = "-";
-                	string LOGV = "-";
-                	string LOGW = "-";
-                	if (Program.ICT) LOGT = "+";
-                	if (Program.ICQU) LOGH = "+";
-                	if (Program.ICU) LOGU = "+";
-                	if (Program.ICV) LOGV = "+";
-                	if (Program.ICW) LOGW = "+";
-                	Console.WriteLine("-------------------------------------------------------------------------------------");
-                	Console.WriteLine("WEATHER-SIT. TIME[s]  TIMESTEP[s]  ENDTIME[s]  PRESS-ITERATIONS  DIVERGENCE U V W T H");
-                	Console.WriteLine(Program.IWETTER.ToString().PadLeft(10) + "/" + (1+computation_retry).ToString().PadLeft(1) + " " + Program.REALTIME.ToString("0.0").PadLeft(7) + "  " +
-                	                  Program.DT.ToString("0.0").PadLeft(11) + "  " + Program.DTI.ToString("0").PadLeft(10) + "               " +
-                	                  (Program.INUMS - 1).ToString("0").PadLeft(3) + "  " + (Program.SUMG * 0.001).ToString("0.000").PadLeft(10) + " " +
-                	                  LOGU + " " + LOGV + " " + LOGW + " " + LOGT + " " + LOGH);
-                }                
+                    //output to screen
+                    string LOGT = "-";
+                    string LOGH = "-";
+                    string LOGU = "-";
+                    string LOGV = "-";
+                    string LOGW = "-";
+                    if (Program.ICT) LOGT = "+";
+                    if (Program.ICQU) LOGH = "+";
+                    if (Program.ICU) LOGU = "+";
+                    if (Program.ICV) LOGV = "+";
+                    if (Program.ICW) LOGW = "+";
+                    Console.WriteLine("-------------------------------------------------------------------------------------");
+                    Console.WriteLine("WEATHER-SIT. TIME[s]  TIMESTEP[s]  ENDTIME[s]  PRESS-ITERATIONS  DIVERGENCE U V W T H");
+                    Console.WriteLine(Program.IWETTER.ToString().PadLeft(10) + "/" + (1 + computation_retry).ToString().PadLeft(1) + " " + Program.REALTIME.ToString("0.0").PadLeft(7) + "  " +
+                                      Program.DT.ToString("0.0").PadLeft(11) + "  " + Program.DTI.ToString("0").PadLeft(10) + "               " +
+                                      (Program.INUMS - 1).ToString("0").PadLeft(3) + "  " + (Program.SUMG * 0.001).ToString("0.000").PadLeft(10) + " " +
+                                      LOGU + " " + LOGV + " " + LOGW + " " + LOGT + " " + LOGH);
+                }
             }
-            
-			return true; // computation OK
+
+            return true; // computation OK
         }
 
-		public static void Relax_Border()
+        public static void Relax_Border()
         {
 
             if (Program.Relax_Border_factor[0][0] < 0)

@@ -68,7 +68,7 @@ namespace Grib.Api.Interop
                 return vt.ToString();
             }
 
-            return GribApiProxy.GribGetTypeName((int) vt);
+            return GribApiProxy.GribGetTypeName((int)vt);
         }
     }
 }

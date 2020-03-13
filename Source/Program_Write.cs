@@ -11,77 +11,71 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using System.IO.Compression;
 using System.IO;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
-	public class ProgramWriters
-	{
-		private static int month_old = 0;
-		private static int day_old = 0;
-		private static int hour_old = 0;
-		private static int minute_old = 0;
-		
+    public class ProgramWriters
+    {
+        private static int month_old = 0;
+        private static int day_old = 0;
+        private static int hour_old = 0;
+        private static int minute_old = 0;
 
-		/// <summary>
-    	///Output of GRAMM logging file
-    	/// </summary>
-		public static void LogfileGrammCoreInfo()
-		{
-			// Write additional Data to the Log-File
-			LogfileGrammCoreWrite("");
-			
-			string err = "GRAMM domain area";
-			LogfileGrammCoreWrite(err);
-			err = "  West  (abs): " + Program.GRAMM_West.ToString();
+
+        /// <summary>
+        ///Output of GRAMM logging file
+        /// </summary>
+        public static void LogfileGrammCoreInfo()
+        {
+            // Write additional Data to the Log-File
+            LogfileGrammCoreWrite("");
+
+            string err = "GRAMM domain area";
+            LogfileGrammCoreWrite(err);
+            err = "  West  (abs): " + Program.GRAMM_West.ToString();
             LogfileGrammCoreWrite(err);
             err = "  East  (abs): " + Convert.ToString((Int32)(Program.GRAMM_West + Program.NX * Program.DDX[1]));
             LogfileGrammCoreWrite(err);
-			err = "  North (abs): " + Convert.ToString((Int32)(Program.GRAMM_South + Program.NY * Program.DDY[1]));
+            err = "  North (abs): " + Convert.ToString((Int32)(Program.GRAMM_South + Program.NY * Program.DDY[1]));
             LogfileGrammCoreWrite(err);
-			err = "  South (abs): " + Program.GRAMM_South.ToString();
+            err = "  South (abs): " + Program.GRAMM_South.ToString();
             LogfileGrammCoreWrite(err);
-			err = "  Latitude [°]: " + Program.BGRAD.ToString();
+            err = "  Latitude [°]: " + Program.BGRAD.ToString();
             LogfileGrammCoreWrite(err);
 
-		} // Write Logfile		
-		
-		public static void LogfileGrammCoreWrite(string a)
-		{
-			try
-			{
-				using (StreamWriter sw = new StreamWriter("Logfile_GRAMMCore.txt", true))
-				{
-					sw.WriteLine(a);
-					sw.Flush();
-				}
-			}
-			catch { }
-		}
-		
-		/// <summary>
-    	///Output of GRAMM Problem report
-    	/// </summary>
-		public static void LogfileProblemreportWrite(string a)
-		{
-			a = "GRAMM Error: " + a;
-			try
-			{
-				using (StreamWriter sw = new StreamWriter("Problemreport_GRAMM.txt", true))
-				{
-					sw.WriteLine(a);
-					sw.Flush();
-				}
-			}
-			catch { }
-			LogfileGrammCoreWrite(a); // Write error to LogfileCore
-		}
-		
-	}
+        } // Write Logfile		
+
+        public static void LogfileGrammCoreWrite(string a)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter("Logfile_GRAMMCore.txt", true))
+                {
+                    sw.WriteLine(a);
+                    sw.Flush();
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
+        ///Output of GRAMM Problem report
+        /// </summary>
+        public static void LogfileProblemreportWrite(string a)
+        {
+            a = "GRAMM Error: " + a;
+            try
+            {
+                using (StreamWriter sw = new StreamWriter("Problemreport_GRAMM.txt", true))
+                {
+                    sw.WriteLine(a);
+                    sw.Flush();
+                }
+            }
+            catch { }
+            LogfileGrammCoreWrite(a); // Write error to LogfileCore
+        }
+
+    }
 }

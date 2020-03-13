@@ -11,17 +11,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices; 
+using System.Runtime.CompilerServices;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
-    	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Calctb_calculate(int NI, int NJ, int NK)
         {
             double EINTRAG1 = 0;
@@ -40,14 +36,14 @@ namespace GRAMM_CSharp_Test
             //Surface energy balance is not computed at the edges, where topography is smoothed - OETTL 23.Dec 13
             for (int i = 2; i <= NI - 1; i++)
             {
-            	double TB2_L;
-				for (int j = 2; j <= NJ - 1; j++)
+                double TB2_L;
+                for (int j = 2; j <= NJ - 1; j++)
                 {
-                	TB2_L = Program.TB[i][j][2];
+                    TB2_L = Program.TB[i][j][2];
                     Program.TB[i][j][1] = TB2_L;
                     EINTRAG1 += Program.WQU[i][j] / Program.DDX[i] / Program.DDY[j];
                     EINTRAG2 += Program.RSOLG[i][j];
-                    EINTRAG3 += (Program.RL[i][j] - Program.EPSG[i][j] * Program.SIGMA * Pow4(TB2_L));                    
+                    EINTRAG3 += (Program.RL[i][j] - Program.EPSG[i][j] * Program.SIGMA * Pow4(TB2_L));
 
                     /*
                     if (Math.Abs(Program.WQU[i][j] / Program.DDX[i] / Program.DDY[j]) > WQUmax)
@@ -130,7 +126,7 @@ namespace GRAMM_CSharp_Test
                                 Console.WriteLine(" langwellige Strahlungsbilanz: "+((Program.RL[i][j] - Program.EPSG[i][j] * Program.SIGMA * Pow4(Program.TB[i][j][2]))).ToString("0.00"));
                             }
                             */
-                            
+
                         }
 
                         Program.TBN[i][j][k] = Program.TB[i][j][k] + 1.0 * (TERMTB / Program.CPBOD / Program.RHOB[i][j]); //Relaxation der Bodentemperaturänderung
@@ -152,13 +148,13 @@ namespace GRAMM_CSharp_Test
 
             if (Program.TerminalOut >= TerminalThreshold) // 
             {
-            	Console.WriteLine(" WQU-S[W/m**2] WQU-L[W/m**2] RSOLG[W/m**2] RTERR[W/m**2] HEATF[W/m**2] RELAXV RELAXT");
-            	Console.WriteLine(EINTRAG1.ToString("0.0").PadLeft(14) + EINTRAG4.ToString("0.0").PadLeft(14) + EINTRAG2.ToString("0.0").PadLeft(14)
-            	                  + EINTRAG3.ToString("0.0").PadLeft(14) + EINTRAG5.ToString("0.0").PadLeft(14) + Program.RELAXV.ToString("0.000".PadLeft(7)) + Program.RELAXT.ToString("0.000".PadLeft(7)));
-            	Console.WriteLine("-------------------------------------------------------------------------------------");
-            	Program.TerminalOut = 0;
+                Console.WriteLine(" WQU-S[W/m**2] WQU-L[W/m**2] RSOLG[W/m**2] RTERR[W/m**2] HEATF[W/m**2] RELAXV RELAXT");
+                Console.WriteLine(EINTRAG1.ToString("0.0").PadLeft(14) + EINTRAG4.ToString("0.0").PadLeft(14) + EINTRAG2.ToString("0.0").PadLeft(14)
+                                  + EINTRAG3.ToString("0.0").PadLeft(14) + EINTRAG5.ToString("0.0").PadLeft(14) + Program.RELAXV.ToString("0.000".PadLeft(7)) + Program.RELAXT.ToString("0.000".PadLeft(7)));
+                Console.WriteLine("-------------------------------------------------------------------------------------");
+                Program.TerminalOut = 0;
             }
-            
+
         }
     }
 }

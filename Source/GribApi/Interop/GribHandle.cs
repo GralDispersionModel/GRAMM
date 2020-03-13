@@ -12,7 +12,7 @@ namespace Grib.Api.Interop
         /// Initializes a new instance of the <see cref="GribHandle"/> class.
         /// </summary>
         /// <param name="h">The h.</param>
-        public GribHandle (IntPtr h)
+        public GribHandle(IntPtr h)
             : base(h)
         {
         }
@@ -21,7 +21,7 @@ namespace Grib.Api.Interop
         /// Called when [dispose].
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void OnDispose (bool disposing)
+        protected override void OnDispose(bool disposing)
         {
             GribApiProxy.GribHandleDelete(this);
         }

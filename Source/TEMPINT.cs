@@ -16,13 +16,10 @@
  * on detailled profile and point measurements using a specific input format -> the file name is free in this case
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -39,7 +36,7 @@ namespace GRAMM_CSharp_Test
             string INTIM;
             string INDAT;
             Int32 O = 0;
-        //    Int32 P = 0;
+            //    Int32 P = 0;
             Int16 INPUT;
             double[] DISTX = new double[52];
             double[] DISTY = new double[52];
@@ -53,7 +50,7 @@ namespace GRAMM_CSharp_Test
             double blh;
             double USTinit;
             Boolean LOGWIND;
-            Boolean meteopgtexist=false;
+            Boolean meteopgtexist = false;
             double TIMESERIES = 0;
             double SECTORWIDTH = 10;
             double WINDDIR = 0;
@@ -62,11 +59,11 @@ namespace GRAMM_CSharp_Test
             double WV = 0;
             double WIND = 0;
             double WINDI = 0;
-            double GRADIENT=0;
+            double GRADIENT = 0;
             double moist_adiabatic = 1.0;  //correction factor to determine the correct adiabatic temperature gradient for moist air
             double TMAX = -1000;
             double HMAX = -1;
-            double windexpon=1;
+            double windexpon = 1;
             double HEIGHT = 0;
             Int32 INDI;
             Int32 INDJ;
@@ -108,13 +105,13 @@ namespace GRAMM_CSharp_Test
             Program.IWETTER++;
 
             //read file GRAMMin.dat for some basic information about the way of initialization (use meteopgt.all or not)
-            if(Program.IWETTER==1) // initialize data
+            if (Program.IWETTER == 1) // initialize data
             {
-            	Program.GRAMMin_File_Read(Program.IWETTER);
-                Program.Z0[Program.inrec[0]][Program.jnrec[0]] = (float) (Program.Rauigkeit);
+                Program.GRAMMin_File_Read(Program.IWETTER);
+                Program.Z0[Program.inrec[0]][Program.jnrec[0]] = (float)(Program.Rauigkeit);
             }
             else // refresh (switching steady state output on/off 
-            	Program.GRAMMin_File_Read(Program.IWETTER);
+                Program.GRAMMin_File_Read(Program.IWETTER);
 
             //check whether original number of weather situations in meteopgt.all is exceeded
             if ((Program.IWETTER > Program.meteopgt_nr) && (Program.meteopgt_nr != 0))
@@ -125,34 +122,34 @@ namespace GRAMM_CSharp_Test
                     Console.ReadKey(true); 	// wait for a key input
                 Environment.Exit(0); 		// Exit console
             }
-            
+
             // 11.4.17 Ku use arguments
             if ((Program.IWETTER > IWetter_Console_Last))
             {
                 Console.WriteLine();
                 Console.Write("GRAMM simulations for weather situations ");
-                Console.Write(IWetter_Console_First.ToString() + " to " +IWetter_Console_Last.ToString());
+                Console.Write(IWetter_Console_First.ToString() + " to " + IWetter_Console_Last.ToString());
                 Console.WriteLine(" finished. Press any key to continue...");
                 if (Program.IOUTPUT <= 0) 			// if not a SOUNDPLAN Project
                     Console.ReadKey(true); 	// wait for a key input
                 Environment.Exit(0); 		// Exit console
             }
-            
+
             //Write actually computed flow situation to file DispNrGramm.txt -> used in the GUI 
             Program.Counter++;
             if ((Program.Counter > 0) && (IWetter_Console_First <= 1)) // Write status for one instance only
             {
-            	Program.Counter = 0;
-            	using (StreamWriter mywriter = new StreamWriter("DispNrGramm.txt"))
-            	{
-            		mywriter.WriteLine(Convert.ToString(Program.IWETTER));
-            	}       	
+                Program.Counter = 0;
+                using (StreamWriter mywriter = new StreamWriter("DispNrGramm.txt"))
+                {
+                    mywriter.WriteLine(Convert.ToString(Program.IWETTER));
+                }
             }
-            
+
             //Set all temperatures to zero
             Parallel.For(1, NI + 1, Program.pOptions, i =>
                 {
-                    for(int j=1;j<=NJ;j++)
+                    for (int j = 1; j <= NJ; j++)
                     {
                         for (int k = 1; k <= NK; k++)
                         {
@@ -187,7 +184,7 @@ namespace GRAMM_CSharp_Test
             moist_adiabatic = -GRADIENT * 105.0; //the factor 105 leads to a slightly stable atmosphere
 
 
-            if ((Program.METEO=="Y")||(Program.METEO=="y"))
+            if ((Program.METEO == "Y") || (Program.METEO == "y"))
             {
                 /*
                  * HEREAFTER A SIMPLE DIAGNOSTIC MODEL IS USED TO OBTAIN THE INITIAL STATES OF
@@ -445,7 +442,7 @@ namespace GRAMM_CSharp_Test
                     if (Program.AKLA == 4) Program.QUINIT = 0.5;
                     if (Program.AKLA == 5) Program.QUINIT = 0.7;
                     if (Program.AKLA == 6) Program.QUINIT = 0.7;
-                    if (Program.AKLA == 7) Program.QUINIT = 0.8; 
+                    if (Program.AKLA == 7) Program.QUINIT = 0.8;
                 }
 
                 //vertical temperature profile->not sure if needed here??
@@ -487,7 +484,7 @@ namespace GRAMM_CSharp_Test
 
                 //vertical temperature profile if (Program.AKLA==7)
                 Inversion_Height = 400;
-                Wind_Velocity = (float) WINDGE;
+                Wind_Velocity = (float)WINDGE;
                 {
                     float factor_inv = 1f;
                     if (Wind_Velocity < 0.5F)
@@ -498,7 +495,7 @@ namespace GRAMM_CSharp_Test
                         factor_inv = 0.4f;
                     else if (Wind_Velocity >= 1.5)
                         factor_inv = 0.2f;
-                    
+
                     if (Program.Wind_Velocity >= 0.35F)
                     {
                         Inversion_Height *= factor_inv;
@@ -520,7 +517,7 @@ namespace GRAMM_CSharp_Test
                         for (int k = 1; k <= NK; k++)
                         {
                             Program.T[i][j][k] = Program.TINIT + GRADIENT * Program.ZSP[i][j][k];
-                           
+
                             if (Program.AKLA == 7)
                             {
                                 if (Program.Wind_Velocity >= 0.35F)
@@ -530,7 +527,7 @@ namespace GRAMM_CSharp_Test
                                 }
                                 else // low wind velocities
                                 {
-                                     //in case of stability class 7 (strongly stable) ans low wind velocities it is assumed that strong ground inversions have already developed
+                                    //in case of stability class 7 (strongly stable) ans low wind velocities it is assumed that strong ground inversions have already developed
                                     //these suppress the development of cold air drainage flows in this zone
                                     //the initial air temperature at ground is set 5K below the surface temperature -> probably not correct because the surface temperature is set equal to the air temperature in all cases in INITB.cs
                                     if ((Program.ZSP[i][j][k] - Program.AHMIN) <= Inversion_Height)
@@ -629,7 +626,7 @@ namespace GRAMM_CSharp_Test
 
                 double GRADIENT1 = 0;
                 HEIGHT = 0;
-                if((VARI=="Y")||(VARI=="y"))
+                if ((VARI == "Y") || (VARI == "y"))
                 {
                     Console.WriteLine(" ");
                     Console.Write("starting at which height:  ");
@@ -667,7 +664,7 @@ namespace GRAMM_CSharp_Test
                     Console.WriteLine(" ");
 
                     //INPUT A POINT OBSERVATION
-                    if(INPUT==1)
+                    if (INPUT == 1)
                     {
                         Console.WriteLine("********************************************");
                         Console.WriteLine("********************************************");
@@ -689,12 +686,12 @@ namespace GRAMM_CSharp_Test
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
                         if (DISTX[L] > (Program.X[NI] + Program.DDX[NI])) goto WESTERNBOUNDARY;
-                    SOUTHERNBOUNDARY:
+                        SOUTHERNBOUNDARY:
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
                         if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ])) goto SOUTHERNBOUNDARY;
-                    SEALEVEL:
+                        SEALEVEL:
                         Console.Write("       HEIGHT ABOVE SEA LEVEL        [M]: ");
                         DISTZ[L][0] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
@@ -768,7 +765,7 @@ namespace GRAMM_CSharp_Test
                             L--;
                             goto GOTO98;
                         }
-                        if((INDI!=0)&&(INDJ!=0)&&(INDK!=0))
+                        if ((INDI != 0) && (INDJ != 0) && (INDK != 0))
                         {
                             Program.T[INDI][INDJ][INDK] = TEMPI[L][0];
                             Program.U[INDI][INDJ][INDK] = WINDU[L][0];
@@ -787,7 +784,7 @@ namespace GRAMM_CSharp_Test
                             goto GOTO98;
                     }
                     //INPUT A VERTICAL PROFILE
-                    else if(INPUT==2)
+                    else if (INPUT == 2)
                     {
                         Console.WriteLine(" ");
                         Console.WriteLine(" ");
@@ -812,7 +809,7 @@ namespace GRAMM_CSharp_Test
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
                         if (DISTX[L] > (Program.X[NI] + Program.DDX[NI])) goto WESTERNBOUNDARY_V;
-                    SOUTHERNBOUNDARY_V:
+                        SOUTHERNBOUNDARY_V:
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
@@ -889,7 +886,7 @@ namespace GRAMM_CSharp_Test
                         VARI = Console.ReadLine();
                         if ((VARI == "A") || (VARI == "a"))
                         {
-                            for (int j = 1; j <= M;j++ )
+                            for (int j = 1; j <= M; j++)
                             {
                                 TEMPI[L][j] = 0;
                                 WINDU[L][j] = 0;
@@ -928,53 +925,53 @@ namespace GRAMM_CSharp_Test
                         FNAME = Console.ReadLine();
                         using (StreamWriter mywriter = new StreamWriter(FNAME))
                         {
-                        	mywriter.WriteLine(PRONAM);
-                        	mywriter.WriteLine(INDAT);
-                        	mywriter.WriteLine(INTIM);
-                        	mywriter.WriteLine(" NUMBER OF MONITORING STATIONS: " + Convert.ToString(L).PadLeft(2,'0'));
-                        	for (int i = 1; i <= L;i++ )
-                        	{
-                        		mywriter.WriteLine("*");
-                        		if(STATION[i]!=" ")
-                        		{
-                        			if(HUG[i]!=0)
-                        			{
-                        				mywriter.WriteLine(" MONITORING STATION  : " + Convert.ToString(STATION[i].PadRight(20)) + "(" + i.ToString("00") + ")");
-                        				mywriter.WriteLine(" DISTANCE FROM W     : " + Convert.ToString(DISTX[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
-                        				mywriter.WriteLine(" DISTANCE FROM S     : " + Convert.ToString(DISTY[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
-                        				mywriter.WriteLine(" HEIGHT ABOVE GROUND : " + Convert.ToString(HUG[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
-                        			}
-                        			for(int j=0;j<=51;j++)
-                        			{
-                        				if(DISTZ[i][j]!=0)
-                        				{
-                        					mywriter.WriteLine(" HEIGHT ABOVE SEA LEV: " + Convert.ToString(DISTZ[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
-                        					mywriter.WriteLine(" TEMPERATURE      [C]: " + Convert.ToString(TEMPI[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
-                        					mywriter.WriteLine(" U-COMPONENT OF WIND : " + Convert.ToString(WINDU[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
-                        					mywriter.WriteLine(" V-COMPONENT OF WIND : " + Convert.ToString(WINDV[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
-                        				}
-                        			}
-                        		}
-                        	}
-                        	mywriter.WriteLine("**");
+                            mywriter.WriteLine(PRONAM);
+                            mywriter.WriteLine(INDAT);
+                            mywriter.WriteLine(INTIM);
+                            mywriter.WriteLine(" NUMBER OF MONITORING STATIONS: " + Convert.ToString(L).PadLeft(2, '0'));
+                            for (int i = 1; i <= L; i++)
+                            {
+                                mywriter.WriteLine("*");
+                                if (STATION[i] != " ")
+                                {
+                                    if (HUG[i] != 0)
+                                    {
+                                        mywriter.WriteLine(" MONITORING STATION  : " + Convert.ToString(STATION[i].PadRight(20)) + "(" + i.ToString("00") + ")");
+                                        mywriter.WriteLine(" DISTANCE FROM W     : " + Convert.ToString(DISTX[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
+                                        mywriter.WriteLine(" DISTANCE FROM S     : " + Convert.ToString(DISTY[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
+                                        mywriter.WriteLine(" HEIGHT ABOVE GROUND : " + Convert.ToString(HUG[i].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + ")");
+                                    }
+                                    for (int j = 0; j <= 51; j++)
+                                    {
+                                        if (DISTZ[i][j] != 0)
+                                        {
+                                            mywriter.WriteLine(" HEIGHT ABOVE SEA LEV: " + Convert.ToString(DISTZ[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
+                                            mywriter.WriteLine(" TEMPERATURE      [C]: " + Convert.ToString(TEMPI[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
+                                            mywriter.WriteLine(" U-COMPONENT OF WIND : " + Convert.ToString(WINDU[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
+                                            mywriter.WriteLine(" V-COMPONENT OF WIND : " + Convert.ToString(WINDV[i][j].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "(" + i.ToString("00") + "," + j.ToString("00") + ")");
+                                        }
+                                    }
+                                }
+                            }
+                            mywriter.WriteLine("**");
 
-                        	for (int i = 1; i <= NI; i++)
-                        	{
-                        		for (int j = 1; j <= NJ; j++)
-                        		{
-                        			for (int k = 1; k <= NK; k++)
-                        			{
-                        				if((Program.T[i][j][k]!=0)||(Program.U[i][j][k]!=0)||(Program.V[i][j][k]!=0))
-                        				{
-                        					mywriter.WriteLine("T(I,J,K)   : " + Convert.ToString(Program.T[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
-                        					mywriter.WriteLine("U-COMPONENT: " + Convert.ToString(Program.U[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
-                        					mywriter.WriteLine("V-COMPONENT: " + Convert.ToString(Program.V[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
-                        				}
-                        			}
-                        		}
-                        	}
+                            for (int i = 1; i <= NI; i++)
+                            {
+                                for (int j = 1; j <= NJ; j++)
+                                {
+                                    for (int k = 1; k <= NK; k++)
+                                    {
+                                        if ((Program.T[i][j][k] != 0) || (Program.U[i][j][k] != 0) || (Program.V[i][j][k] != 0))
+                                        {
+                                            mywriter.WriteLine("T(I,J,K)   : " + Convert.ToString(Program.T[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
+                                            mywriter.WriteLine("U-COMPONENT: " + Convert.ToString(Program.U[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
+                                            mywriter.WriteLine("V-COMPONENT: " + Convert.ToString(Program.V[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString("00"));
+                                        }
+                                    }
+                                }
+                            }
                         } // using (mywriter) 
-                        
+
                         Console.WriteLine(" ");
                         Console.Write("   WROTE INPUT TO FILE " + FNAME);
                     }
@@ -1098,7 +1095,7 @@ namespace GRAMM_CSharp_Test
                     Console.Write("   ADD MORE MONITORING STATIONS ? (Y)ES (N)O : -> THIS FUNCTIONALITY IS NOT SUPPORTED WITH THE CURRENT VERSION  ");
                     VARI = Console.ReadLine();
                     if ((VARI == "Y") || (VARI == "y"))
-                        //here should be a jump to the goto GOTO98 statement, which is impossible in C#
+                    //here should be a jump to the goto GOTO98 statement, which is impossible in C#
                     { }
                 }
                 //INTERPOLATION PROCEDURE
@@ -1607,10 +1604,10 @@ namespace GRAMM_CSharp_Test
                     Console.WriteLine("INTERPOLATION FAILED!!");
                     Environment.Exit(0);
                 }
-            }            
+            }
 
             //pressure for the model top
-            if((Program.METEO=="Y")||(Program.METEO=="y"))
+            if ((Program.METEO == "Y") || (Program.METEO == "y"))
             {
                 PUNTEN = 99000;
                 PMEER = 101300;
@@ -1626,7 +1623,7 @@ namespace GRAMM_CSharp_Test
             }
             Program.POBEN = PMEER * Math.Exp(-Program.ZSP[2][2][NK] / 8000);
 
-          GOTO1234:
+        GOTO1234:
 
             Parallel.For(1, NI + 1, Program.pOptions, i =>
             {
@@ -1636,19 +1633,19 @@ namespace GRAMM_CSharp_Test
                     {
                         //harmonic mean temperature
                         double THARM = 0;
-                        for(int m=k;m<=NK-1;m++)
+                        for (int m = k; m <= NK - 1; m++)
                         {
                             THARM += (Program.ZSP[i][j][m + 1] - Program.ZSP[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
                         }
                         //pressure profile
-                        Program.PBZ[i][j][k] = (float) (Program.POBEN * Math.Exp(Program.GERD / Program.GASCON * THARM));
+                        Program.PBZ[i][j][k] = (float)(Program.POBEN * Math.Exp(Program.GERD / Program.GASCON * THARM));
                     }
                 }
             });
 
-            if(Math.Abs((Program.PBZ[Program.AHMINI][Program.AHMINJ][1]-PUNTEN)/PUNTEN*100)>=0.01)
+            if (Math.Abs((Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) / PUNTEN * 100) >= 0.01)
             {
-                if(Program.PBZ[Program.AHMINI][Program.AHMINJ][1]>PUNTEN)
+                if (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] > PUNTEN)
                 {
                     Program.POBEN -= (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) * 0.1;
                     goto GOTO1234;
@@ -1739,7 +1736,7 @@ namespace GRAMM_CSharp_Test
             //Profiles of the radiation model
             Int32 NPROF = 30;
             Program.ZPROF[1] = Math.Max(Program.AHMIN, 0);
-            for(int n=1;n<=NPROF;n++)
+            for (int n = 1; n <= NPROF; n++)
             {
                 Int32 INDO = 0;
                 Int32 INDU = 0;
@@ -1760,10 +1757,10 @@ namespace GRAMM_CSharp_Test
                     INDU = 0;
                     double GRAD = 0;
                     double GRADP = 0;
-                    for(int m=1;m<=NK;m++)
+                    for (int m = 1; m <= NK; m++)
                     {
                         DIFF = Program.ZSP[Program.AHMINI][Program.AHMINJ][m] - Program.ZPROF[n];
-                        if((DIFF>=0)&&(DIFF<UNTO))
+                        if ((DIFF >= 0) && (DIFF < UNTO))
                         {
                             UNTO = DIFF;
                             INDO = m;
@@ -1774,7 +1771,7 @@ namespace GRAMM_CSharp_Test
                             INDU = m;
                         }
                     }
-                    if(INDO==0)
+                    if (INDO == 0)
                     {
                         GRAD = (Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU] - Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU - 1]) /
                             (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU - 1]);
@@ -1811,8 +1808,8 @@ namespace GRAMM_CSharp_Test
 
                 //compute absolute humidity based on specific humidity
                 double TBZN = Program.TPROF[n] - 153.15;
-                TBZN = Math.Max(0,Math.Min(209.0, TBZN));
-				int TBZNINT = Convert.ToInt32(Math.Floor(TBZN));
+                TBZN = Math.Max(0, Math.Min(209.0, TBZN));
+                int TBZNINT = Convert.ToInt32(Math.Floor(TBZN));
                 double PDST = Program.PSAT[TBZNINT + 1] + (Program.PSAT[TBZNINT + 2] - Program.PSAT[TBZNINT + 1]) * (TBZN - (float)TBZNINT);
 
                 //water vapour in the atmosphere for the radiation model

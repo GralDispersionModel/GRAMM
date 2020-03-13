@@ -18,7 +18,7 @@ namespace Grib.Api.Interop
 {
     public class GribValueTypeException : Exception
     {
-        public GribValueTypeException (string msg, Exception innerException = null)
+        public GribValueTypeException(string msg, Exception innerException = null)
             : base(msg, innerException)
         {
         }

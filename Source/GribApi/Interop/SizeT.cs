@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Grib.Api.Interop
 {
@@ -44,7 +41,7 @@ namespace Grib.Api.Interop
         /// Initializes a new instance of the <see cref="SizeT"/> struct.
         /// </summary>
         /// <param name="val">The value.</param>
-        private SizeT (UIntPtr val) : this()
+        private SizeT(UIntPtr val) : this()
         {
             Value = val;
         }
@@ -53,7 +50,7 @@ namespace Grib.Api.Interop
         /// Initializes a new instance of the <see cref="SizeT"/> struct.
         /// </summary>
         /// <param name="val">The value.</param>
-        private SizeT (uint val = 0)
+        private SizeT(uint val = 0)
             : this((UIntPtr)val)
         {
         }
@@ -62,7 +59,7 @@ namespace Grib.Api.Interop
         /// Initializes a new instance of the <see cref="SizeT"/> struct.
         /// </summary>
         /// <param name="val">The value.</param>
-        private SizeT (int val)
+        private SizeT(int val)
             : this((UIntPtr)val)
         {
         }
@@ -88,7 +85,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator SizeT (UIntPtr s)
+        public static implicit operator SizeT(UIntPtr s)
         {
             return new SizeT(s);
         }
@@ -100,7 +97,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator SizeT (UInt32 s)
+        public static implicit operator SizeT(UInt32 s)
         {
             return new SizeT((UIntPtr)s);
         }
@@ -112,7 +109,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator SizeT (UInt64 s)
+        public static explicit operator SizeT(UInt64 s)
         {
             return new SizeT((UIntPtr)s);
         }
@@ -124,9 +121,9 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator SizeT (Int32 s)
+        public static explicit operator SizeT(Int32 s)
         {
-            return new SizeT((UIntPtr) s);
+            return new SizeT((UIntPtr)s);
         }
 
         /// <summary>
@@ -136,9 +133,9 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator SizeT (Int64 s)
+        public static explicit operator SizeT(Int64 s)
         {
-            return new SizeT((UIntPtr) s);
+            return new SizeT((UIntPtr)s);
         }
 
         /// <summary>
@@ -148,7 +145,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator UIntPtr (SizeT s)
+        public static implicit operator UIntPtr(SizeT s)
         {
             return s.Value;
         }
@@ -160,7 +157,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator UInt32 (SizeT s)
+        public static implicit operator UInt32(SizeT s)
         {
             return s.Value.ToUInt32();
         }
@@ -172,7 +169,7 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator UInt64 (SizeT s)
+        public static implicit operator UInt64(SizeT s)
         {
             return s.Value.ToUInt64();
         }
@@ -184,9 +181,9 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator Int32 (SizeT s)
+        public static explicit operator Int32(SizeT s)
         {
-            return (Int32) s.Value.ToUInt32();
+            return (Int32)s.Value.ToUInt32();
         }
 
         /// <summary>
@@ -196,9 +193,9 @@ namespace Grib.Api.Interop
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator Int64 (SizeT s)
+        public static explicit operator Int64(SizeT s)
         {
-            return (Int64) s.Value.ToUInt64();
+            return (Int64)s.Value.ToUInt64();
         }
 
         /// <summary>
@@ -251,7 +248,7 @@ namespace Grib.Api.Interop
 
             if (obj != null && typeof(SizeT).IsAssignableFrom(obj.GetType()))
             {
-                isEqual = this == (SizeT) obj;
+                isEqual = this == (SizeT)obj;
             }
 
             return isEqual;
