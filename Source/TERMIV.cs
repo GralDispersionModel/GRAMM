@@ -13,11 +13,11 @@
 using System;
 using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
-		///<summary>
+        ///<summary>
         ///Calculate the diffusion and advection terms for the implicit scheme (Patankar 1980, p52)
         ///</summary>
         public static void TERMIVterms(int NI, int NJ, int NK)

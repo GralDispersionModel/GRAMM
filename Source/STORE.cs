@@ -11,21 +11,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.IO;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
-    	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void STOREcalculate(int NI, int NJ, int NK)
-        {         
+        {
 
             //Boundary values for turbulent kinetic energy and dissipation
             Parallel.For(2, NI, Program.pOptions, i =>
@@ -34,21 +31,21 @@ namespace GRAMM_CSharp_Test
                 {
                     for (int k = 1; k <= NK - 1; k++)
                     {
-                    	if (j == 1)
-                    	{
-                    		Program.TEN[i][1][k] = Program.TEN[i][2][k];
-                    		Program.TEN[i][NJ][k] = Program.TEN[i][NJ - 1][k];
-                    		Program.DISSN[i][1][k] = Program.DISSN[i][2][k];
-                    		Program.DISSN[i][NJ][k] = Program.DISSN[i][NJ - 1][k];
-                    	}
-                    	
-                    	if (i == 1)
-                    	{
-                    		Program.TEN[1][j][k] = Program.TEN[2][j][k];
-                    		Program.TEN[NI][j][k] = Program.TEN[NI - 1][j][k];
-                    		Program.DISSN[1][j][k] = Program.DISSN[2][j][k];
-                    		Program.DISSN[NI][j][k] = Program.DISSN[NI - 1][j][k];
-                    	}
+                        if (j == 1)
+                        {
+                            Program.TEN[i][1][k] = Program.TEN[i][2][k];
+                            Program.TEN[i][NJ][k] = Program.TEN[i][NJ - 1][k];
+                            Program.DISSN[i][1][k] = Program.DISSN[i][2][k];
+                            Program.DISSN[i][NJ][k] = Program.DISSN[i][NJ - 1][k];
+                        }
+
+                        if (i == 1)
+                        {
+                            Program.TEN[1][j][k] = Program.TEN[2][j][k];
+                            Program.TEN[NI][j][k] = Program.TEN[NI - 1][j][k];
+                            Program.DISSN[1][j][k] = Program.DISSN[2][j][k];
+                            Program.DISSN[NI][j][k] = Program.DISSN[NI - 1][j][k];
+                        }
                     }
                 }
             });
@@ -202,9 +199,9 @@ namespace GRAMM_CSharp_Test
             });
 
             //Computation of values at receptor points
-            if (Program.recexist==true)
+            if (Program.recexist == true)
             {
-                for(int ianz = 0; ianz < Program.Urec.Count(); ianz++)
+                for (int ianz = 0; ianz < Program.Urec.Count(); ianz++)
                 {
                     double wind = 0;
                     double z1 = 0;
@@ -247,32 +244,32 @@ namespace GRAMM_CSharp_Test
             }
 
             //updated values for absolute temperature - see next loop
-//            Parallel.For(1, NI + 1, Program.pOptions, i =>
-//            {
-//                for (int j = 1; j <= NJ; j++)
-//                {
-//                	double[] TABS_L = Program.TABS[i][j];
-//                	double[] T_L    = Program.T[i][j];
-//                	double[] FAC_L  = Program.FAC[i][j];
-//                	
-//                    for (int k = 1; k <= NK - 1; k++)
-//                    {
-//                    	TABS_L[k] = (T_L[k] + Program.TBZ1) / FAC_L[k];
-//                    }
-//                }
-//            });
+            //            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //            {
+            //                for (int j = 1; j <= NJ; j++)
+            //                {
+            //                	double[] TABS_L = Program.TABS[i][j];
+            //                	double[] T_L    = Program.T[i][j];
+            //                	double[] FAC_L  = Program.FAC[i][j];
+            //                	
+            //                    for (int k = 1; k <= NK - 1; k++)
+            //                    {
+            //                    	TABS_L[k] = (T_L[k] + Program.TBZ1) / FAC_L[k];
+            //                    }
+            //                }
+            //            });
 
             //updated values for soil and absolute temperature
             Parallel.For(1, NI + 1, Program.pOptions, i =>
             {
                 for (int j = 1; j <= NJ; j++)
                 {
-                	double[] TBA_L = Program.TBA[i][j];
-                	double[] TB_L  = Program.TB[i][j];
-                	double[] TBN_L = Program.TBN[i][j];
-                	
+                    double[] TBA_L = Program.TBA[i][j];
+                    double[] TB_L = Program.TB[i][j];
+                    double[] TBN_L = Program.TBN[i][j];
+
                     for (int k = 1; k <= Program.NZB - 1; k++)
-                    {                    	
+                    {
                         TBA_L[k] = TB_L[k];
                         TB_L[k] = TBN_L[k];
                     }
@@ -281,30 +278,30 @@ namespace GRAMM_CSharp_Test
             });
 
             //Turbulent eddy viscosity model
-            if(Program.ICTE == true)
-            {                
+            if (Program.ICTE == true)
+            {
                 //Parallel.For(2, NI, Program.pOptions, i =>
-                Parallel.ForEach(Partitioner.Create(2, NI, (int) (NI/Program.pOptions.MaxDegreeOfParallelism)), range =>
-         		{	
-               	for (int i = range.Item1; i < range.Item2; i++)  
+                Parallel.ForEach(Partitioner.Create(2, NI, (int)(NI / Program.pOptions.MaxDegreeOfParallelism)), range =>
                   {
-                    for (int j = 2; j <= NJ - 1; j++)
-                    {
-                    	double[] VISV_L   = Program.VISV[i][j];
-                    	double[] DISSN_L  = Program.DISSN[i][j];
-                    	double[] TE_L     = Program.TE[i][j];
-                    	double[] TEN_L    = Program.TEN[i][j];
-                    	
-                        for (int k = 1; k <= NK - 1; k++)
-                        {
-                            if (TE_L[k] <= 0) TE_L[k] = 0;
-                            VISV_L[k] += Program.RELAXT * (0.09 * Pow2(TEN_L[k]) / DISSN_L[k] - VISV_L[k]);
-                            VISV_L[k] = Math.Max(Program.VISEL, VISV_L[k]);
-                            VISV_L[k] = Math.Min(50, VISV_L[k]);
-                        }
+                      for (int i = range.Item1; i < range.Item2; i++)
+                      {
+                          for (int j = 2; j <= NJ - 1; j++)
+                          {
+                              double[] VISV_L = Program.VISV[i][j];
+                              double[] DISSN_L = Program.DISSN[i][j];
+                              double[] TE_L = Program.TE[i][j];
+                              double[] TEN_L = Program.TEN[i][j];
+
+                              for (int k = 1; k <= NK - 1; k++)
+                              {
+                                  if (TE_L[k] <= 0) TE_L[k] = 0;
+                                  VISV_L[k] += Program.RELAXT * (0.09 * Pow2(TEN_L[k]) / DISSN_L[k] - VISV_L[k]);
+                                  VISV_L[k] = Math.Max(Program.VISEL, VISV_L[k]);
+                                  VISV_L[k] = Math.Min(50, VISV_L[k]);
+                              }
+                          }
                       }
-                    }
-                });
+                  });
             }
             else
             {
@@ -356,65 +353,65 @@ namespace GRAMM_CSharp_Test
             {
                 for (int j = 1; j <= NJ; j++)
                 {
-                	double[] TE_L       = Program.TE[i][j];
-                	double[] DISS_L     = Program.DISS[i][j];
-                	double[] VISV_L     = Program.VISV[i][j];
-                	
+                    double[] TE_L = Program.TE[i][j];
+                    double[] DISS_L = Program.DISS[i][j];
+                    double[] VISV_L = Program.VISV[i][j];
+
                     for (int k = 1; k <= NK; k++)
                     {
                         TE_L[NK] = TE_L[NK - 1];
                         DISS_L[NK] = DISS_L[NK - 1];
                         VISV_L[NK] = VISV_L[NK - 1];
-                        
+
                         if (j == 1) // just one times
                         {
-                        	Program.TE[i][NJ][k] = Program.TE[i][NJ - 1][k];
-                        	Program.TE[i][1][k] = Program.TE[i][2][k];
-                        	
-                        	Program.DISS[i][NJ][k] = Program.DISS[i][NJ - 1][k];
-                        	Program.DISS[i][1][k] = Program.DISS[i][2][k];
-                        	
-                        	Program.VISV[i][NJ][k] = Program.VISV[i][NJ - 1][k];
-                        	Program.VISV[i][1][k] = Program.VISV[i][2][k];
-                        	
-                        	Program.ZI[i][1] = Program.ZI[i][2];
-                        	Program.ZI[i][NJ] = Program.ZI[i][NJ - 1];
-                        	
-                        	Program.RSOLG[i][1] = Program.RSOLG[i][2];
-                        	Program.RSOLG[i][NJ] = Program.RSOLG[i][NJ - 1];
+                            Program.TE[i][NJ][k] = Program.TE[i][NJ - 1][k];
+                            Program.TE[i][1][k] = Program.TE[i][2][k];
+
+                            Program.DISS[i][NJ][k] = Program.DISS[i][NJ - 1][k];
+                            Program.DISS[i][1][k] = Program.DISS[i][2][k];
+
+                            Program.VISV[i][NJ][k] = Program.VISV[i][NJ - 1][k];
+                            Program.VISV[i][1][k] = Program.VISV[i][2][k];
+
+                            Program.ZI[i][1] = Program.ZI[i][2];
+                            Program.ZI[i][NJ] = Program.ZI[i][NJ - 1];
+
+                            Program.RSOLG[i][1] = Program.RSOLG[i][2];
+                            Program.RSOLG[i][NJ] = Program.RSOLG[i][NJ - 1];
                         }
-                        
+
                         if (i == 1)
                         {
-                        	Program.TE[NI][j][k] = Program.TE[NI - 1][j][k];
-                        	Program.TE[1][j][k] = Program.TE[2][j][k];
-                        	
-                        	Program.DISS[NI][j][k] = Program.DISS[NI - 1][j][k];
-                        	Program.DISS[1][j][k] = Program.DISS[2][j][k];
-                        	
-                        	Program.VISV[NI][j][k] = Program.VISV[NI - 1][j][k];
-                        	Program.VISV[1][j][k] = Program.VISV[2][j][k];
-                        	
-                        	Program.VISV[1][1][k] = 0.5F * (Program.VISV[2][1][k] + Program.VISV[1][2][k]);
-                        	Program.VISV[NI][1][k] = 0.5F * (Program.VISV[NI - 1][1][k] + Program.VISV[NI][2][k]);
-                        	Program.VISV[1][NJ][k] = 0.5F * (Program.VISV[2][NJ][k] + Program.VISV[1][NJ - 1][k]);
-                        	Program.VISV[NI][NJ][k] = 0.5F * (Program.VISV[NI - 1][NJ][k] + Program.VISV[NI][NJ - 1][k]);
+                            Program.TE[NI][j][k] = Program.TE[NI - 1][j][k];
+                            Program.TE[1][j][k] = Program.TE[2][j][k];
 
-                        	Program.ZI[1][1] = Program.ZI[2][2];
-                        	Program.ZI[1][NJ] = Program.ZI[2][NJ - 1];
-                        	Program.ZI[NI][NJ] = Program.ZI[NI - 1][NJ - 1];
-                        	Program.ZI[NI][1] = Program.ZI[NI - 1][2];
-                        	Program.ZI[1][j] = Program.ZI[2][j];
-                        	Program.ZI[NI][j] = Program.ZI[NI - 1][j];
-                        	
-                        	Program.RSOLG[1][1] = Program.RSOLG[2][2];
-                        	Program.RSOLG[1][NJ] = Program.RSOLG[2][NJ - 1];
-                        	Program.RSOLG[NI][NJ] = Program.RSOLG[NI - 1][NJ - 1];
-                        	Program.RSOLG[NI][1] = Program.RSOLG[NI - 1][2];
-                        	Program.RSOLG[1][j] = Program.RSOLG[2][j];
-                        	Program.RSOLG[NI][j] = Program.RSOLG[NI - 1][j];
+                            Program.DISS[NI][j][k] = Program.DISS[NI - 1][j][k];
+                            Program.DISS[1][j][k] = Program.DISS[2][j][k];
+
+                            Program.VISV[NI][j][k] = Program.VISV[NI - 1][j][k];
+                            Program.VISV[1][j][k] = Program.VISV[2][j][k];
+
+                            Program.VISV[1][1][k] = 0.5F * (Program.VISV[2][1][k] + Program.VISV[1][2][k]);
+                            Program.VISV[NI][1][k] = 0.5F * (Program.VISV[NI - 1][1][k] + Program.VISV[NI][2][k]);
+                            Program.VISV[1][NJ][k] = 0.5F * (Program.VISV[2][NJ][k] + Program.VISV[1][NJ - 1][k]);
+                            Program.VISV[NI][NJ][k] = 0.5F * (Program.VISV[NI - 1][NJ][k] + Program.VISV[NI][NJ - 1][k]);
+
+                            Program.ZI[1][1] = Program.ZI[2][2];
+                            Program.ZI[1][NJ] = Program.ZI[2][NJ - 1];
+                            Program.ZI[NI][NJ] = Program.ZI[NI - 1][NJ - 1];
+                            Program.ZI[NI][1] = Program.ZI[NI - 1][2];
+                            Program.ZI[1][j] = Program.ZI[2][j];
+                            Program.ZI[NI][j] = Program.ZI[NI - 1][j];
+
+                            Program.RSOLG[1][1] = Program.RSOLG[2][2];
+                            Program.RSOLG[1][NJ] = Program.RSOLG[2][NJ - 1];
+                            Program.RSOLG[NI][NJ] = Program.RSOLG[NI - 1][NJ - 1];
+                            Program.RSOLG[NI][1] = Program.RSOLG[NI - 1][2];
+                            Program.RSOLG[1][j] = Program.RSOLG[2][j];
+                            Program.RSOLG[NI][j] = Program.RSOLG[NI - 1][j];
                         }
-                       
+
                     }
                 }
             });
@@ -424,16 +421,16 @@ namespace GRAMM_CSharp_Test
             {
                 for (int j = 1; j <= NJ; j++)
                 {
-                    double[] UN_L    = Program.UN[i][j];
-                	double[] VN_L    = Program.VN[i][j];
-                	double[] WN_L    = Program.WN[i][j];
-                	double[] U1N_L   = Program.U1N[i][j];
-                	double[] U2N_L   = Program.U2N[i][j];
-                	double[] V1N_L   = Program.V1N[i][j];
-                	double[] V2N_L   = Program.V2N[i][j];
-                	double[] W1N_L   = Program.W1N[i][j];
-                	double[] W2N_L   = Program.W2N[i][j];
-                	
+                    double[] UN_L = Program.UN[i][j];
+                    double[] VN_L = Program.VN[i][j];
+                    double[] WN_L = Program.WN[i][j];
+                    double[] U1N_L = Program.U1N[i][j];
+                    double[] U2N_L = Program.U2N[i][j];
+                    double[] V1N_L = Program.V1N[i][j];
+                    double[] V2N_L = Program.V2N[i][j];
+                    double[] W1N_L = Program.W1N[i][j];
+                    double[] W2N_L = Program.W2N[i][j];
+
                     for (int k = NK - 3; k <= NK; k++)
                     {
                         double ATTENU = 1.5;
@@ -459,35 +456,35 @@ namespace GRAMM_CSharp_Test
                 {
                     for (int k = 1; k <= NK; k++)
                     {
-                    	if (j == 1)
-                    	{
-                    		float RHO3 = Program.RHO[i][1][k];
-                    		float RHO4 = Program.RHO[i][NJ][k];
-                    	
-                    		Program.U2NRHO[i][1][k]  = (float) (Program.U[i][1][k]  * RHO3);
-                    		Program.U1NRHO[i][NJ][k] = (float) (Program.U[i][NJ][k] * RHO4);
-                     
-                    		Program.V2NRHO[i][1][k]  = (float) (Program.V[i][1][k]  * RHO3);
-                    		Program.V1NRHO[i][NJ][k] = (float) (Program.V[i][NJ][k] * RHO4); 
+                        if (j == 1)
+                        {
+                            float RHO3 = Program.RHO[i][1][k];
+                            float RHO4 = Program.RHO[i][NJ][k];
 
-                    		Program.W2NRHO[i][1][k]  = (float) (Program.W[i][1][k]  * RHO3);
-                    		Program.W1NRHO[i][NJ][k] = (float) (Program.W[i][NJ][k] * RHO4);
-                    	}
-                    	
-                    	if (i == 1)
-                    	{
-                    		float RHO1 = Program.RHO[1][j][k];
-                    		float RHO2 = Program.RHO[NI][j][k];
-                    	
-                    		Program.U2NRHO[1][j][k]  = (float) (Program.U[1][j][k]  * RHO1);
-                    		Program.U1NRHO[NI][j][k] = (float) (Program.U[NI][j][k] * RHO2);
-                    		
-                    		Program.V2NRHO[1][j][k]  = (float) (Program.V[1][j][k]  * RHO1);
-                    		Program.V1NRHO[NI][j][k] = (float) (Program.V[NI][j][k] * RHO2);
-                    		
-                    		Program.W2NRHO[1][j][k]  = (float) (Program.W[1][j][k]  * RHO1);
-                    		Program.W1NRHO[NI][j][k] = (float) (Program.W[NI][j][k] * RHO2);
-                    	}
+                            Program.U2NRHO[i][1][k] = (float)(Program.U[i][1][k] * RHO3);
+                            Program.U1NRHO[i][NJ][k] = (float)(Program.U[i][NJ][k] * RHO4);
+
+                            Program.V2NRHO[i][1][k] = (float)(Program.V[i][1][k] * RHO3);
+                            Program.V1NRHO[i][NJ][k] = (float)(Program.V[i][NJ][k] * RHO4);
+
+                            Program.W2NRHO[i][1][k] = (float)(Program.W[i][1][k] * RHO3);
+                            Program.W1NRHO[i][NJ][k] = (float)(Program.W[i][NJ][k] * RHO4);
+                        }
+
+                        if (i == 1)
+                        {
+                            float RHO1 = Program.RHO[1][j][k];
+                            float RHO2 = Program.RHO[NI][j][k];
+
+                            Program.U2NRHO[1][j][k] = (float)(Program.U[1][j][k] * RHO1);
+                            Program.U1NRHO[NI][j][k] = (float)(Program.U[NI][j][k] * RHO2);
+
+                            Program.V2NRHO[1][j][k] = (float)(Program.V[1][j][k] * RHO1);
+                            Program.V1NRHO[NI][j][k] = (float)(Program.V[NI][j][k] * RHO2);
+
+                            Program.W2NRHO[1][j][k] = (float)(Program.W[1][j][k] * RHO1);
+                            Program.W1NRHO[NI][j][k] = (float)(Program.W[NI][j][k] * RHO2);
+                        }
                     }
                 }
             });

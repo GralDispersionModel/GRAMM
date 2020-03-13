@@ -16,7 +16,7 @@ namespace Grib.Api
         /// <param name="msgHandle">The MSG handle.</param>
         /// <param name="nw">The nw.</param>
         /// <param name="se">The se.</param>
-        public GribBox (GribHandle msgHandle, GeoCoordinate nw, GeoCoordinate se)
+        public GribBox(GribHandle msgHandle, GeoCoordinate nw, GeoCoordinate se)
         {
             int err;
             var box = GribApiProxy.GribBoxNew(msgHandle, out err);

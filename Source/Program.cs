@@ -12,15 +12,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Data;
 using System.Globalization;
-using OSGeo.OSR;
+using System.IO;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     /* GRAZ MESOSCALE MODELL GRAMM
     COMPREHENSIVE DESCRIPTION CAN BE FOUND IN OETTL, 2016
@@ -50,7 +46,7 @@ namespace GRAMM_CSharp_Test
         {
             GdalConfiguration.ConfigureOgr();
             GdalConfiguration.ConfigureGdal();
-            
+
             // Arguments: "First Situation" "Final Situation" "Max. Time Step" "RelaxV" "RelaxT"
             // if "First Situation" = "?" -> print Info & Stop
 
@@ -69,18 +65,18 @@ namespace GRAMM_CSharp_Test
             //WRITE GRAMM VERSION INFORMATION TO SCREEN
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
-            Console.WriteLine("| |");
-            string Info = "+ > > G R A M M VERSION: 21.01Alpha < < +";
+            Console.WriteLine("|                                                      |");
+            string Info =     "+         > > G R A M M VERSION: 21.01Alpha < <        +";
             Console.WriteLine(Info);
             if (unix)
             {
-                Console.WriteLine("| L I N U X |");
+                Console.WriteLine("|                      L I N U X                     |");
             }
 #if NETCOREAPP2_1 || NETCOREAPP2_0 || NETCOREAPP3_0
 Console.WriteLine("| .Net Core Version |");
 #endif
             Console.WriteLine("+------------------------------------------------------+");
-            Console.WriteLine("");
+            Console.WriteLine(" ");
 
             //show licence terms
             ShowCopyright(args);
@@ -493,7 +489,7 @@ Console.WriteLine("| .Net Core Version |");
                     OUTPUT(NX, NY, NZ, true); // intermediate output
 
                     //generating meteopgt.all and mettimeseries.dat for ERA5/GUI postprocessing
-                    if(Program.ISTAT == 2 || Program.ISTAT == 4)
+                    if (Program.ISTAT == 2 || Program.ISTAT == 4)
                     {
                         Meteopgtall.GRALGenerateMeteoFilesForERA5();
                     }

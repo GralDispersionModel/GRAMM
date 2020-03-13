@@ -33,7 +33,7 @@ using System.Reflection;
 using Gdal = OSGeo.GDAL.Gdal;
 using Ogr = OSGeo.OGR.Ogr;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     public static partial class GdalConfiguration
     {

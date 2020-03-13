@@ -11,13 +11,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -64,15 +61,15 @@ namespace GRAMM_CSharp_Test
         public const double TTop = 216.65;                        //Temperature at the top of the atmosphere
         public const double AgNorm = 0.6;                         //Default surface albedo
         public static double a0 = 0;                              //Intermediate value for computing radiation density
-//        public static double SinIe = 0;                         //sun angle above surface (Mye) [rad]
-//        public static double SinI = 0;                          //sun angle above surface (My) [rad]
+                                                                  //        public static double SinIe = 0;                         //sun angle above surface (Mye) [rad]
+                                                                  //        public static double SinI = 0;                          //sun angle above surface (My) [rad]
 
-        public static void RADIATRAD(bool lGeom,bool lGeomWr,bool lGeomRe,int iTag,int iMon,int iJahr,double Zeit, int NI, int NJ, int NK)
+        public static void RADIATRAD(bool lGeom, bool lGeomWr, bool lGeomRe, int iTag, int iMon, int iJahr, double Zeit, int NI, int NJ, int NK)
         {
             int iTheta; // int Kalb;
 
             if (NK != 3) Console.Write("RADIATION started");
-            if((Program.ISOL != 1) && (Program.ISOL != 2))
+            if ((Program.ISOL != 1) && (Program.ISOL != 2))
             {
                 Console.WriteLine("===========================================");
                 Console.WriteLine("Selected radiation scheme must equal 1 or 2");
@@ -90,31 +87,31 @@ namespace GRAMM_CSharp_Test
             KStMax = 1;
             for (int i = 1; i <= NI; i++)
             {
-            	for (int j = 1; j <= NJ; j++)
-            	{
-            		KStMax = Math.Max(KStMax, Program.KST[i][j]);
-            	}
+                for (int j = 1; j <= NJ; j++)
+                {
+                    KStMax = Math.Max(KStMax, Program.KST[i][j]);
+                }
             }
 
             //Computing geometry (inclination, exposition and projection of surface cells)
-            if(lGeom == true  && File.Exists("albeq.dat") == false) // if possible, read albeq.dat
+            if (lGeom == true && File.Exists("albeq.dat") == false) // if possible, read albeq.dat
             {
 
-            	Parallel.For(1, NI+1, Program.pOptions, i =>
-                {
-                   for (int j = 1; j <= NJ; j++)
-                    {
-                        Program.Q[i][j] = 0;
-                        Program.Alfa[i][j] = 0;
-                        Program.Beta[i][j] = 0;
-                    }
-                 });
+                Parallel.For(1, NI + 1, Program.pOptions, i =>
+                  {
+                      for (int j = 1; j <= NJ; j++)
+                      {
+                          Program.Q[i][j] = 0;
+                          Program.Alfa[i][j] = 0;
+                          Program.Beta[i][j] = 0;
+                      }
+                  });
 
-            	Parallel.For(2, NI, Program.pOptions, i =>
-            	{
+                Parallel.For(2, NI, Program.pOptions, i =>
+                {
                     for (int j = 2; j <= NJ - 1; j++)
                     {
-                    	double XP, XW, XE, YP, YS, YN, ZE, ZN, ZW, ZS;
+                        double XP, XW, XE, YP, YS, YN, ZE, ZN, ZW, ZS;
                         XP = Program.X[i];
                         XW = Program.X[i - 1];
                         XE = Program.X[i + 1];
@@ -127,74 +124,74 @@ namespace GRAMM_CSharp_Test
                         ZN = Program.AH[i][j + 1];
 
                         //Inclination and exposition
-                        float HX = (float) ((ZE - ZW) / (XE - XW)); // inclination gradients of the ground
-                        float HY = (float) ((ZN - ZS) / (YN - YS));
-                        
+                        float HX = (float)((ZE - ZW) / (XE - XW)); // inclination gradients of the ground
+                        float HY = (float)((ZN - ZS) / (YN - YS));
+
                         Program.Alfa[i][j] = MathF.Atan(MathF.Sqrt(HX * HX + HY * HY)); //inclination of the ground cell
-                        
+
                         if (Math.Abs(Program.Alfa[i][j]) < Eps)
                             Program.Beta[i][j] = 0; // direction of the ground cell 0 = north
                         else
                             Program.Beta[i][j] = MathF.Atan2(HX, HY);
-                        
+
                         Program.Q[i][j] = CLQ(i, j, Program.Alfa[i][j], Program.Beta[i][j]);  //sky view factor  = 0 in case of flat terrain (1 - Q = Horizontüberhöhung)
                     }
-            	  });
+                });
 
                 if (NK != 3) Console.Write(" / geometry computed");
                 //save geometry data
-                if(lGeomWr==true)
+                if (lGeomWr == true)
                 {
-                	try
-                	{
-                		using (BinaryWriter wr = new BinaryWriter(File.Open("albeq.dat", FileMode.Create)))
-                		{
-                			for (int i = 1; i <= Program.NX; i++)
-                				for (int j = 1; j <= Program.NY; j++)
-                			{
-                				{
-                					wr.Write((double) Program.Alfa[i][j]);
-                					wr.Write((double) Program.Beta[i][j]);
-                					wr.Write(Program.Q[i][j]);
-                				}
-                			}
-                			wr.Write(KStMax);
-                		}
-                		if (NK != 3) Console.Write(" / geometry saved");
-                	}
-                	catch
-                	{
-                		Console.WriteLine("Unable to write geometry data of the radiation model to file 'albeq.dat'");
-                		File.Delete("albeq.dat");
-                	}
+                    try
+                    {
+                        using (BinaryWriter wr = new BinaryWriter(File.Open("albeq.dat", FileMode.Create)))
+                        {
+                            for (int i = 1; i <= Program.NX; i++)
+                                for (int j = 1; j <= Program.NY; j++)
+                                {
+                                    {
+                                        wr.Write((double)Program.Alfa[i][j]);
+                                        wr.Write((double)Program.Beta[i][j]);
+                                        wr.Write(Program.Q[i][j]);
+                                    }
+                                }
+                            wr.Write(KStMax);
+                        }
+                        if (NK != 3) Console.Write(" / geometry saved");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Unable to write geometry data of the radiation model to file 'albeq.dat'");
+                        File.Delete("albeq.dat");
+                    }
                 }
             }
 
-           
+
             //read geometry data
             if (lGeomRe == true || File.Exists("albeq.dat"))
             {
-            	try
-            	{
-            		using (BinaryReader br = new BinaryReader(File.Open("albeq.dat", FileMode.Open, FileAccess.Read, FileShare.Read)))
-            		{
-            			for (int i = 1; i <= Program.NX; i++)
-            				for (int j = 1; j <= Program.NY; j++)
-            			{
-            				{
-            					Program.Alfa[i][j] = (float) br.ReadDouble();
-            					Program.Beta[i][j] = (float) br.ReadDouble();
-            					Program.Q[i][j] = br.ReadDouble();
-            				}
-            			}
-            			KStMax = br.ReadInt32();
-            		}
-            		if (NK != 3) Console.Write(" / geometry loaded");
-            	}
-            	catch
-            	{
-            		Console.WriteLine("Unable to read geometry data of the radiation model from file 'albeq.dat'");
-            	}
+                try
+                {
+                    using (BinaryReader br = new BinaryReader(File.Open("albeq.dat", FileMode.Open, FileAccess.Read, FileShare.Read)))
+                    {
+                        for (int i = 1; i <= Program.NX; i++)
+                            for (int j = 1; j <= Program.NY; j++)
+                            {
+                                {
+                                    Program.Alfa[i][j] = (float)br.ReadDouble();
+                                    Program.Beta[i][j] = (float)br.ReadDouble();
+                                    Program.Q[i][j] = br.ReadDouble();
+                                }
+                            }
+                        KStMax = br.ReadInt32();
+                    }
+                    if (NK != 3) Console.Write(" / geometry loaded");
+                }
+                catch
+                {
+                    Console.WriteLine("Unable to read geometry data of the radiation model from file 'albeq.dat'");
+                }
             }
 
             //sun azimuth, angle, and height
@@ -208,34 +205,34 @@ namespace GRAMM_CSharp_Test
 
             //general height dependent values
             CLTStern(); // uses a0
-			
-			double DOmega, Omega;
+
+            double DOmega, Omega;
             DOmega = 2 * Math.PI / nOmega;
             iTheta = (int)((Eta + Math.PI) / (2 * Math.PI / nOmega)) + 1;     //sector where eta lies
             if (iTheta > nOmega) iTheta = 1;
             Omega = DOmega * (iTheta - 1) + DOmega * 0.5;                               //actual angle
- 			
-			//Console.WriteLine("Itime in hours" + (timeR/3600).ToString() + " Omega" + Omega.ToString() + " Eta "+ Eta.ToString());
+
+            //Console.WriteLine("Itime in hours" + (timeR/3600).ToString() + " Omega" + Omega.ToString() + " Eta "+ Eta.ToString());
 
             //main loop for computing solar radiation
-			Parallel.For(2, NI, Program.pOptions, i =>
-            { 
-      		   double SinIe = 0;                            //sun angle above surface (Mye) [rad]
-       		   double SinI=0;
-      		   double ThetaB=0;
-     		   double ThetaOld = 0;
-     		   double Theta = 0;
-//            for (int i = 2; i <= Program.NX - 1; i++)
-//            {
+            Parallel.For(2, NI, Program.pOptions, i =>
+            {
+                double SinIe = 0;                            //sun angle above surface (Mye) [rad]
+                double SinI = 0;
+                double ThetaB = 0;
+                double ThetaOld = 0;
+                double Theta = 0;
+                //            for (int i = 2; i <= Program.NX - 1; i++)
+                //            {
                 for (int j = 2; j <= NJ - 1; j++)
                 {
-                	// sun angle over the surface
+                    // sun angle over the surface
                     SinIe = Mye * MathF.Cos(Program.Alfa[i][j]) + CosHe * MathF.Sin(Program.Alfa[i][j]) * MathF.Cos(Eta - Program.Beta[i][j]);
                     SinI = My * MathF.Cos(Program.Alfa[i][j]) + CosH * MathF.Sin(Program.Alfa[i][j]) * MathF.Cos(Eta - Program.Beta[i][j]);
-                    
+
                     ThetaB = CLThet(i, j, Program.AH[i][j], Omega, DOmega, ThetaB);
                     ThetaOld = -90 * GrRa;
-                    
+
                     for (int k = Program.KST[i][j] - 1; k <= Program.NZ; k++)
                     {
                         ClAlbedo(i, j, k, Program.KST[i][j] - 1, ThetaB, SinI, SinIe);
@@ -259,8 +256,8 @@ namespace GRAMM_CSharp_Test
                     dTdt_Sol(i, j);
                 }
             });
-            
-            if (NK != 3)  Console.WriteLine(" / radiation computed");
+
+            if (NK != 3) Console.WriteLine(" / radiation computed");
             //terrestrial downward longwave radiation
             Cl_LStrich();
 
@@ -279,38 +276,38 @@ namespace GRAMM_CSharp_Test
             //Terrestrial radiation
             for (int i = 1; i <= NI; i++)
             {
-            	for (int j = 1; j <= NJ; j++)
-            	{
-            		Cl_RterrG(i, j);
-            		Cl_dTdtterr(i, j);
-            	}
+                for (int j = 1; j <= NJ; j++)
+                {
+                    Cl_RterrG(i, j);
+                    Cl_dTdtterr(i, j);
+                }
             }
 
             //border values          
             for (int k = 1; k <= NK; k++)
             {
- 			    Parallel.For(2, NI, Program.pOptions, i =>
-                {
-//                for (int i = 2; i <= Program.NX - 1; i++)
-//                {
+                Parallel.For(2, NI, Program.pOptions, i =>
+               {
+                    //                for (int i = 2; i <= Program.NX - 1; i++)
+                    //                {
                     Program.Arad[i][1][k] = Program.Arad[i][2][k];
-                    Program.SG[i][1][k] = Program.SG[i][2][k];
-                    Program.DG[i][1][k] = Program.DG[i][2][k];
-                    Program.EG[i][1][k] = Program.EG[i][2][k];
-                    Program.DT_SOL[i][1][k] = Program.DT_SOL[i][2][k];
-                    Program.DT_TERR[i][1][k] = Program.DT_TERR[i][2][k];
+                   Program.SG[i][1][k] = Program.SG[i][2][k];
+                   Program.DG[i][1][k] = Program.DG[i][2][k];
+                   Program.EG[i][1][k] = Program.EG[i][2][k];
+                   Program.DT_SOL[i][1][k] = Program.DT_SOL[i][2][k];
+                   Program.DT_TERR[i][1][k] = Program.DT_TERR[i][2][k];
 
-                    Program.Arad[i][Program.NY][k] = Program.Arad[i][Program.NY - 1][k];
-                    Program.SG[i][Program.NY][k] = Program.SG[i][Program.NY - 1][k];
-                    Program.DG[i][Program.NY][k] = Program.DG[i][Program.NY - 1][k];
-                    Program.EG[i][Program.NY][k] = Program.EG[i][Program.NY - 1][k];
-                    Program.DT_SOL[i][Program.NY][k] = Program.DT_SOL[i][Program.NY - 1][k];
-                    Program.DT_TERR[i][Program.NY][k] = Program.DT_TERR[i][Program.NY - 1][k];
-            	});
-            	Parallel.For(2, NJ, Program.pOptions, j =>
+                   Program.Arad[i][Program.NY][k] = Program.Arad[i][Program.NY - 1][k];
+                   Program.SG[i][Program.NY][k] = Program.SG[i][Program.NY - 1][k];
+                   Program.DG[i][Program.NY][k] = Program.DG[i][Program.NY - 1][k];
+                   Program.EG[i][Program.NY][k] = Program.EG[i][Program.NY - 1][k];
+                   Program.DT_SOL[i][Program.NY][k] = Program.DT_SOL[i][Program.NY - 1][k];
+                   Program.DT_TERR[i][Program.NY][k] = Program.DT_TERR[i][Program.NY - 1][k];
+               });
+                Parallel.For(2, NJ, Program.pOptions, j =>
                 {
-//                for (int j = 2; j <= Program.NY - 1; j++)
-//                {
+                    //                for (int j = 2; j <= Program.NY - 1; j++)
+                    //                {
                     Program.Arad[1][j][k] = Program.Arad[2][j][k];
                     Program.SG[1][j][k] = Program.SG[2][j][k];
                     Program.DG[1][j][k] = Program.DG[2][j][k];
@@ -324,9 +321,9 @@ namespace GRAMM_CSharp_Test
                     Program.EG[Program.NX][j][k] = Program.EG[Program.NX - 1][j][k];
                     Program.DT_SOL[Program.NX][j][k] = Program.DT_SOL[Program.NX - 1][j][k];
                     Program.DT_TERR[Program.NX][j][k] = Program.DT_TERR[Program.NX - 1][j][k];
-            	 });
+                });
             }
-        }        
+        }
 
         //Number of days since 1.1.1600
         public static int DateNum(string Date)
@@ -336,86 +333,86 @@ namespace GRAMM_CSharp_Test
             Day = Convert.ToInt32(Date.Substring(0, 2));
             Month = Convert.ToInt32(Date.Substring(2, 2));
             Year = Convert.ToInt32(Date.Substring(4, 4));
-//            if (Month > 2)
-//            {
-//                Month -= 3;
-//            }
-//            else
-//            { 
-//                Month += 9;
-//                Year--;
-//            }
-//            Year -= 1600;
-//            DateNum = Convert.ToInt32((Convert.ToInt32((Year / 100)) * 146097) / 4)
-//                    + Convert.ToInt32(((Year % 100) * 1461) / 4)
-//                    + Convert.ToInt32(((Month * 153) + 2) / 5) + Day + 59;
-//
-            DateTime firstdate  = new DateTime(1600,1,1);
-			DateTime seconddate = new DateTime(Year,Month,Day);
+            //            if (Month > 2)
+            //            {
+            //                Month -= 3;
+            //            }
+            //            else
+            //            { 
+            //                Month += 9;
+            //                Year--;
+            //            }
+            //            Year -= 1600;
+            //            DateNum = Convert.ToInt32((Convert.ToInt32((Year / 100)) * 146097) / 4)
+            //                    + Convert.ToInt32(((Year % 100) * 1461) / 4)
+            //                    + Convert.ToInt32(((Month * 153) + 2) / 5) + Day + 59;
+            //
+            DateTime firstdate = new DateTime(1600, 1, 1);
+            DateTime seconddate = new DateTime(Year, Month, Day);
             TimeSpan ts = seconddate - firstdate;
             DateNum = ts.Days; // calculates the number of days between two dates
             return DateNum;
         }
 
-        
+
         private static double CLQ(int i, int j, double Alfai, double Betai)
         {
-        	//Computation of the projection to the ground cell
-        	// Alfai = inclination of the ground cell
-        	// Betai azimuth of the ground cell
-        	double DOmega, Omega;
-        	//Projection of surface cell
-        	DOmega = 2 * Math.PI / (float)nOmega;
-        	double QI = 0;
-        	double Theta = 0;
-        	for (int N = 1; N <= nOmega; N++)
-        	{
-        		Omega = DOmega * (N - 1) + DOmega * 0.5;                                            //compute sectors
-        		float AlfEff = (float) (-Program.Alfa[i][j] * Math.Cos(Program.Beta[i][j] - Omega));         //actual angle
-        		//Compute horizons of surroundings
-        		Theta = CLThet(i, j, Program.AH[i][j], Omega, DOmega, Theta);
-        		float TheS = (float) Math.Max(Theta, AlfEff);
-        		double DQi = Math.Cos(AlfEff) * 0.5F * (MathF.Pow(MathF.Sin(TheS), 2) - MathF.Pow(MathF.Sin(AlfEff),2))
-        			- MathF.Sin(AlfEff) * 0.5F * ((MathF.Sin(2 * TheS) - MathF.Sin(2 * AlfEff)) * 0.5
-        			+TheS - AlfEff);
-        		QI += DQi;                                                                               //sum up projection
-        	}
+            //Computation of the projection to the ground cell
+            // Alfai = inclination of the ground cell
+            // Betai azimuth of the ground cell
+            double DOmega, Omega;
+            //Projection of surface cell
+            DOmega = 2 * Math.PI / (float)nOmega;
+            double QI = 0;
+            double Theta = 0;
+            for (int N = 1; N <= nOmega; N++)
+            {
+                Omega = DOmega * (N - 1) + DOmega * 0.5;                                            //compute sectors
+                float AlfEff = (float)(-Program.Alfa[i][j] * Math.Cos(Program.Beta[i][j] - Omega));         //actual angle
+                                                                                                            //Compute horizons of surroundings
+                Theta = CLThet(i, j, Program.AH[i][j], Omega, DOmega, Theta);
+                float TheS = (float)Math.Max(Theta, AlfEff);
+                double DQi = Math.Cos(AlfEff) * 0.5F * (MathF.Pow(MathF.Sin(TheS), 2) - MathF.Pow(MathF.Sin(AlfEff), 2))
+                    - MathF.Sin(AlfEff) * 0.5F * ((MathF.Sin(2 * TheS) - MathF.Sin(2 * AlfEff)) * 0.5
+                    + TheS - AlfEff);
+                QI += DQi;                                                                               //sum up projection
+            }
 
-        	QI *= DOmega / Math.PI;
-			
-        	return QI;
-		}
-        
+            QI *= DOmega / Math.PI;
+
+            return QI;
+        }
+
         //Horizons of surroundings
         public static double CLThet(int I, int J, float Hoehe, double Omega, double DOmega, double Theta)
         {
-        	// search horizon for radiation or shadow estimation
+            // search horizon for radiation or shadow estimation
             int IAkt, JAkt, IZ, JZ, Nenner;
             double DXrad, DYrad, Dx1, Dx2, Dy1, Dy2, XSum, YSum, ZSum, ThetaI;
             bool Ende;
-            float OM1 = (float) (Omega - DOmega * 0.5);
-            float OM2 = (float) (Omega + DOmega * 0.5);
+            float OM1 = (float)(Omega - DOmega * 0.5);
+            float OM2 = (float)(Omega + DOmega * 0.5);
             Theta = 0;
 
-            if((Omega > Math.PI * 1.75) || (Omega <= Math.PI * 0.25)) // northern sector
+            if ((Omega > Math.PI * 1.75) || (Omega <= Math.PI * 0.25)) // northern sector
             {
                 IAkt = I;             //angle in the north sector
                 JZ = J + 1;
                 Ende = false;
-                
-                while((JZ <= Program.NY) && (Ende != true))
+
+                while ((JZ <= Program.NY) && (Ende != true))
                 {
                     DYrad = Program.Y[JZ] - Program.Y[J];   //distance JZ-J
                     Dx1 = MathF.Tan(OM1) * DYrad;            //distance in x-directions of OM1
                     Dx2 = MathF.Tan(OM2) * DYrad;            //distance in x-directions of OM2
-                    if(((Program.X[I]+Dx2)>=Program.X[Program.NX])||(Program.X[I]+Dx1)<=Program.X[1])
+                    if (((Program.X[I] + Dx2) >= Program.X[Program.NX]) || (Program.X[I] + Dx1) <= Program.X[1])
                     {
                         Ende = true; 						// sector outside the computation area
                         Theta = Math.Max(Theta, 0);
                     }
                     else
                     {
-                        if(Program.X[IAkt] < (Program.X[I] + Dx1)) // counter less OM1
+                        if (Program.X[IAkt] < (Program.X[I] + Dx1)) // counter less OM1
                         {
                             while (Program.X[IAkt] < (Program.X[I] + Dx1))
                                 IAkt++;
@@ -428,7 +425,7 @@ namespace GRAMM_CSharp_Test
                             IZ = IAkt + 1;
                             IAkt++;
                         }
-                        
+
                         if (Program.X[IZ] > (Program.X[I] + Dx2))     //no point between OM1 and OM2
                         {
                             XSum = (Program.X[IZ] + Program.X[IZ - 1]) * 0.5F - Program.X[I];
@@ -439,7 +436,7 @@ namespace GRAMM_CSharp_Test
                             XSum = 0;
                             ZSum = 0;
                             Nenner = 0;
-                            while(Program.X[IZ] <= (Program.X[I] + Dx2))
+                            while (Program.X[IZ] <= (Program.X[I] + Dx2))
                             {
                                 Nenner++;
                                 XSum += Program.X[IZ] - Program.X[I];
@@ -460,7 +457,7 @@ namespace GRAMM_CSharp_Test
                 JAkt = J;
                 IZ = I + 1;
                 Ende = false;
-                while((IZ<=Program.NX)&&(Ende==false))
+                while ((IZ <= Program.NX) && (Ende == false))
                 {
                     DXrad = Program.X[IZ] - Program.X[I];
                     Dy1 = MathF.Tan(MathF.PI * 0.5F - OM1) * DXrad;
@@ -643,9 +640,9 @@ namespace GRAMM_CSharp_Test
             PhiThe = 2 * MathF.PI * ((float)Na - 2.84F) / 365;
             GPhi = 1.0006F + 0.03343F * MathF.Cos(PhiThe) + 0.0011F * MathF.Sin(PhiThe);   //radiation flux variation
             Delta = MathF.Asin(MathF.Sin(23.5F * MathF.PI / 180) * MathF.Sin(2 * MathF.PI * (Na - 80) / 365));   //sun declination
-            Psirad = (float) (timeR / 43200 * Math.PI - Math.PI);   // horizontal sun angle in hours 0:00 = -Pi, 12:00 = 0, 24:00 = Pi
-            
-            Mye = (float) (Math.Sin(Program.BGRAD * GrRa) * MathF.Sin(Delta) + Math.Cos(Program.BGRAD * GrRa) * MathF.Cos(Delta) * MathF.Cos(Psirad));    //sinus of sun angle
+            Psirad = (float)(timeR / 43200 * Math.PI - Math.PI);   // horizontal sun angle in hours 0:00 = -Pi, 12:00 = 0, 24:00 = Pi
+
+            Mye = (float)(Math.Sin(Program.BGRAD * GrRa) * MathF.Sin(Delta) + Math.Cos(Program.BGRAD * GrRa) * MathF.Cos(Delta) * MathF.Cos(Psirad));    //sinus of sun angle
             My = MathF.Max(0.02F, Mye);					  // needed to avoid errors if sun under the horizon
             CosHe = MathF.Sqrt(1 - Mye * Mye);             // cosinus of sun angle
             CosH = MathF.Sqrt(1 - My * My);
@@ -654,18 +651,18 @@ namespace GRAMM_CSharp_Test
 
             if ((MathF.Abs(CosHe) < Eps) || (Program.BGRAD * GrRa == MathF.PI * 0.5F) || (MathF.Abs(Psirad) < Eps))
             {
-            	Eta = 0; // at the pole, at noon
+                Eta = 0; // at the pole, at noon
             }
             else
             {
                 CosEta = (Mye * Math.Sin(Program.BGRAD * GrRa) - MathF.Sin(Delta)) / (CosHe * Math.Cos(Program.BGRAD * GrRa));
                 if (Math.Abs(CosEta) <= 1 + Eps)
                 {
-                    if(CosEta>1)
+                    if (CosEta > 1)
                         CosEta = 1;
                     if (CosEta < -1)
                         CosEta = -1;
-                    Eta = (float) Math.Acos(CosEta);
+                    Eta = (float)Math.Acos(CosEta);
                     if (Psirad < 0)
                         Eta = -Eta;
                 }
@@ -675,24 +672,24 @@ namespace GRAMM_CSharp_Test
                     Environment.Exit(0);
                 }
             }
-            
+
             if (Program.BGRAD < 0) // Kuntner 22.3.2017 :on the southern hemisphere - set the sun position to the north
             {
-            	//Console.WriteLine(Eta.ToString());
-            	if (Eta < 0 && Eta > -Math.PI / 2)
-            	{
-            		Eta = -MathF.PI - Eta; 
-            	}
-            	if (Eta > 0 && Eta < Math.PI / 2)
-            	{
-            		Eta = MathF.PI - Eta; 
-            	}
-            	
-            	if (Eta > 2 * Math.PI)
-            		Eta -= 2* MathF.PI;
-            	
-            	if (Eta < Eps)
-            		Eta = MathF.PI;
+                //Console.WriteLine(Eta.ToString());
+                if (Eta < 0 && Eta > -Math.PI / 2)
+                {
+                    Eta = -MathF.PI - Eta;
+                }
+                if (Eta > 0 && Eta < Math.PI / 2)
+                {
+                    Eta = MathF.PI - Eta;
+                }
+
+                if (Eta > 2 * Math.PI)
+                    Eta -= 2 * MathF.PI;
+
+                if (Eta < Eps)
+                    Eta = MathF.PI;
             }
             //Console.WriteLine("ETA " + Eta.ToString());
             return He;
@@ -701,26 +698,26 @@ namespace GRAMM_CSharp_Test
         //Surface albedo
         public static double ClAg()
         {
-        	Parallel.For(1, Program.NX + 1, Program.pOptions, I =>
+            Parallel.For(1, Program.NX + 1, Program.pOptions, I =>
             {
-//            for (int I = 1; I <= Program.NX; I++)
-//            {
+                //            for (int I = 1; I <= Program.NX; I++)
+                //            {
                 for (int J = 1; J <= Program.NY; J++)
                 {
                     Program.Ag[I][J] = Program.ALBEDO[I][J];
                     if (Program.Ag[I][J] == 0.08)
                         Program.Ag[I][J] = MathF.Min(1, MathF.Max(0.03F, -0.0139F + MathF.Tan(MathF.PI * 0.5F - He)));    //Flassak p 133
                 }
-        	});
-            return He;   
+            });
+            return He;
         }
 
         //Vertical integrals of haze, etc.
         public static double ClYrWc()
         {
-        	//N,               ! Zaehlervariable
-     	    //K                ! Hoehenindex der Zelle
-        	double[] Rhop = new double[Program.NPROFMAX];      //Density [kg/m³]
+            //N,               ! Zaehlervariable
+            //K                ! Hoehenindex der Zelle
+            double[] Rhop = new double[Program.NPROFMAX];      //Density [kg/m³]
             double[] QRp = new double[Program.NPROFMAX];       //Intermediate value for calculating Rp F50a
             double[] QCp = new double[Program.NPROFMAX];       //Intermediate value for calculating Cp F50b
             double[] Vnz = new double[Program.NPROFMAX];       //Intermediate value
@@ -729,13 +726,13 @@ namespace GRAMM_CSharp_Test
             //double[][][] QCldz = CreateArray<double[][]>(Program.NX1, () => CreateArray<double[]>(Program.NY1, () => new double[Program.NPROFMAX]));     //Intermediate value
             double[] QIcez = new double[Program.NPROFMAX];     //Intermediate value
 
-            
+
             for (int N = 1; N <= 30; N++)
             {
                 Rhop[N] = Program.PPROF[N] / 287 / Program.TPROF[N];             //general gas equation
                 QRp[N] = Rhop[N] * Program.QVAP[N] * Program.PPROF[N] / p0;      //F50a
                 QCp[N] = Rhop[N] * QCo2 * Program.PPROF[N] / p0;                 //F50b
-                Vnz[N] = 570 * (1 / MathF.Pow((float) Program.VNORM[N], 1.5F));  //F13a
+                Vnz[N] = 570 * (1 / MathF.Pow((float)Program.VNORM[N], 1.5F));  //F13a
                 QVapz[N] = Rhop[N] * Program.QVAP[N];                            //F13b
                 QCldz[N] = Rhop[N] * (Program.QCLD[N] + Program.QRAIN[N]);       //F13c
                 QIcez[N] = Rhop[N] * (Program.QICE[N] + Program.QSNOW[N]);       //F13d
@@ -802,16 +799,16 @@ namespace GRAMM_CSharp_Test
                 }
                 */
             }
- 			
+
             // it seems, that there is a dependency, so parallelisation is not possible!
             for (int K = 1; K <= Program.NZ; K++) // start of integration
             {
-                if(K==1) // Border of the 1st cell
+                if (K == 1) // Border of the 1st cell
                 {
                     Program.Dz1[K] = 0;                                          //borders of first cell
                     Program.Dz2[K] = (Program.ZZ[K] + Program.ZZ[K + 1]) * 0.5;
                 }
-                else if(K==Program.NZ) // border of the last cell k
+                else if (K == Program.NZ) // border of the last cell k
                 {
                     Program.Dz1[K] = (Program.ZZ[K] + Program.ZZ[K - 1]) * 0.5;    //borders of last cell
                     Program.Dz2[K] = Program.ZZ[K] + (Program.ZZ[K] - Program.ZZ[K - 1]) * 0.5;
@@ -865,22 +862,22 @@ namespace GRAMM_CSharp_Test
                     }
                 }
                 */
-             } 
-            
-            return 0d;   
+            }
+
+            return 0d;
         }
 
         //integration over a field of points
-        public static double rInteg(double[] Xvalue,double[] Yvalue,int nMax,double X1,double X2)
+        public static double rInteg(double[] Xvalue, double[] Yvalue, int nMax, double X1, double X2)
         {
             double rInteg = 0;
             double Y = 0;
             int N = 2;
-            while(X1>Xvalue[N])
+            while (X1 > Xvalue[N])
             {
                 N++;
             }
-            if(X2<Xvalue[N])
+            if (X2 < Xvalue[N])
             {
                 Y = Yvalue[N - 1] + ((X1 + X2) * 0.5F - Xvalue[N - 1]) * ((Yvalue[N] - Yvalue[N - 1]) / (Xvalue[N] - Xvalue[N - 1]));
                 rInteg = Y * (X2 - X1);
@@ -890,7 +887,7 @@ namespace GRAMM_CSharp_Test
                 Y = Yvalue[N - 1] + ((X1 + Xvalue[N]) * 0.5F - Xvalue[N - 1]) * ((Yvalue[N] - Yvalue[N - 1]) / (Xvalue[N] - Xvalue[N - 1]));
                 rInteg = Y * (Xvalue[N] - X1);
                 N++;
-                while(Xvalue[N]<X2)
+                while (Xvalue[N] < X2)
                 {
                     Y = Yvalue[N - 1] + ((Xvalue[N] + Xvalue[N - 1]) * 0.5F - Xvalue[N - 1]) * ((Yvalue[N] - Yvalue[N - 1]) / (Xvalue[N] - Xvalue[N - 1]));
                     rInteg += Y * (Xvalue[N] - Xvalue[N - 1]);
@@ -906,15 +903,15 @@ namespace GRAMM_CSharp_Test
         //General height dependent values
         public static double CLTStern()
         {
-         	double Tau1, Tau2, TauS;
-            
-         	for (int k = 1; k <= Program.NZ;k++ )
-            {
-                Program.Tstern[k] = 0.3 + (MathF.Pow(0.1F * (float) Program.R[k][3], 0.2F)) * (0.75 + My) +
-                    (8.0 * p0 / Program.PBZZ[k]) * (Program.YG[k][3] + 0.1F * Program.PBZZ[k] / p0 + 0.02);
-                Program.IG[k] = GPhi * IG0 * Solar_reduction_factor * MathF.Exp((float) (-1 * ((Program.Tstern[k] / My) * a0)));
+            double Tau1, Tau2, TauS;
 
-                float tmp = 1000F * (float) Program.W1rad[k][3] + 1;
+            for (int k = 1; k <= Program.NZ; k++)
+            {
+                Program.Tstern[k] = 0.3 + (MathF.Pow(0.1F * (float)Program.R[k][3], 0.2F)) * (0.75 + My) +
+                    (8.0 * p0 / Program.PBZZ[k]) * (Program.YG[k][3] + 0.1F * Program.PBZZ[k] / p0 + 0.02);
+                Program.IG[k] = GPhi * IG0 * Solar_reduction_factor * MathF.Exp((float)(-1 * ((Program.Tstern[k] / My) * a0)));
+
+                float tmp = 1000F * (float)Program.W1rad[k][3] + 1;
                 if (MathF.Log(tmp) == 0)
                 {
                     Tau1 = 0;
@@ -926,10 +923,10 @@ namespace GRAMM_CSharp_Test
                 Tau2 = 56.6 * Program.W2rad[k][3];
                 Program.Tau[k] = Tau1 + Tau2;
                 TauS = Math.Min(32, Program.Tau[k]);
-                Program.CloudES[k] = MathF.Pow((float) (1 - TauS / 32), 4);
+                Program.CloudES[k] = MathF.Pow((float)(1 - TauS / 32), 4);
                 Program.CloudESeS[k] = Math.Max(0.1f, Program.CloudES[k]);
 
-                Program.nS[k] = 0.346 * (Program.CloudESeS[k] - 0.1) + 0.85 * MathF.Pow((float) Program.CloudESeS[k] - 0.1F, 2);
+                Program.nS[k] = 0.346 * (Program.CloudESeS[k] - 0.1) + 0.85 * MathF.Pow((float)Program.CloudESeS[k] - 0.1F, 2);
                 Program.nD[k] = 0.3 * MathF.Sin(MathF.PI * (Program.CloudES[k] + 0.25F)) + 0.36F * Program.CloudES[k] - 0.15F;
                 /*
                 for (int i = 1; i <= Program.NX; i++)
@@ -964,38 +961,38 @@ namespace GRAMM_CSharp_Test
                Theta          : excess angle of surface cell
                AcZw           : intermediate value for computing Ac
             */
-		   // negative values are possible, if Mye is used in the following formulasand the sun is under the horizon (t=20:00 Phi = 47°)
-		   // a square root of a negative number willcause an error
-		   // therefore My is used and limited by 0.02
-		   
-		   double WUnt, TClearUP, TClearDown, TCUp, TCDown, Ac, AgMod;
-           float AcZw;
+            // negative values are possible, if Mye is used in the following formulasand the sun is under the horizon (t=20:00 Phi = 47°)
+            // a square root of a negative number willcause an error
+            // therefore My is used and limited by 0.02
 
-		   Program.Myx[k] = My * Program.CloudES[k] + 0.5F * (1 - Program.CloudES[k]);
-		   WUnt = Program.Wrad[KSti][3] - Program.Wrad[k][3];
-		   TClearUP = Math.Pow(Program.PBZZ[k] / Program.PBZZ[KSti], 0.25);
-		   TClearDown = TClearUP;
-		   TCDown = 1.2 * MathF.Pow((float) Program.Myx[k] + 0.2F, 0.5F) * (1.3 * MathF.Pow(1000F * (float) WUnt + 0.1F, -0.33F) - 0.06);
-		   TCDown = Math.Min(1, TCDown);
-		   TCDown = Math.Max(0, TCDown);
-		   TCUp = 1.3 * MathF.Pow(1000F * (float) WUnt + 0.1F, -0.33F) - 0.06;
-		   TCUp = Math.Min(1, TCUp);
-		   TCUp = Math.Max(0, TCUp);
-		   AcZw = (float) (2600 * WUnt * (1.2 - Program.Myx[k]));
-		  
-		   if (AcZw <= eHoch1)
-		   	Ac = 0;
-		   else
-		   	Ac = 0.42 * MathF.Log(MathF.Log(AcZw));
-		   
-		   if ((SinIe < 0) || (He < Theta))
-		   	AgMod = Program.Ag[i][j] * (1 - Program.CloudES[KSti]);
-		   else
-		   	AgMod = Program.Ag[i][j] * (1 - Program.CloudES[KSti] + Program.CloudES[KSti] * SinI / My);
-		   
-		   Program.Arad[i][j][k] = Ac + (TClearUP * TClearDown * TCUp * TCDown * AgMod) / (1 - Ac * AgMod);
+            double WUnt, TClearUP, TClearDown, TCUp, TCDown, Ac, AgMod;
+            float AcZw;
 
-		   return Ac;
+            Program.Myx[k] = My * Program.CloudES[k] + 0.5F * (1 - Program.CloudES[k]);
+            WUnt = Program.Wrad[KSti][3] - Program.Wrad[k][3];
+            TClearUP = Math.Pow(Program.PBZZ[k] / Program.PBZZ[KSti], 0.25);
+            TClearDown = TClearUP;
+            TCDown = 1.2 * MathF.Pow((float)Program.Myx[k] + 0.2F, 0.5F) * (1.3 * MathF.Pow(1000F * (float)WUnt + 0.1F, -0.33F) - 0.06);
+            TCDown = Math.Min(1, TCDown);
+            TCDown = Math.Max(0, TCDown);
+            TCUp = 1.3 * MathF.Pow(1000F * (float)WUnt + 0.1F, -0.33F) - 0.06;
+            TCUp = Math.Min(1, TCUp);
+            TCUp = Math.Max(0, TCUp);
+            AcZw = (float)(2600 * WUnt * (1.2 - Program.Myx[k]));
+
+            if (AcZw <= eHoch1)
+                Ac = 0;
+            else
+                Ac = 0.42 * MathF.Log(MathF.Log(AcZw));
+
+            if ((SinIe < 0) || (He < Theta))
+                AgMod = Program.Ag[i][j] * (1 - Program.CloudES[KSti]);
+            else
+                AgMod = Program.Ag[i][j] * (1 - Program.CloudES[KSti] + Program.CloudES[KSti] * SinI / My);
+
+            Program.Arad[i][j][k] = Ac + (TClearUP * TClearDown * TCUp * TCDown * AgMod) / (1 - Ac * AgMod);
+
+            return Ac;
         }
 
         //solar scheme 1 (thin clouds)
@@ -1014,19 +1011,19 @@ namespace GRAMM_CSharp_Test
             jzw = 0;
 
             fA = 1 + (1 - 0.5F * Program.CloudES[k]) * (Program.Arad[i][j][k] - 0.2);
-            
-            if(Program.Tau[k]<2)
+
+            if (Program.Tau[k] < 2)
             {
                 jzw = ((0.07 * Program.Tstern[k] - 0.115) / My) * (Program.PBZZ[k] / p0);
                 j32 = Math.Max(0, jzw);
             }
             else
             {
-                Tauj = MathF.Max(32, (float) Program.Tau[k]);
+                Tauj = MathF.Max(32, (float)Program.Tau[k]);
                 j32 = 45.25 * MathF.Pow(Tauj, -1.5F);
             }
-            
-            if(He<Theta)
+
+            if (He < Theta)
             {
                 Program.SG[i][j][k] = 0;
             }
@@ -1059,7 +1056,7 @@ namespace GRAMM_CSharp_Test
             jzw = ((0.07 * Program.Tstern[k] - 0.115) / My) * (Program.PBZZ[k] / p0);
             j38 = Math.Max(0, jzw);
             fAE = 1 + (1 - 0.9 * Program.CloudES[k]) * (Program.Arad[i][j][k] - 0.2);
-            Tc = 1.2 * MathF.Pow((float) Mye + 0.2F, 0.5F) * (1.3 * MathF.Pow((float) (1000F * Program.Wrad[k][3] + 0.1F), -0.33F) - 0.06);
+            Tc = 1.2 * MathF.Pow((float)Mye + 0.2F, 0.5F) * (1.3 * MathF.Pow((float)(1000F * Program.Wrad[k][3] + 0.1F), -0.33F) - 0.06);
             Tc = Math.Min(1, Tc);
             Tc = Math.Max(0, Tc);
 
@@ -1071,10 +1068,10 @@ namespace GRAMM_CSharp_Test
             {
                 SStrich = Program.IG[k] * Mye;
             }
-            
+
             DStrich = Program.IG[k] * My * j38;
             Program.EG[i][j][k] = (SStrich + DStrich) * Tc * fAE;
-            
+
             if (He < Theta)
             {
                 Program.SG[i][j][k] = 0;
@@ -1085,7 +1082,7 @@ namespace GRAMM_CSharp_Test
             }
 
             Program.DG[i][j][k] = Program.EG[i][j][k] - Program.SG[i][j][k];
-            
+
 
             return jzw;
         }
@@ -1102,10 +1099,10 @@ namespace GRAMM_CSharp_Test
                BGG            : reflective share of solar radiation at the surface
             */
             double XH, SGG, DGSG, DGDG, BGG;
-            
+
             XH = 1.5 * My * Program.CloudES[k] * (0.65 + 0.04 * Program.Tstern[k] * Program.PBZZ[k] / p0 - 0.6 * Program.CloudES[k]);
-            
-            if((SinIe<0)||(He<Theta))
+
+            if ((SinIe < 0) || (He < Theta))
             {
                 SGG = 0;
                 DGSG = 0;
@@ -1115,11 +1112,11 @@ namespace GRAMM_CSharp_Test
                 SGG = Program.SG[i][j][k] * SinIe / Mye;
                 DGSG = XH * SinIe * Program.DG[i][j][k] / My;
             }
-            
+
             DGDG = (1 - XH) * (1 - Program.Q[i][j]) * Program.DG[i][j][k];
             BGG = Program.Ag[i][j] * Program.Q[i][j] * (Program.SG[i][j][k] + Program.DG[i][j][k]);
 
-            Program.GLOBRAD[i][j] =(SGG + DGSG + DGDG + BGG);
+            Program.GLOBRAD[i][j] = (SGG + DGSG + DGDG + BGG);
             Program.RSOLG[i][j] = (1 - Program.Ag[i][j]) * Program.GLOBRAD[i][j];
 
             //influence of snow cover, except in urban areas and water bodies
@@ -1154,8 +1151,8 @@ namespace GRAMM_CSharp_Test
                 IceDens = Program.W2rad[k][2] / Dz;
                 WatDens = Program.W1rad[k][2] / Dz;
                 AzMin = Program.Arad[i][j][k];
-                
-                if(Program.SG[i][j][k]!=0)
+
+                if (Program.SG[i][j][k] != 0)
                 {
                     EzMin = Program.EG[i][j][k] + (Program.Dz1[k] - Program.ZZ[k]) * ((Program.EG[i][j][k + 1] - Program.EG[i][j][k]) / (Program.ZZ[k + 1] - Program.ZZ[k]));
                     EzPlus = Program.EG[i][j][k] + (Program.Dz2[k] - Program.ZZ[k]) * ((Program.EG[i][j][k + 1] - Program.EG[i][j][k]) / (Program.ZZ[k + 1] - Program.ZZ[k]));
@@ -1165,23 +1162,23 @@ namespace GRAMM_CSharp_Test
                     EzMin = Program.EG[i][j][k - 1] + (Program.Dz1[k] - Program.ZZ[k - 1]) * ((Program.EG[i][j][k] - Program.EG[i][j][k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]));
                     EzPlus = Program.EG[i][j][k - 1] + (Program.Dz2[k] - Program.ZZ[k - 1]) * ((Program.EG[i][j][k] - Program.EG[i][j][k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]));
                 }
-                
-                if((IceDens < 0.000001) && (WatDens < 0.00001))
+
+                if ((IceDens < 0.000001) && (WatDens < 0.00001))
                 {
                     Program.DT_SOL[i][j][k] = 1 / (Program.RHOBZZ[k] * cp * Dz) * Math.Abs(EzPlus - EzMin) * 0.7 * (1 + AzMin);
                 }
                 else
                 {
-                    float tmp = (float) (1 + 1000 * Program.Wrad[k][2]);
+                    float tmp = (float)(1 + 1000 * Program.Wrad[k][2]);
                     AcDown = 0.025 * Math.Pow((Program.Myx[k] + Program.Myx[k + 1]) * 0.5F + 0.1, 0.5F) * MathF.Log(tmp);
                     AcUp = 0.0194 * MathF.Log(tmp);
                     Program.DT_SOL[i][j][k] = 1 / (Program.RHOBZZ[k] * cp * Dz) * Math.Abs(EzPlus * AcDown + EzMin * AzMin * AcUp);
                 }
             }
-            
+
             Program.DT_SOL[i][j][Program.NZ] = Program.DT_SOL[i][j][Program.NZ - 1];
             Program.DT_SOL[i][j][Program.KST[i][j] - 1] = Program.DT_SOL[i][j][Program.KST[i][j]];
-            
+
             return AcUp;
         }
 
@@ -1260,7 +1257,7 @@ namespace GRAMM_CSharp_Test
         }
 
         //Epsilon
-        public static double Cl_Eps(double Epsi,double Rpi,double CGpi,double Wi)
+        public static double Cl_Eps(double Epsi, double Rpi, double CGpi, double Wi)
         {
             /*
              * Epsilon computation by Somielski 
@@ -1276,7 +1273,7 @@ namespace GRAMM_CSharp_Test
             double Eps_r, Eps_CO2, Eps_c, Eps_clear;
 
             Rpi = (Rpi * (1 / 1000)) * 100;
-            float rpi = (float) Rpi;
+            float rpi = (float)Rpi;
 
             //CGpi must not be negative
             CGpi = Math.Max((CGpi * (1 / 1.963)) * 100, 0);
@@ -1295,9 +1292,9 @@ namespace GRAMM_CSharp_Test
             else
                 Eps_r = 0.136 * MathF.Log(rpi) + 0.542;
 
-            Eps_CO2 = 0.185 * (1 - MathF.Exp(-0.39F * MathF.Pow((float) CGpi, 0.4F)));
+            Eps_CO2 = 0.185 * (1 - MathF.Exp(-0.39F * MathF.Pow((float)CGpi, 0.4F)));
             Eps_clear = 1.03 * (Eps_r + Eps_CO2);
-            Eps_c = 1 - MathF.Exp((float) (-130 * Wi));
+            Eps_c = 1 - MathF.Exp((float)(-130 * Wi));
 
             Epsi = 1 - (1 - Eps_clear) * (1 - Eps_c);
 
@@ -1334,18 +1331,18 @@ namespace GRAMM_CSharp_Test
             RpOutp = 0;
             WOutp = 0;
             WOutm = 0;
-            
-            while((kk <= Program.NZ) && (WSearch < Wcrit))
+
+            while ((kk <= Program.NZ) && (WSearch < Wcrit))
             {
                 WSearch += Program.Wrad[kk][2];
                 CGpSearch += Program.CGp[kk][2];
                 RpSearch += Program.Rp[kk][2];
                 kk++;
             }
-            
-            if(WSearch >= Wcrit)
+
+            if (WSearch >= Wcrit)
             {
-                if(Program.Wrad[kk-1][2] < Wcrit)
+                if (Program.Wrad[kk - 1][2] < Wcrit)
                 {
                     WOutp = 0;
                 }
@@ -1362,15 +1359,15 @@ namespace GRAMM_CSharp_Test
                 CGpOutp = Program.CGp[k][3] - Program.CGp[k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
                 RpOutp = Program.Rp[k][3] - Program.Rp[k][2] / (Program.Dz2[k] - Program.Dz1[k]) * (Program.Dz2[k] - Program.ZZ[k]);
             }
-            
+
             WOutm = WOutp + Program.Wrad[k][2];
             CGpOutm = CGpOutp + Program.CGp[k][2];
             RpOutm = RpOutp + Program.Rp[k][2];
-            
+
             EpsApi = Cl_Eps(EpsApi, RpOutp, CGpOutp, WOutp);
             EpsAmi = Cl_Eps(EpsAmi, RpOutm, CGpOutm, WOutm);
-            
-            if(WSearch>=Wcrit)
+
+            if (WSearch >= Wcrit)
             {
                 Eabi = 1;
                 Tabi = Program.TABS[1][1][kk - 1];
@@ -1420,16 +1417,16 @@ namespace GRAMM_CSharp_Test
             Ebel = 0;
             Tbel = 0;
 
-            for (int k = Program.KST[i][j]; k <= Program.NZ;k++ )
+            for (int k = Program.KST[i][j]; k <= Program.NZ; k++)
             {
                 Dz = Program.Dz2[k] - Program.Dz1[k];
                 Cl_EpsB(i, j, k, ref EpsBp, ref EpsBm, ref Ebel, ref Tbel);
-                
+
                 Program.DT_TERR[i][j][k] = (1 / (Program.RHOBZZ[k] * cp * Dz)) *
-                    ((Program.Eab[i][j][k] * Program.SIGMA * MathF.Pow( (float) Program.Tab[i][j][k], 4) - Program.SIGMA * MathF.Pow( (float)Program.TABS[1][1][k], 4)) * (Program.EpsAm[i][j][k] - Program.EpsAp[i][j][k]) +
-                    (Ebel * Program.SIGMA * MathF.Pow((float) Tbel, 4) + (1 - Ebel) * Program.RL[i][j] - Program.SIGMA * MathF.Pow( (float)Program.TABS[1][1][k], 4)) * (EpsBp - EpsBm));
+                    ((Program.Eab[i][j][k] * Program.SIGMA * MathF.Pow((float)Program.Tab[i][j][k], 4) - Program.SIGMA * MathF.Pow((float)Program.TABS[1][1][k], 4)) * (Program.EpsAm[i][j][k] - Program.EpsAp[i][j][k]) +
+                    (Ebel * Program.SIGMA * MathF.Pow((float)Tbel, 4) + (1 - Ebel) * Program.RL[i][j] - Program.SIGMA * MathF.Pow((float)Program.TABS[1][1][k], 4)) * (EpsBp - EpsBm));
             }
-            
+
             Program.DT_TERR[i][j][Program.KST[i][j] - 1] = Program.DT_TERR[i][j][Program.KST[i][j]];
 
             return OK;
@@ -1466,7 +1463,7 @@ namespace GRAMM_CSharp_Test
             RpOutp = 0;
             WOutp = 0;
             WOutm = 0;
-            while ((kk >= (Program.KST[i][j]-1)) && (WSearch < Wcrit))
+            while ((kk >= (Program.KST[i][j] - 1)) && (WSearch < Wcrit))
             {
                 WSearch += Program.Wrad[kk][2];
                 CGpSearch += Program.CGp[kk][2];
@@ -1498,7 +1495,7 @@ namespace GRAMM_CSharp_Test
 
             EpsBp = Cl_Eps(EpsBp, RpOutp, CGpOutp, WOutp);
             EpsBm = Cl_Eps(EpsBm, RpOutm, CGpOutm, WOutm);
-           
+
             if (WSearch >= Wcrit)
             {
                 Ebel = 1;

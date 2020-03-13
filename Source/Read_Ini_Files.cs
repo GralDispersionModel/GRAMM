@@ -11,12 +11,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -561,10 +559,10 @@ namespace GRAMM_CSharp_Test
                         while (myreader.EndOfStream == false)
                         {
                             text = myreader.ReadLine().Split(new char[] { ',', ' ' });
-                            
+
                             if (text.Length > 3)
                             {
-								text[0] = text[0].Trim();
+                                text[0] = text[0].Trim();
                                 text[0] = text[0].Replace(".", decsep);
                                 double _xrec = Convert.ToDouble(text[1].Replace(".", decsep));
                                 double _yrec = Convert.ToDouble(text[2].Replace(".", decsep));
@@ -643,14 +641,14 @@ namespace GRAMM_CSharp_Test
                         }
                         catch { }
                     }
-                    if (Urec.Count == 0)  
+                    if (Urec.Count == 0)
                     {
                         Urec.Add(0);
                         Vrec.Add(0);
                         Trec.Add(0);
-					    inrec.Add(1);
-            		    jnrec.Add(1);
-            		    knrec.Add(1);
+                        inrec.Add(1);
+                        jnrec.Add(1);
+                        knrec.Add(1);
                     }
                 }
                 else
@@ -658,9 +656,9 @@ namespace GRAMM_CSharp_Test
                     Urec.Add(0);
                     Vrec.Add(0);
                     Trec.Add(0);
-					inrec.Add(1);
-            		jnrec.Add(1);
-            		knrec.Add(1);
+                    inrec.Add(1);
+                    jnrec.Add(1);
+                    knrec.Add(1);
                 }
             }
             catch

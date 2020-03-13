@@ -12,13 +12,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -89,7 +86,7 @@ namespace GRAMM_CSharp_Test
                     }
                 }
             }
-            else if(REALTIME > ERA5BOUND_Threshold && (Program.ISTAT == 2 || Program.ISTAT == 4))
+            else if (REALTIME > ERA5BOUND_Threshold && (Program.ISTAT == 2 || Program.ISTAT == 4))
             {
                 ERA5BOUND_Threshold += ERA5BOUND;
 
@@ -123,14 +120,14 @@ namespace GRAMM_CSharp_Test
                         ref QERA5, ref SDERA5, ref CCERA5, ref PERA5, ref STERA5, ref SWERA5, ref MSLPERA5, ref LCCERA5, ref MCCERA5, ref HCCERA5, ref WATERCLOUDERA5, ref SEATEMPERA5);
 
                     //calculate boundary conditions using ERA5 data
-                    ERA5_BoundaryConditions2(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);                   
+                    ERA5_BoundaryConditions2(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);
                 }
             }
 
             //in case of non-steady-state option: read file meteopgt.all to get geostrophic wind for forcing
             Int16 IHOUR = Convert.ToInt16(Math.Floor(TJETZT / IOUTPUT));
             if (((REALTIME == 0) || (REALTIME > 0) && ((ITIME % IRAD) == 0)) && (Program.ISTAT == 1))
-                {
+            {
                 bool meteopgtexist = File.Exists("meteopgt.all");
                 if (meteopgtexist == true)
                 {
@@ -175,7 +172,7 @@ namespace GRAMM_CSharp_Test
                     }
                     catch
                     {
-                        Console.WriteLine("Error when reading file mettimeseries.dat in line " + inid.ToString() +  "- Execution stopped");
+                        Console.WriteLine("Error when reading file mettimeseries.dat in line " + inid.ToString() + "- Execution stopped");
                         Environment.Exit(0);
                     }
                 }
@@ -186,36 +183,36 @@ namespace GRAMM_CSharp_Test
             {
                 double ANEMO_I = 1.0 / 10000.0;
                 double TLIMIT_L = 1.0 / Program.TLIMIT2 * (Program.REALTIME - Program.TLIMIT + Program.TLIMIT2);
-                Parallel.For(1, NI+1, Program.pOptions, i =>
-                {
-                    for (int j = 1; j <= NJ; j++)
-                    {
-                    	float[] ZSP_L = Program.ZSP[i][j];
-                    	double[] UG_L = Program.UG[i][j];
-                    	double[] VG_L = Program.VG[i][j];
-                    	double AH = Program.AH[i][j];
-                    	double Delta_L = 0;
-                    	
-                        for (int k = 1; k <= NK; k++)
-                        {
-                            Delta_L = Math.Pow(Math.Min(ZSP_L[k] - AH, 10000) * ANEMO_I, 0.25);
+                Parallel.For(1, NI + 1, Program.pOptions, i =>
+                  {
+                      for (int j = 1; j <= NJ; j++)
+                      {
+                          float[] ZSP_L = Program.ZSP[i][j];
+                          double[] UG_L = Program.UG[i][j];
+                          double[] VG_L = Program.VG[i][j];
+                          double AH = Program.AH[i][j];
+                          double Delta_L = 0;
 
-                            UG_L[k] = WU1 - (WU1 - WU2) * TLIMIT_L;
-                            VG_L[k] = WV1 - (WV1 - WV2) * TLIMIT_L;
+                          for (int k = 1; k <= NK; k++)
+                          {
+                              Delta_L = Math.Pow(Math.Min(ZSP_L[k] - AH, 10000) * ANEMO_I, 0.25);
 
-                            
-                            Program.USWN[j][k] = UG_L[k] * Delta_L;
-                        	Program.VSWN[j][k] = VG_L[k] * Delta_L;
-                        	Program.USEN[j][k] = Program.USWN[j][k];
-                        	Program.VSEN[j][k] = Program.VSWN[j][k];
-                        	Program.USSN[i][k] = UG_L[k] * Delta_L;
-                        	Program.VSSN[i][k] = VG_L[k] * Delta_L;
-                        	Program.USNN[i][k] = Program.USSN[i][k];
-                        	Program.VSNN[i][k] = Program.VSSN[i][k];                           
+                              UG_L[k] = WU1 - (WU1 - WU2) * TLIMIT_L;
+                              VG_L[k] = WV1 - (WV1 - WV2) * TLIMIT_L;
 
-                        }
-                    }
-                });
+
+                              Program.USWN[j][k] = UG_L[k] * Delta_L;
+                              Program.VSWN[j][k] = VG_L[k] * Delta_L;
+                              Program.USEN[j][k] = Program.USWN[j][k];
+                              Program.VSEN[j][k] = Program.VSWN[j][k];
+                              Program.USSN[i][k] = UG_L[k] * Delta_L;
+                              Program.VSSN[i][k] = VG_L[k] * Delta_L;
+                              Program.USNN[i][k] = Program.USSN[i][k];
+                              Program.VSNN[i][k] = Program.VSSN[i][k];
+
+                          }
+                      }
+                  });
             }
 
             //compute boundary values at the western border
@@ -232,12 +229,12 @@ namespace GRAMM_CSharp_Test
                     Program.TBN[1][j][2] = Program.TBN[2][j][2];
                     Program.QUN[1][j][k] = Program.QUN[2][j][k];
 
-                    if(Program.IBOUND == 1 && Program.ISTAT <= 1)
+                    if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                     {
                         Program.UN[1][j][k] = Program.U1N[2][j][k];
                         Program.TN[1][j][k] = Program.TN[2][j][k];
                     }
-                    else if(Program.IBOUND == 6 && Program.ISTAT <= 1)
+                    else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
                     {
                         for (int i = 1; i <= 6; i++)
                         {
@@ -251,7 +248,7 @@ namespace GRAMM_CSharp_Test
                     }
                     else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                     {
-                        
+
                         for (int i = 1; i <= 1; i++)
                         {
                             int i1 = Math.Min(i, NI);
@@ -261,7 +258,7 @@ namespace GRAMM_CSharp_Test
                             Program.VN[i1][j][k] = Program.VN[i1 + 1][j][k] - AALPHA * (Program.VN[i1 + 1][j][k] - Program.VSWN[j][k]);
                             Program.TN[i1][j][k] = Program.TN[i1 + 1][j][k] - AALPHA * (Program.TN[i1 + 1][j][k] - Program.TSWN[j][k]);
                         }
-                        
+
                         Program.WN[1][j][k] = 0;
                         //Program.VN[1][j][k] = Program.VSWN[j][k];
                         //Program.TN[1][j][k] = Program.TSWN[j][k];
@@ -282,12 +279,12 @@ namespace GRAMM_CSharp_Test
             {
                 for (int k = 1; k <= NK; k++)
                 {
-                    
+
                     Program.U2N[NI][j][k] = Program.U2N[NI - 1][j][k];
                     Program.V2N[NI][j][k] = Program.V2N[NI - 1][j][k];
                     Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
                     Program.VN[NI][j][k] = Program.V2N[NI - 1][j][k];
-                    
+
 
                     Program.WN[NI][j][k] = 0;
                     Program.TBN[NI][j][2] = Program.TBN[NI - 1][j][2];
@@ -312,7 +309,7 @@ namespace GRAMM_CSharp_Test
                     }
                     else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                     {
-                        
+
                         for (int i = NI; i <= NI; i++)
                         {
                             int i1 = Math.Max(i, 1);
@@ -322,7 +319,7 @@ namespace GRAMM_CSharp_Test
                             Program.VN[i1][j][k] = Program.VN[i1 - 1][j][k] - AALPHA * (Program.VN[i1 - 1][j][k] - Program.VSEN[j][k]);
                             Program.TN[i1][j][k] = Program.TN[i1 - 1][j][k] - AALPHA * (Program.TN[i1 - 1][j][k] - Program.TSEN[j][k]);
                         }
-                        
+
                         Program.WN[NI][j][k] = 0;
                         //Program.VN[NI][j][k] = Program.VSEN[j][k];
                         //Program.TN[NI][j][k] = Program.TSEN[j][k];
@@ -335,7 +332,7 @@ namespace GRAMM_CSharp_Test
                     Program.V2N[NI][j][k] = Program.VN[NI][j][k];
                     Program.W1N[NI][j][k] = Program.WN[NI][j][k];
                     Program.W2N[NI][j][k] = Program.WN[NI][j][k];
-                    
+
 
                 }
             });
@@ -372,7 +369,7 @@ namespace GRAMM_CSharp_Test
                     }
                     else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                     {
-                        
+
                         for (int j = 1; j <= 1; j++)
                         {
                             int j1 = Math.Min(j, NJ);
@@ -382,7 +379,7 @@ namespace GRAMM_CSharp_Test
                             Program.UN[i][j1][k] = Program.UN[i][j1 + 1][k] - AALPHA * (Program.UN[i][j1 + 1][k] - Program.USSN[i][k]);
                             Program.TN[i][j1][k] = Program.TN[i][j1 + 1][k] - AALPHA * (Program.TN[i][j1 + 1][k] - Program.TSSN[i][k]);
                         }
-                        
+
                         Program.WN[i][1][k] = 0;
                         //Program.UN[i][1][k] = Program.USSN[i][k];
                         //Program.TN[i][1][k] = Program.TSSN[i][k];
@@ -431,7 +428,7 @@ namespace GRAMM_CSharp_Test
                     }
                     else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                     {
-                        
+
                         for (int j = NJ; j <= NJ; j++)
                         {
                             int j1 = Math.Max(j, 1);
@@ -441,7 +438,7 @@ namespace GRAMM_CSharp_Test
                             Program.UN[i][j1][k] = Program.UN[i][j1 - 1][k] - AALPHA * (Program.UN[i][j1 - 1][k] - Program.USNN[i][k]);
                             Program.TN[i][j1][k] = Program.TN[i][j1 - 1][k] - AALPHA * (Program.TN[i][j1 - 1][k] - Program.TSNN[i][k]);
                         }
-                        
+
                         Program.WN[i][NJ][k] = 0;
                         //Program.UN[i][NJ][k] = Program.USNN[i][k];
                         //Program.TN[i][NJ][k] = Program.TSNN[i][k];
@@ -457,12 +454,12 @@ namespace GRAMM_CSharp_Test
 
                 }
             });
- 			
+
             Parallel.For(1, NJ + 1, Program.pOptions, j =>
-            {  
+            {
                 for (int k = 1; k <= NK; k++)
                 {
-                	Program.T[1][j][k] = Program.TN[1][j][k];
+                    Program.T[1][j][k] = Program.TN[1][j][k];
                     Program.QU[1][j][k] = Program.QUN[1][j][k];
 
                     Program.T[NI][j][k] = Program.TN[NI][j][k];
@@ -470,7 +467,7 @@ namespace GRAMM_CSharp_Test
                 }
             });
 
-            
+
             Parallel.For(1, NI + 1, Program.pOptions, i =>
             {
                 for (int k = 1; k <= NK; k++)

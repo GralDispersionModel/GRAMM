@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
-using System.Linq;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -29,7 +26,7 @@ namespace GRAMM_CSharp_Test
             range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                            //computation of the new specific humidity
                                                            //Parallel.For(2, NI, Program.pOptions, i =>            
-            
+
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
                 double DIM;

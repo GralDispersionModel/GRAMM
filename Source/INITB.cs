@@ -11,13 +11,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     class INITB
     {
@@ -594,25 +591,25 @@ namespace GRAMM_CSharp_Test
                                 }
                             }
 
-                                    //diagnostic evaluation of anthropogenic heat fluxes
-                                    /*
-                                    for (int j = 1; j < NJ + 1; j++)
-                                    {
-                                        for (int i = 1; i < NI + 1; i++)
-                                        {
-                                            //CORINE CLASS 111 CONTINUOUS URBAN FABRIC
-                                            if (Program.Z0[i][j] >= 1.2)
-                                                Program.AWQ[i][j] = 40 * Program.DDX[i] * Program.DDY[j];
-                                            //CORINE CLASS 112 DISCONTINUOUS URBAN FABRIC
-                                            if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 4))
-                                                Program.AWQ[i][j] = 20 * Program.DDX[i] * Program.DDY[j];
-                                            //CORINE CLASS 121 INUDSTRIAL UNITS
-                                            if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 3.5))
-                                                Program.AWQ[i][j] = 50 * Program.DDX[i] * Program.DDY[j];
-                                        }
-                                    }
-                                    */
+                            //diagnostic evaluation of anthropogenic heat fluxes
+                            /*
+                            for (int j = 1; j < NJ + 1; j++)
+                            {
+                                for (int i = 1; i < NI + 1; i++)
+                                {
+                                    //CORINE CLASS 111 CONTINUOUS URBAN FABRIC
+                                    if (Program.Z0[i][j] >= 1.2)
+                                        Program.AWQ[i][j] = 40 * Program.DDX[i] * Program.DDY[j];
+                                    //CORINE CLASS 112 DISCONTINUOUS URBAN FABRIC
+                                    if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 4))
+                                        Program.AWQ[i][j] = 20 * Program.DDX[i] * Program.DDY[j];
+                                    //CORINE CLASS 121 INUDSTRIAL UNITS
+                                    if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 3.5))
+                                        Program.AWQ[i][j] = 50 * Program.DDX[i] * Program.DDY[j];
                                 }
+                            }
+                            */
+                        }
                     }
                 }
                 catch

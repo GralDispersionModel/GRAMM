@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Grib.Api.Interop.Util
 {
     internal static class Win32
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        private static extern bool SetDllDirectory ([MarshalAs(UnmanagedType.LPStr)]string lpPathName);
+        private static extern bool SetDllDirectory([MarshalAs(UnmanagedType.LPStr)]string lpPathName);
 
         [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        internal static extern int _putenv_s (string e, string v);
+        internal static extern int _putenv_s(string e, string v);
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
-        internal static extern IntPtr LoadLibrary ([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
+        internal static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
 
-        internal static AutoRef LoadWin32Library (string libPath)
+        internal static AutoRef LoadWin32Library(string libPath)
         {
             if (String.IsNullOrEmpty(libPath))
             {
@@ -39,7 +36,7 @@ namespace Grib.Api.Interop.Util
             return new AutoRef(moduleHandle);
         }
 
-        internal static void SetDllSearchPath (string pathName)
+        internal static void SetDllSearchPath(string pathName)
         {
             if (!Win32.SetDllDirectory(pathName))
             {

@@ -10,17 +10,16 @@
 ///</remarks>
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Grib.Api;
 using OSGeo.OSR;
-using System.IO;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace GRAMM_CSharp_Test
+namespace GRAMM_2001
 {
     partial class Program
     {
@@ -79,7 +78,7 @@ namespace GRAMM_CSharp_Test
             }
             catch { }
 
-            
+
             SpatialReference ERA5pro = new SpatialReference("");
             ERA5pro.SetWellKnownGeogCS("WGS84");
             SpatialReference GRAMMpro = new SpatialReference("");
@@ -142,7 +141,7 @@ namespace GRAMM_CSharp_Test
             {
                 fname = Files[i].Name;
                 using (GribFile file = new GribFile(fname))
-                {                    
+                {
                     double dummy = 0.0;
 
                     foreach (GribMessage msg in file)
@@ -1485,7 +1484,7 @@ namespace GRAMM_CSharp_Test
                 VISINIT = Program.CK * Math.Sqrt(TEINIT) * 10;
             else if (TEINIT == 0)
                 VISINIT = Program.VISEL;
-            
+
 
             //computing specific humidity from relative humidity
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
@@ -1618,7 +1617,7 @@ namespace GRAMM_CSharp_Test
                     Program.GLOBRAD[i][j] = 0;
                     Program.RL[i][j] = 0;
                     Program.AWQ[i][j] = 0;
-                    Program.QUG[i][j] = Program.QU[i][j][1];                    
+                    Program.QUG[i][j] = Program.QU[i][j][1];
                 }
             });
 
@@ -1785,7 +1784,7 @@ namespace GRAMM_CSharp_Test
                     for (int k = 1; k <= Program.NZ; k++)
                     {
                         double term = Math.Sqrt(1.0 - 2.0 * betamin * 9.81 * ZSP_L[k] / Program.GASCON / Math.Pow(Tsurfacemin, 2));
-                        double Thelp= Tsurfacemin * term * FACTOR_L[k] - Program.TBZ1;
+                        double Thelp = Tsurfacemin * term * FACTOR_L[k] - Program.TBZ1;
                         TBZ_L[k] = Thelp + Program.TBZ1;
                         Tinter_L[k] = Tinter_L[k] * FACTOR_L[k] - Program.TBZ1;
                     }
@@ -1944,7 +1943,7 @@ namespace GRAMM_CSharp_Test
                         Program.W1[i][j][k] = W_L[k];
                         Program.W2N[i][j][k] = W_L[k];
                         Program.W2[i][j][k] = W_L[k];
-                        
+
 
                         //Program.TN[i][j][k] = TBZ[i][j][k] - Program.TBZ1;
                         //Program.T[i][j][k] = TBZ[i][j][k] - Program.TBZ1;
@@ -1958,14 +1957,14 @@ namespace GRAMM_CSharp_Test
                 for (int k = 1; k <= Program.NZ; k++)
                 {
                     int j = 1;
-                    Program.TSSN[i][k] = Tinterim[i][j][k];                    
+                    Program.TSSN[i][k] = Tinterim[i][j][k];
                     Program.QUSSN[i][k] = QUinterim[i][j][k];
                     Program.WSSN[i][k] = 0;
                     Program.VSSN[i][k] = Vinterim[i][j][k];
                     Program.USSN[i][k] = Uinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
 
                     j = Program.NY;
                     Program.TSNN[i][k] = Tinterim[i][j][k];
@@ -1973,9 +1972,9 @@ namespace GRAMM_CSharp_Test
                     Program.WSNN[i][k] = 0;
                     Program.USNN[i][k] = Uinterim[i][j][k];
                     Program.VSNN[i][k] = Vinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
                 }
             });
 
@@ -1990,9 +1989,9 @@ namespace GRAMM_CSharp_Test
                     Program.WSWN[j][k] = 0;
                     Program.VSWN[j][k] = Vinterim[i][j][k];
                     Program.USWN[j][k] = Uinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
 
                     i = Program.NX;
                     Program.TSEN[j][k] = Tinterim[i][j][k];
@@ -2000,11 +1999,11 @@ namespace GRAMM_CSharp_Test
                     Program.WSEN[j][k] = 0;
                     Program.USEN[j][k] = Uinterim[i][j][k];
                     Program.VSEN[j][k] = Vinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
                 }
-            });            
+            });
 
             //set wetness for water bodies and dry areas (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies and dry areas)
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
@@ -2220,9 +2219,9 @@ namespace GRAMM_CSharp_Test
                     Program.WSSN[i][k] = 0;
                     Program.VSSN[i][k] = Vinterim[i][j][k];
                     Program.USSN[i][k] = Uinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
 
                     j = Program.NY;
                     Program.TSNN[i][k] = Tinterim[i][j][k];
@@ -2230,9 +2229,9 @@ namespace GRAMM_CSharp_Test
                     Program.WSNN[i][k] = 0;
                     Program.USNN[i][k] = Uinterim[i][j][k];
                     Program.VSNN[i][k] = Vinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
                 }
             });
 
@@ -2247,9 +2246,9 @@ namespace GRAMM_CSharp_Test
                     Program.WSWN[j][k] = 0;
                     Program.VSWN[j][k] = Vinterim[i][j][k];
                     Program.USWN[j][k] = Uinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
 
                     i = Program.NX;
                     Program.TSEN[j][k] = Tinterim[i][j][k];
@@ -2257,11 +2256,11 @@ namespace GRAMM_CSharp_Test
                     Program.WSEN[j][k] = 0;
                     Program.USEN[j][k] = Uinterim[i][j][k];
                     Program.VSEN[j][k] = Vinterim[i][j][k];
-                    
+
                     Program.WAT_VAPN[i][j][k] = CWinterim[i][j][k];
-                    
+
                 }
-            });            
+            });
 
             //set wetness for water bodies and dry areas (due to the coarse ERA5 data resolution, this is necessary to better account for water bodies and dry areas )
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>

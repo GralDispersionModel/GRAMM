@@ -16,11 +16,8 @@ using Grib.Api.Interop;
 using Grib.Api.Interop.SWIG;
 using Grib.Api.Interop.Util;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace Grib.Api
 {
@@ -43,29 +40,29 @@ namespace Grib.Api
         /// <exception cref="System.ComponentModel.Win32Exception"></exception>
         public static void Init()
         {
-            lock(_initLock)
+            lock (_initLock)
             {
                 if (Initialized) { return; }
 
                 Initialized = true;
                 string definitions = "";
 
-				if (String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("GRIB_API_NO_ABORT"))) 
-				{
-					NoAbort = true;
-				}
+                if (String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("GRIB_API_NO_ABORT")))
+                {
+                    NoAbort = true;
+                }
 
                 if (String.IsNullOrWhiteSpace(DefinitionsPath) &&
                     GribEnvironmentLoadHelper.TryFindDefinitions(out definitions))
                 {
                     DefinitionsPath = definitions;
-					SamplesPath = definitions.Remove(definitions.LastIndexOf("definitions")) + "samples";
+                    SamplesPath = definitions.Remove(definitions.LastIndexOf("definitions")) + "samples";
                 }
 
-				AssertValidEnvironment();
+                AssertValidEnvironment();
                 _libHandle = GribEnvironmentLoadHelper.BootStrapLibrary();
 
-				GribApiNative.HookGribExceptions();
+                GribApiNative.HookGribExceptions();
             }
         }
 
@@ -77,7 +74,7 @@ namespace Grib.Api
         /// or
         /// Could not locate 'definitions/boot.def'.
         /// </exception>
-        private static void AssertValidEnvironment ()
+        private static void AssertValidEnvironment()
         {
             /*
             Assembly _assembly;
@@ -85,11 +82,11 @@ namespace Grib.Api
             Stream s = _assembly.GetManifestResourceStream("GRAMM.Resource.boot.def");
             */
 
-            string[] paths = GribEnvironment.DefinitionsPath.Split(new [] { ';' });
+            string[] paths = GribEnvironment.DefinitionsPath.Split(new[] { ';' });
             string existingPath = "";
             bool exists = false;
 
-            foreach(string path in paths)
+            foreach (string path in paths)
             {
                 existingPath = path;
                 exists = Directory.Exists(path);
@@ -113,7 +110,7 @@ namespace Grib.Api
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="val">The value.</param>
-        private static void PutEnvVar (string name, string val)
+        private static void PutEnvVar(string name, string val)
         {
             Environment.SetEnvironmentVariable(name, val, EnvironmentVariableTarget.Process);
             Win32._putenv_s(name, val);
@@ -180,23 +177,23 @@ namespace Grib.Api
         }
 
 
-		/// <summary>
-		/// Gets or sets the location of grib_api's samples directory. By default, it is located  next to Grib.Api/definitions.
-		/// </summary>
-		/// <value>
-		/// The definitions path.
-		/// </value>
-		public static string SamplesPath
-		{
-			get
-			{
-				return Environment.GetEnvironmentVariable("GRIB_SAMPLES_PATH") + "";
-			}
-			set
-			{
-				PutEnvVar("GRIB_SAMPLES_PATH", value);
-			}
-		}
+        /// <summary>
+        /// Gets or sets the location of grib_api's samples directory. By default, it is located  next to Grib.Api/definitions.
+        /// </summary>
+        /// <value>
+        /// The definitions path.
+        /// </value>
+        public static string SamplesPath
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("GRIB_SAMPLES_PATH") + "";
+            }
+            set
+            {
+                PutEnvVar("GRIB_SAMPLES_PATH", value);
+            }
+        }
 
         /// <summary>
         /// Gets the grib_api version wrapped by this library.
@@ -208,7 +205,7 @@ namespace Grib.Api
         {
             get
             {
-				if (!Initialized) { Init(); }
+                if (!Initialized) { Init(); }
 
                 string version = GribApiProxy.GribGetApiVersion().ToString();
                 string major = version[0].ToString();

@@ -10,7 +10,7 @@ namespace Grib.Api.Interop
     /// </summary>
     public class GribKeysIterator : AutoRef
     {
-        internal GribKeysIterator (IntPtr h)
+        internal GribKeysIterator(IntPtr h)
             : base(h)
         {
         }
@@ -19,30 +19,30 @@ namespace Grib.Api.Interop
         /// Gets the next value in a series.
         /// </summary>
         /// <returns>False if there are no more values.</returns>
-        public bool Next ()
+        public bool Next()
         {
             return GribApiProxy.GribKeysIteratorNext(this) != 0;
         }
 
-		/// <summary>
-		/// Rewinds this instance.
-		/// </summary>
-		public void Rewind ()
-		{
-			GribApiProxy.GribKeysIteratorRewind(this);
-		}
+        /// <summary>
+        /// Rewinds this instance.
+        /// </summary>
+        public void Rewind()
+        {
+            GribApiProxy.GribKeysIteratorRewind(this);
+        }
 
         /// <summary>
         /// Called when [dispose].
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void OnDispose (bool disposing)
+        protected override void OnDispose(bool disposing)
         {
-			if (this.pReference != IntPtr.Zero) 
-			{
-				this.Rewind();
-				GribApiProxy.GribKeysIteratorDelete(this);
-			}
+            if (this.pReference != IntPtr.Zero)
+            {
+                this.Rewind();
+                GribApiProxy.GribKeysIteratorDelete(this);
+            }
         }
 
         public string Name
@@ -63,7 +63,7 @@ namespace Grib.Api.Interop
         /// <param name="filters">The key filters.</param>
         /// <param name="nspace">The namespace of the keys to iterate.</param>
         /// <returns></returns>
-        public static GribKeysIterator Create (GribHandle handle, uint filters, string nspace)
+        public static GribKeysIterator Create(GribHandle handle, uint filters, string nspace)
         {
             return GribApiProxy.GribKeysIteratorNew(handle, filters, nspace);
         }

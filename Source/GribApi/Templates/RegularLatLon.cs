@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Grib.Api.Templates
+﻿namespace Grib.Api.Templates
 {
     class RegularLatLon
     {
