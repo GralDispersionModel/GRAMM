@@ -222,7 +222,7 @@ namespace GRAMM_2001
         ///</summary>
         public static bool[][] DRY_AREA = CreateArray<bool[]>(1, () => new bool[1]);
         ///<summary>
-        ///Cloudyness 0 < x < 1
+        ///Cloudyness 0 - x - 1
         ///</summary>
         public static double[][] CLOUDS = CreateArray<double[]>(1, () => new double[1]);
         ///<summary>
@@ -1007,143 +1007,11 @@ namespace GRAMM_2001
         /// Large scale value of spec. humidity at southern boundary at time t+1
         ///</summary>
         public static double[][] QUSSN = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///Inclination angle of the surface fall-line (=line of greates slope)
-        ///</summary>
-        public static float[][] Alfa = CreateArray<float[]>(1, () => new float[1]);
-        ///<summary>
-        ///Azimuth angle of fall-line (=line of greates slope)
-        ///</summary>
-        public static float[][] Beta = CreateArray<float[]>(1, () => new float[1]);
-        // North = 0
-        ///<summary>
-        ///1-Q = Sky-view factor (Horizontüberhöhung) in the radiation model
-        ///</summary>
-        public static double[][] Q = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        /// Integrated visibility in the radiation model
-        ///</summary>
-        public static double[][] YG = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///Integrated water vapour in the radiation model
-        ///</summary>
-        public static double[][] R = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///influence of clouds on the solar incoming radiation
-        ///</summary>
-        public static double[][] W1rad = CreateArray<double[]>(1, () => new double[1]);
-        //public static double[][][][] W1rad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
-        ///<summary>
-        /// influence of rain on the solar incoming radiation
-        ///</summary>
-        public static double[][] W2rad = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///? something in the radiation model
-        ///</summary>
-        public static double[][] Wrad = CreateArray<double[]>(1, () => new double[1]);
         //public static double[][][][] Wrad = CreateArray<double[][][]>(1, () => CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1])));
         ///<summary>
         ///Temporary Radiation in TIMP
         ///</summary>
         public static double[][][] RADIATION = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Lower cell height of the radiation model
-        ///</summary>
-        public static double[] Dz1 = new double[1];
-        ///<summary>
-        ///Upper cell height of the radiation model
-        ///</summary>
-        public static double[] Dz2 = new double[1];
-        ///<summary>
-        /// Surface albedo in the radiation model
-        ///</summary>
-        public static double[][] Ag = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///Linke turbidity coefficient (~1 - 8)
-        ///</summary>
-        public static double[] Tstern = new double[1];
-        ///<summary>
-        ///Cloud parameter
-        ///</summary>
-        public static float[] CloudES = new float[1];
-        //public static double[][][] eS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        /// Cloud parameter
-        ///</summary>
-        public static float[] CloudESeS = new float[1];
-        //public static double[][][] eSeS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Shortwave solar radiation
-        ///</summary>
-        public static double[] IG = new double[1];
-        ///<summary>
-        ///Total solar radiation density
-        ///</summary>
-        public static double[][][] EG = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Direct solar radiation density
-        ///</summary>
-        public static double[][][] SG = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Diffusive solar radiation density
-        ///</summary>
-        public static double[][][] DG = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Transmission function
-        ///</summary>
-        public static double[] nS = new double[1];
-        //public static double[][][] nS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Transmission function
-        ///</summary>
-        public static double[] nD = new double[1];
-        //public static double[][][] nD = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Temporary array for cloud
-        ///</summary>
-        public static double[] Tau = new double[1];
-        //public static double[][][] Tau = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        /// Temporary array in the radiation model
-        ///</summary>
-        public static double[][][] Arad = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Temporary array in the radiatio model
-        ///</summary>
-        public static double[] Myx = new double[1];
-        ///<summary>
-        /// Integrated water vapour
-        ///</summary>
-        public static double[][] Rp = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///Integrated CO2
-        ///</summary>
-        public static double[][] CGp = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        /// Downward terrestrial radiation
-        ///</summary>
-        public static double[] L_Strich = new double[1];
-        //public static double[][][] L_Strich = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Total incoming terrestrial radiation
-        ///</summary>
-        public static double[][] RTerrG = CreateArray<double[]>(1, () => new double[1]);
-        ///<summary>
-        ///Temporary array in the radiation model
-        ///</summary>
-        public static double[][][] EpsAp = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Temporary array in the radiation model
-        ///</summary>
-        public static double[][][] EpsAm = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Temperature of the black cloud (at top of the atmosphere)
-        ///</summary>
-        public static double[][][] Tab = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Emissivity? of the black cloud (at top of the atmosphere)
-        ///</summary>
-        public static double[][][] Eab = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         ///Stability class (1-7)
         ///</summary>
@@ -1258,7 +1126,7 @@ namespace GRAMM_2001
         ///</summary>
         public static Int32 IBOUND;
         ///<summary>
-        ///NON-STEADYSTATE/FORCING W. "METEOPGT.ALL" YES=1
+        ///NON-STEADYSTATE/FORCING: Default = 0, "METEOPGT.ALL" = 1, GRAMM transient = 2
         ///</summary>
         public static Int32 ISTAT;
         ///<summary>
@@ -1795,5 +1663,9 @@ namespace GRAMM_2001
         ///counter for calling chemical solver
         ///</summary>
         public static float Update_Chemistry_Threshold = 60;
+        ///<summary>
+        ///Calculation of solar radiation
+        ///</summary>
+        public static RadiationCalculation RadiationModel;
     }
 }
