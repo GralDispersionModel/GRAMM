@@ -76,7 +76,7 @@ namespace GRAMM_2001
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
 
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -151,7 +151,7 @@ namespace GRAMM_2001
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
 
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -226,7 +226,7 @@ namespace GRAMM_2001
                                         IMIND = Convert.ToInt32(Math.Floor(AMIND));
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, 3, 3, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, 3, 3, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -319,7 +319,7 @@ namespace GRAMM_2001
                                         IMIND = Convert.ToInt32(Math.Floor(AMIND));
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -392,7 +392,7 @@ namespace GRAMM_2001
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
 
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -464,7 +464,7 @@ namespace GRAMM_2001
                                         IMIND = Convert.ToInt32(Math.Floor(AMIND));
                                         ASECD = (AMIND - (float)IMIND) * 60;
                                         ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                                        RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, 3, 3, 3);
+                                        RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, 3, 3, 3);
                                         Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                         Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -550,7 +550,7 @@ namespace GRAMM_2001
                                     IMIND = Convert.ToInt32(Math.Floor(AMIND));
                                     ASECD = (AMIND - (float)IMIND) * 60;
                                     ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                                    RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
+                                    RadiationModel.RADIATRAD(LGEOM, false, false, iday_var, imonth_var, IJAHR, TJETZT, NX_Radiat_Guess, NY_Radiat_Guess, 3);
                                     Console.Write(iday_var.ToString() + "." + imonth_var.ToString() + "  -  " + istu_var.ToString() + ":00        ");
                                     Console.SetCursorPosition(0, Console.CursorTop);
 
@@ -608,7 +608,7 @@ namespace GRAMM_2001
                 IMIND = Convert.ToInt32(Math.Floor(AMIND));
                 ASECD = (AMIND - (float)IMIND) * 60;
                 ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG, IMON, IJAHR, TJETZT, NX, NY, NZ);
+                RadiationModel.RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG, IMON, IJAHR, TJETZT, NX, NY, NZ);
             }
         }
 

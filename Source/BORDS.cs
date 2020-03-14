@@ -81,7 +81,7 @@ namespace GRAMM_2001
                         IMIND = Convert.ToInt32(Math.Floor(AMIND));
                         double ASECD = (AMIND - (float)IMIND) * 60;
                         int ISECD = Convert.ToInt32(Math.Floor(ASECD));
-                        RADIATRAD(false, false, false, ITAG_RAD, IMON_RAD, IJAHR, TJETZT1, NX, NY, NZ);
+                        RadiationModel.RADIATRAD(false, false, false, ITAG_RAD, IMON_RAD, IJAHR, TJETZT1, NX, NY, NZ);
                         Console.WriteLine(ITAG_RAD.ToString() + "." + IMON_RAD.ToString() + "  -  " + ISTUD.ToString() + ":" + IMIND.ToString("D2"));
                     }
                 }

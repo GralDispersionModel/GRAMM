@@ -246,6 +246,9 @@ Console.WriteLine("| .Net Core Version |");
 
             ProgramWriters.LogfileGrammCoreInfo();
 
+            // init radiation model 
+            RadiationModel = new RadiationCalculation(); 
+
         //Loop_______________________________________________________________________________________________
         NEXTWEATHERSITUATION:
 
@@ -427,7 +430,7 @@ Console.WriteLine("| .Net Core Version |");
                         {
                             if (TJETZT1 >= 86400) TJETZT1 -= 86400;
                         }
-                        RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG_RAD, IMON_RAD, IJAHR, TJETZT1, NX, NY, NZ);
+                        RadiationModel.RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG_RAD, IMON_RAD, IJAHR, TJETZT1, NX, NY, NZ);
                         Console.WriteLine(ITAG_RAD.ToString() + "." + IMON_RAD.ToString() + " - " + ISTUD.ToString() + ":" + IMIND.ToString("D2"));
                     }
 
@@ -450,7 +453,7 @@ Console.WriteLine("| .Net Core Version |");
                                 {
                                     if (TJETZT1 >= 86400) TJETZT1 -= 86400;
                                 }
-                                RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG, IMON, IJAHR, TJETZT1, NX, NY, NZ);
+                                RadiationModel.RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG, IMON, IJAHR, TJETZT1, NX, NY, NZ);
                                 Console.WriteLine(ITAG.ToString() + "." + IMON.ToString() + " - " + ISTUD.ToString() + ":" + IMIND.ToString("D2"));
                             }
                         }
