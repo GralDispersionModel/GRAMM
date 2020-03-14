@@ -1126,7 +1126,7 @@ namespace GRAMM_2001
         ///</summary>
         public static Int32 IBOUND;
         ///<summary>
-        ///NON-STEADYSTATE/FORCING: Default = 0, "METEOPGT.ALL" = 1, GRAMM transient = 2
+        ///NON-STEADYSTATE/FORCING: Default = 0, "METEOPGT.ALL" = 1, GRAMM transient = 2 or higher
         ///</summary>
         public static Int32 ISTAT;
         ///<summary>

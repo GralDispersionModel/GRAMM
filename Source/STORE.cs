@@ -166,25 +166,6 @@ namespace GRAMM_2001
                             V_L[k] = VN_L[k];
                             W_L[k] = WN_L[k];
 
-                            //in transient mode using ERA5, the geostrophic wind is set equal to the real wind
-                            if (Program.ISTAT >= 2)
-                            {
-                                if (ZSP_L[k] > AHMAX + 2000)
-                                {
-                                    UG_L[k] = U_L[k];
-                                    VG_L[k] = V_L[k];
-                                }
-                                else
-                                {
-                                    UG_L[k] = 0;
-                                    VG_L[k] = 0;
-                                }
-                                UG1_L[k] = (float)UG_L[k];
-                                VG1_L[k] = (float)VG_L[k];
-                                UG2_L[k] = (float)UG_L[k];
-                                VG2_L[k] = (float)VG_L[k];
-                            }
-
                             T_L[k] = TN_L[k];
                             QU_L[k] = QUN_L[k];
                             TE_L[k] = TEN_L[k];

@@ -68,39 +68,8 @@ namespace GRAMM_2001
             //Initialization procedure
             //Program.ISOL = 1; //Switch for radiation model: 1=thin clouds 2=thick clouds
             if (Program.ISTAT < 2)
-                Temp_INIT(NI, NJ, NK);
-            else if (Program.ISTAT >= 2)
             {
-                DateTime dateref = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
-                List<float> XERA5 = new List<float>();
-                List<float> YERA5 = new List<float>();
-                List<float> ZERA5 = new List<float>();
-                List<float> OROERA5 = new List<float>();
-                List<float> UERA5 = new List<float>();
-                List<float> VERA5 = new List<float>();
-                List<float> WERA5 = new List<float>();
-                List<float> TERA5 = new List<float>();
-                List<float> QERA5 = new List<float>();
-                List<float> WATERCLOUDERA5 = new List<float>();
-                List<float> SDERA5 = new List<float>();
-                List<float> CCERA5 = new List<float>();
-                List<float> LCCERA5 = new List<float>();
-                List<float> MCCERA5 = new List<float>();
-                List<float> HCCERA5 = new List<float>();
-                List<float> PERA5 = new List<float>();
-                List<float> STERA5 = new List<float>();
-                List<float> SWERA5 = new List<float>();
-                List<float> MSLPERA5 = new List<float>();
-                List<float> SEATEMPERA5 = new List<float>();
-
-                //read ERA5 grib2 files
-                ERA5_Read(dateref, ref ERA5_date1, ref ERA5_date2, ref XERA5, ref YERA5, ref ZERA5, ref OROERA5, ref UERA5, ref VERA5, ref WERA5, ref TERA5,
-                    ref QERA5, ref SDERA5, ref CCERA5, ref PERA5, ref STERA5, ref SWERA5, ref MSLPERA5, ref LCCERA5, ref MCCERA5, ref HCCERA5, ref WATERCLOUDERA5, ref SEATEMPERA5);
-
-                Program.IWETTER++;
-
-                //initialize GRAMM using ERA5 data
-                ERA5_InitializeOntoGRAMMgrid(XERA5, YERA5, ZERA5, UERA5, VERA5, WERA5, TERA5, QERA5, PERA5, SDERA5, CCERA5, STERA5, SWERA5, MSLPERA5, LCCERA5, MCCERA5, HCCERA5, WATERCLOUDERA5, SEATEMPERA5);
+                Temp_INIT(NI, NJ, NK);
             }
 
             if (Program.ISTAT < 2)

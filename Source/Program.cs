@@ -44,9 +44,6 @@ namespace GRAMM_2001
 
         static void Main(string[] args)
         {
-            GdalConfiguration.ConfigureOgr();
-            GdalConfiguration.ConfigureGdal();
-
             // Arguments: "First Situation" "Final Situation" "Max. Time Step" "RelaxV" "RelaxT"
             // if "First Situation" = "?" -> print Info & Stop
 
@@ -265,26 +262,6 @@ Console.WriteLine("| .Net Core Version |");
             Int32 IMIND = Convert.ToInt32(Math.Floor(AMIND));
             double ASECD = (AMIND - (float)IMIND) * 60;
             Int32 ISECD = Convert.ToInt32(Math.Floor(ASECD));
-
-            if (ISTAT >= 2)
-            {
-                //setting UTC time for reading ERA5 data
-                dateUTC = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
-                //GRAMM uses sun time -> UTC has to be transferred
-                if (Longitude > 180.0)
-                    Longitude -= 180;
-                if (Longitude < -180.0)
-                    Longitude += 180;
-                ISTU += Convert.ToInt32(Longitude * 12 / 180.0);
-                if (ISTU >= 24)
-                {
-                    ISTU -= 24;
-                    DateTime dateref = new DateTime(Program.IJAHR4digits, Program.IMON, Program.ITAG, Program.ISTU, Program.IMIN, 0);
-                    dateref = dateref.AddDays(1);
-                    ITAG = dateref.Day;
-                    IMON = dateref.Month;
-                }
-            }
 
             if (ISTAT == 0)
             {

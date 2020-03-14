@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -9,13 +9,5 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GDAL" Version="2.4.3" />
-    <PackageReference Include="Gdal.Core" Version="2.3.0-beta-023" />
-    <PackageReference Include="Gdal.Core.WindowsRuntime" Version="2.3.0-beta-023" />
-    <PackageReference Include="GDAL.Native" Version="2.4.3" />
-    <PackageReference Include="GDAL.Plugins" Version="2.4.3" />
-  </ItemGroup>
 
 </Project>
