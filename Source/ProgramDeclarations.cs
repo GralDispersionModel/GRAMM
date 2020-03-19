@@ -1435,7 +1435,7 @@ namespace GRAMM_2001
         ///</summary>
         public static Boolean ICQU;
         ///<summary>
-        /// Flag switching the computation of a passive scalar on/off (not used)
+        /// Flag switching the computation of a passive scalar on/off (not used) 
         ///</summary>
         public static Boolean ICPSI;
         ///<summary>
