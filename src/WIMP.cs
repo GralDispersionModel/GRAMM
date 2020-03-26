@@ -105,7 +105,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -118,8 +117,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -141,8 +139,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -204,7 +201,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -217,8 +213,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
 
                                     //Recurrence formula
@@ -241,8 +236,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -304,7 +298,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -317,9 +310,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -341,8 +332,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -403,7 +393,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -416,9 +405,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -440,8 +427,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -503,7 +489,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -516,9 +501,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -540,8 +523,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -599,7 +581,6 @@ namespace GRAMM_2001
                         float[] F1W_L = Program.F1W[i][j];
                         float[] F2W_L = Program.F2W[i][j];
                         float[] RHO_L = Program.RHO[i][j];
-                        double[] U1N_L = Program.U1N[i][j];
                         double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                         double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                         float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -612,9 +593,7 @@ namespace GRAMM_2001
                             if (m == 2)
                             {
                                 DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                 //Recurrence formula
                                 if (k > 1)
@@ -636,8 +615,7 @@ namespace GRAMM_2001
                             else
                             {
                                 DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                 //Recurrence formula
                                 help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -698,7 +676,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -711,8 +688,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -734,8 +710,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -796,7 +771,6 @@ namespace GRAMM_2001
                             float[] F1W_L = Program.F1W[i][j];
                             float[] F2W_L = Program.F2W[i][j];
                             float[] RHO_L = Program.RHO[i][j];
-                            double[] U1N_L = Program.U1N[i][j];
                             double[] W1N_L = Program.W1N[i][j]; double[] W1Ni_L = Program.W1N[i + 1][j]; double[] W1NJ_P_L = Program.W1N[i][j + 1];
                             double[] W2N_L = Program.W2N[i][j]; double[] W2Ni_L = Program.W2N[i - 1][j]; double[] W2NJ_P_L = Program.W2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -809,9 +783,7 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * W2Ni_L[k] + AS1_L[k] * W2NJ_P_L[k] + F1W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                    if (k == 1) DIM -= RHO_L[k] * W1N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -833,9 +805,7 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * W1Ni_L[k] + AN2_L[k] * W1NJ_P_L[k] + F2W_L[kn];
-
-                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * Math.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
-
+                                    if (k == 1) DIM -= RHO_L[k] * W2N_L[k] * USTxUSTV * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
