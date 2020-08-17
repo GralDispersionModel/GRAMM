@@ -63,7 +63,7 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 20.06    < <          +";
+            string Info =     "+         > > G R A M M VERSION: 20.09    < <          +";
             Console.WriteLine(Info);
             if (unix)
             {
