@@ -189,7 +189,7 @@ namespace GRAMM_2001
                         {
                             try
                             {
-                                dummy = Convert.ToInt16(Program.U[i][j][k] * 100);
+                                dummy = Convert.ToInt16(Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, Program.U[i][j][k] * 100)));
                             }
                             catch
                             {
@@ -200,7 +200,7 @@ namespace GRAMM_2001
 
                             try
                             {
-                                dummy = Convert.ToInt16(Program.V[i][j][k] * 100);
+                                dummy = Convert.ToInt16(Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, Program.V[i][j][k] * 100)));
                             }
                             catch
                             {
@@ -210,7 +210,7 @@ namespace GRAMM_2001
                             writer.Write(dummy);
                             try
                             {
-                                dummy = Convert.ToInt16(Program.W[i][j][k] * 100);
+                                dummy = Convert.ToInt16(Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue,Program.W[i][j][k] * 100)));
                             }
                             catch
                             {
@@ -279,11 +279,12 @@ namespace GRAMM_2001
                             writer.Write(NK);
                             writer.Write(GRAMMhorgridsize);
                             for (int i = 1; i <= NI; i++)
+                            {
                                 for (int j = 1; j <= NJ; j++)
                                 {
-                                    dummy = Convert.ToInt16(Program.UST[i][j] * 1000);
-                                    writer.Write(dummy);
+                                    writer.Write(Convert.ToInt16(Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, Program.UST[i][j] * 1000))));
                                 }
+                            }
                         }
 
                         string obukhovfilename = (Convert.ToString(Program.IWETTER).PadLeft(5, '0') + ".obl");
@@ -296,11 +297,12 @@ namespace GRAMM_2001
                             writer.Write(NK);
                             writer.Write(GRAMMhorgridsize);
                             for (int i = 1; i <= NI; i++)
+                            {
                                 for (int j = 1; j <= NJ; j++)
                                 {
-                                    dummy = Convert.ToInt16(Program.OL[i][j] * 10);
-                                    writer.Write(dummy);
+                                    writer.Write(Convert.ToInt16(Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, Program.OL[i][j] * 10))));
                                 }
+                            }
                         }
 
                         //computation and ouput of stability classes
@@ -314,10 +316,12 @@ namespace GRAMM_2001
                             writer.Write(NK);
                             writer.Write(GRAMMhorgridsize);
                             for (int i = 1; i <= NI; i++)
+                            {
                                 for (int j = 1; j <= NJ; j++)
                                 {
-                                    writer.Write(Program.stabilityclass[i][j]);
+                                    writer.Write((Int16) Math.Max(Int16.MinValue, Math.Min(Int16.MaxValue, Program.stabilityclass[i][j])));
                                 }
+                            }
                         }
                     } // archive
                 } // Zip File
