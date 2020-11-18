@@ -451,7 +451,7 @@ Console.WriteLine("| .Net Core Version |");
                     }
                 }
 
-                Int16 IHOUR = Convert.ToInt16(Math.Floor(TJETZT / IOUTPUT));
+                int IHOUR = Convert.ToInt32(Math.Floor(TJETZT / IOUTPUT));
                 if (REALTIME > Intermed_Threshold && DTI > 3602) // if threshold is exceeded && simulation time > 1 h -> create intermed. outputs
                 {
                     Console.Write(" INTERMEDIATE OUTPUT ");

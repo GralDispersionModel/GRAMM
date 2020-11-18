@@ -22,11 +22,11 @@ namespace GRAMM_2001
         public static void meteopgtall_calculate(int Ori_Weather_nr, int IWETTER, double DTI, double TIME, int OUTPUT, double TLIMIT2, ref int Filenumber)
         {
             //compute index of intermediate file
-            Int16 IHOUR = Convert.ToInt16(Math.Floor(TIME / OUTPUT));
+            int IHOUR = Convert.ToInt32(Math.Floor(TIME / OUTPUT));
 
             //compute filenumber
             Filenumber = Ori_Weather_nr;
-            List<Int16> counter = new List<Int16>();
+            List<int> counter = new List<int>();
             //reading meteopgt.all
 
             try
@@ -47,7 +47,7 @@ namespace GRAMM_2001
                             Integrationtime(AKLA, WINDGE, TLIMIT2, Ori_Weather_nr, ref ITIME);
 
                             //number of additional weather situations
-                            int addnumb = Convert.ToInt16(Math.Ceiling(ITIME / OUTPUT - 1));
+                            int addnumb = Convert.ToInt32(Math.Ceiling(ITIME / OUTPUT - 1));
                             for (int i = 1; i <= addnumb; i++)
                             {
                                 counter.Add(1);
@@ -91,12 +91,12 @@ namespace GRAMM_2001
                             double ITIME = TLIMIT2;
                             Integrationtime(AKLA, WINDGE, TLIMIT2, Ori_Weather_nr, ref ITIME);
                             //number of additional weather situations
-                            int addnumb = Convert.ToInt16(Math.Ceiling(ITIME / OUTPUT - 1));
+                            int addnumb = Convert.ToInt32(Math.Ceiling(ITIME / OUTPUT - 1));
                             //Console.WriteLine(inid.ToString()+"/" + addnumb.ToString() +"/" + ITIME.ToString() + "/" + OUTPUT.ToString());
                             text[1] = text[1].Replace(".", string.Empty);
                             for (int i = 1; i <= addnumb; i++)
                             {
-                                texttoadd.Add(Convert.ToString(Convert.ToInt16(WINDDIR)) + "." + text[1] + "," + inid.ToString() + "." + i.ToString() + "," + text[2] + ",0");
+                                texttoadd.Add(Convert.ToString(Convert.ToInt32(WINDDIR)) + "." + text[1] + "," + inid.ToString() + "." + i.ToString() + "," + text[2] + ",0");
                             }
                         }
                         if (myreader.EndOfStream)

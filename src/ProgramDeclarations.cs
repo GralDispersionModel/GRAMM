@@ -92,7 +92,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Flag needed for the intermediate output of GRAMM flowfields
         ///</summary>
-        public static Int16 IHOURO;
+        public static Int32 IHOURO;
         ///<summary>
         /// Volume of grid cells
         ///</summary>
