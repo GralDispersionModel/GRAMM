@@ -21,7 +21,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Calculate the diffusion and advection terms for the implicit scheme (Patankar 1980, p52)
         ///</summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void TERMIPSterms(int NI, int NJ, int NK)
         {
             Parallel.For(2, NI, Program.pOptions, i =>

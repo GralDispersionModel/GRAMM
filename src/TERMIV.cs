@@ -12,6 +12,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace GRAMM_2001
 {
@@ -20,6 +21,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Calculate the diffusion and advection terms for the implicit scheme (Patankar 1980, p52)
         ///</summary>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void TERMIVterms(int NI, int NJ, int NK)
         {
 

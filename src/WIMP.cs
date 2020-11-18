@@ -19,7 +19,7 @@ namespace GRAMM_2001
 {
     partial class Program
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void WVELcalculate(int NI, int NJ, int NK)
         {
             if (Program.ICW)

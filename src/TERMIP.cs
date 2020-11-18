@@ -11,12 +11,14 @@
 #endregion
 
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace GRAMM_2001
 {
     partial class Program
     {
         // procedure calculating the terms for the non-hydrostatic pressure equation
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void TERMIPterms(int NI, int NJ, int NK)
         {
             Parallel.For(2, NI, Program.pOptions, i =>

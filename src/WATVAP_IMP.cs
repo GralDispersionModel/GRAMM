@@ -13,11 +13,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace GRAMM_2001
 {
     partial class Program
     {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void WatVap_calculate(int NI, int NJ, int NK)
         {
             //computation of temperature change due to latent heat
