@@ -31,7 +31,7 @@ namespace GRAMM_2001
             double WINDGE2 = 0;
 
             //in case of non-steady-state option: read file meteopgt.all to get geostrophic wind for forcing
-            Int16 IHOUR = Convert.ToInt16(Math.Floor(TJETZT / IOUTPUT));
+            int IHOUR = Convert.ToInt32(Math.Floor(TJETZT / IOUTPUT));
             if (((REALTIME == 0) || (REALTIME > 0) && ((ITIME % IRAD) == 0)) && (Program.ISTAT == 1))
             {
                 bool meteopgtexist = File.Exists("meteopgt.all");

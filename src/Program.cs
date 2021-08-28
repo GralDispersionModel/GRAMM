@@ -63,7 +63,7 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 20.09    < <          +";
+            string Info =     "+         > > G R A M M VERSION: 21.09    < <          +";
             Console.WriteLine(Info);
             if (unix)
             {
@@ -451,7 +451,7 @@ Console.WriteLine("| .Net Core Version |");
                     }
                 }
 
-                Int16 IHOUR = Convert.ToInt16(Math.Floor(TJETZT / IOUTPUT));
+                int IHOUR = Convert.ToInt32(Math.Floor(TJETZT / IOUTPUT));
                 if (REALTIME > Intermed_Threshold && DTI > 3602) // if threshold is exceeded && simulation time > 1 h -> create intermed. outputs
                 {
                     Console.Write(" INTERMEDIATE OUTPUT ");
