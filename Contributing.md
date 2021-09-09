@@ -42,7 +42,7 @@ If you find a bug in the source code, you can help us by submitting an issue to 
 Please test the bug fix by one ore more projects and document the changes.
 
 ## What should I know before I get started?
-GRAMM is developed on .NetCore 3.1. You can use Visual Studio or Visual Studio Code for development across platforms or Visual Studio 2019 in Windows.<br>
+GRAMM is developed on .Net5. You can use Visual Studio or Visual Studio Code for development across platforms or Visual Studio 2019 in Windows.<br>
 The released GRAMM application was compiled with GDAL and ECMWF coupling. If you want to compile without ECMWF coupling delete the constant `_ECMWF_` and remove the dependencies for GDAL in the compiler settings or in the file Source.csproj.<br>
 If you want to compile with ECMWF coupling, keep the flag `_ECMWF_` and install the dependencies for GDAL. <br>
 The program version including GDAL and ECMWF coupling was not tested at Linux.
