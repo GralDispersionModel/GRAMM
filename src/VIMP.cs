@@ -61,8 +61,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                int range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                int range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, i =>
@@ -103,7 +104,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -127,7 +131,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -159,8 +166,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, ih =>
@@ -203,7 +211,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -226,7 +237,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
 
@@ -259,8 +273,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, jh =>
@@ -303,7 +318,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -326,7 +344,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -358,8 +379,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, j =>
@@ -401,7 +423,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -424,7 +449,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -456,8 +484,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, ih =>
@@ -500,7 +529,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -523,7 +555,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -555,8 +590,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, i =>
@@ -597,7 +633,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -620,7 +659,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -652,8 +694,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, jh =>
@@ -696,7 +739,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -719,7 +765,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -751,8 +800,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, j =>
@@ -793,7 +843,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AW1_L[k] * V2Ni_L[k] + AS1_L[k] * V2NJ_P_L[k] + F1V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -816,7 +869,10 @@ namespace GRAMM_2001
                                 {
                                     DIM = AE2_L[k] * V1Ni_L[k] + AN2_L[k] * V1NJ_P_L[k] + F2V_L[kn];
 
-                                    if (k == 1) DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * V2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);

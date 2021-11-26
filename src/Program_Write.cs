@@ -46,6 +46,10 @@ namespace GRAMM_2001
 
         } // Write Logfile		
 
+        /// <summary>
+        /// Output to GRAMM log file
+        /// </summary>
+        /// <param name="a"></param>
         public static void LogfileGrammCoreWrite(string a)
         {
             try

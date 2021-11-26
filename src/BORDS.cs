@@ -19,6 +19,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Set the boundary condítions
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void Bords_calculate(int NI, int NJ, int NK)
         {
             //damping factor

@@ -326,7 +326,11 @@ namespace GRAMM_2001
 
             int iTheta; // int Kalb;
 
-            if (NK != 3) Console.Write("RADIATION started");
+            if (NK != 3)
+            {
+                Console.Write("RADIATION started");
+            }
+
             if ((Program.ISOL != 1) && (Program.ISOL != 2))
             {
                 Console.WriteLine("===========================================");
@@ -388,15 +392,22 @@ namespace GRAMM_2001
                         Alfa[i][j] = MathF.Atan(MathF.Sqrt(HX * HX + HY * HY)); //inclination of the ground cell
 
                         if (Math.Abs(Alfa[i][j]) < Eps)
+                        {
                             Beta[i][j] = 0; // direction of the ground cell 0 = north
+                        }
                         else
+                        {
                             Beta[i][j] = MathF.Atan2(HX, HY);
+                        }
 
                         Q[i][j] = CLQ(i, j, Alfa[i][j], Beta[i][j]);  //sky view factor  = 0 in case of flat terrain (1 - Q = horizontal elevation)
                     }
                 });
 
-                if (NK != 3) Console.Write(" / geometry computed");
+                if (NK != 3)
+                {
+                    Console.Write(" / geometry computed");
+                }
                 //save geometry data
                 if (lGeomWr == true)
                 {
@@ -405,6 +416,7 @@ namespace GRAMM_2001
                         using (BinaryWriter wr = new BinaryWriter(File.Open("albeq.dat", FileMode.Create)))
                         {
                             for (int i = 1; i <= Program.NX; i++)
+                            {
                                 for (int j = 1; j <= Program.NY; j++)
                                 {
                                     {
@@ -413,9 +425,14 @@ namespace GRAMM_2001
                                         wr.Write(Q[i][j]);
                                     }
                                 }
+                            }
+
                             wr.Write(KStMax);
                         }
-                        if (NK != 3) Console.Write(" / geometry saved");
+                        if (NK != 3)
+                        {
+                            Console.Write(" / geometry saved");
+                        }
                     }
                     catch
                     {
@@ -434,6 +451,7 @@ namespace GRAMM_2001
                     using (BinaryReader br = new BinaryReader(File.Open("albeq.dat", FileMode.Open, FileAccess.Read, FileShare.Read)))
                     {
                         for (int i = 1; i <= Program.NX; i++)
+                        {
                             for (int j = 1; j <= Program.NY; j++)
                             {
                                 {
@@ -442,9 +460,14 @@ namespace GRAMM_2001
                                     Q[i][j] = br.ReadDouble();
                                 }
                             }
+                        }
+
                         KStMax = br.ReadInt32();
                     }
-                    if (NK != 3) Console.Write(" / geometry loaded");
+                    if (NK != 3)
+                    {
+                        Console.Write(" / geometry loaded");
+                    }
                 }
                 catch
                 {
@@ -467,7 +490,11 @@ namespace GRAMM_2001
             double DOmega, Omega;
             DOmega = 2 * Math.PI / NumberOmega;
             iTheta = (int)((Eta + Math.PI) / (2 * Math.PI / NumberOmega)) + 1;     //sector where eta lies
-            if (iTheta > NumberOmega) iTheta = 1;
+            if (iTheta > NumberOmega)
+            {
+                iTheta = 1;
+            }
+
             Omega = DOmega * (iTheta - 1) + DOmega * 0.5;                               //actual angle
 
             //Console.WriteLine("Itime in hours" + (timeR/3600).ToString() + " Omega" + Omega.ToString() + " Eta "+ Eta.ToString());
@@ -495,9 +522,13 @@ namespace GRAMM_2001
                     {
                         ClAlbedo(i, j, k, Program.KST[i][j] - 1, ThetaB, SinI, SinIe);
                         if (ThetaOld >= He)
+                        {
                             Theta = CLThet(i, j, Program.ZZ[k], Omega, DOmega, Theta);
+                        }
                         else
+                        {
                             Theta = -90 * GrRa;
+                        }
 
                         ThetaOld = Theta;
 
@@ -515,7 +546,10 @@ namespace GRAMM_2001
                 }
             });
 
-            if (NK != 3) Console.WriteLine(" / radiation computed");
+            if (NK != 3)
+            {
+                Console.WriteLine(" / radiation computed");
+            }
             //terrestrial downward longwave radiation
             Cl_LStrich();
 
@@ -680,13 +714,19 @@ namespace GRAMM_2001
                         if (Program.X[IAkt] < (Program.X[I] + Dx1)) // counter less OM1
                         {
                             while (Program.X[IAkt] < (Program.X[I] + Dx1))
+                            {
                                 IAkt++;
+                            }
+
                             IZ = IAkt;
                         }
                         else // counter equal or larger OM1
                         {
                             while (Program.X[IAkt] >= (Program.X[I] + Dx1))
+                            {
                                 IAkt--;
+                            }
+
                             IZ = IAkt + 1;
                             IAkt++;
                         }
@@ -737,13 +777,19 @@ namespace GRAMM_2001
                         if (Program.Y[JAkt] > (Program.Y[J] + Dy1))
                         {
                             while (Program.Y[JAkt] > (Program.Y[J] + Dy1))
+                            {
                                 JAkt--;
+                            }
+
                             JZ = JAkt;
                         }
                         else
                         {
                             while (Program.Y[JAkt] <= (Program.Y[J] + Dy1))
+                            {
                                 JAkt++;
+                            }
+
                             JZ = JAkt - 1;
                             JAkt--;
                         }
@@ -793,13 +839,19 @@ namespace GRAMM_2001
                         if (Program.X[IAkt] > (Program.X[I] + Dx1))
                         {
                             while (Program.X[IAkt] > (Program.X[I] + Dx1))
+                            {
                                 IAkt--;
+                            }
+
                             IZ = IAkt;
                         }
                         else
                         {
                             while (Program.X[IAkt] <= (Program.X[I] + Dx1))
+                            {
                                 IAkt++;
+                            }
+
                             IZ = IAkt - 1;
                             IAkt--;
                         }
@@ -849,13 +901,19 @@ namespace GRAMM_2001
                         if (Program.Y[JAkt] < (Program.Y[J] + Dy1))
                         {
                             while (Program.Y[JAkt] < (Program.Y[J] + Dy1))
+                            {
                                 JAkt++;
+                            }
+
                             JZ = JAkt;
                         }
                         else
                         {
                             while (Program.Y[JAkt] >= (Program.Y[J] + Dy1))
+                            {
                                 JAkt--;
+                            }
+
                             JZ = JAkt + 1;
                             JAkt++;
                         }
@@ -927,12 +985,20 @@ namespace GRAMM_2001
                 if (Math.Abs(CosEta) <= 1 + Eps)
                 {
                     if (CosEta > 1)
+                    {
                         CosEta = 1;
+                    }
+
                     if (CosEta < -1)
+                    {
                         CosEta = -1;
+                    }
+
                     Eta = (float)Math.Acos(CosEta);
                     if (Psirad < 0)
+                    {
                         Eta = -Eta;
+                    }
                 }
                 else
                 {
@@ -954,10 +1020,14 @@ namespace GRAMM_2001
                 }
 
                 if (Eta > 2 * Math.PI)
+                {
                     Eta -= 2 * MathF.PI;
+                }
 
                 if (Eta < Eps)
+                {
                     Eta = MathF.PI;
+                }
             }
             //Console.WriteLine("ETA " + Eta.ToString());
             return He;
@@ -976,7 +1046,9 @@ namespace GRAMM_2001
                 {
                     Ag[I][J] = Program.ALBEDO[I][J];
                     if (Ag[I][J] == 0.08)
+                    {
                         Ag[I][J] = MathF.Min(1, MathF.Max(0.03F, -0.0139F + MathF.Tan(MathF.PI * 0.5F - He)));    //Flassak p 133
+                    }
                 }
             });
             return He;
@@ -1259,14 +1331,22 @@ namespace GRAMM_2001
             AcZw = 2600 * WUnt * (1.2F - Myx[k]);
 
             if (AcZw <= Eulerian)
+            {
                 Ac = 0;
+            }
             else
+            {
                 Ac = 0.42 * MathF.Log(MathF.Log(AcZw));
+            }
 
             if ((SinIe < 0) || (He < Theta))
+            {
                 AgMod = Ag[i][j] * (1 - CloudES[KSti]);
+            }
             else
+            {
                 AgMod = Ag[i][j] * (1 - CloudES[KSti] + CloudES[KSti] * SinI / My);
+            }
 
             Arad[i][j][k] = Ac + (TClearUP * TClearDown * TCUp * TCDown * AgMod) / (1 - Ac * AgMod);
 
@@ -1570,17 +1650,29 @@ namespace GRAMM_2001
 
             float tmp = MathF.Log(rpi);
             if (Rpi < 0.0183)
+            {
                 Eps_r = 0.113 * MathF.Log(1 + 12.63F * rpi);
+            }
             else if (tmp < -3)
+            {
                 Eps_r = 0.104 * MathF.Log(rpi) + 0.44;
+            }
             else if (tmp < -1.5)
+            {
                 Eps_r = 0.121 * MathF.Log(rpi) + 0.491;
+            }
             else if (tmp < -1.0)
+            {
                 Eps_r = 0.146 * MathF.Log(rpi) + 0.527;
+            }
             else if (tmp < 0)
+            {
                 Eps_r = 0.161 * MathF.Log(rpi) + 0.542;
+            }
             else
+            {
                 Eps_r = 0.136 * MathF.Log(rpi) + 0.542;
+            }
 
             Eps_CO2 = 0.185 * (1 - MathF.Exp(-0.39F * MathF.Pow((float)CGpi, 0.4F)));
             Eps_clear = 1.03 * (Eps_r + Eps_CO2);

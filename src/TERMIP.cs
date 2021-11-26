@@ -17,7 +17,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
-        // procedure calculating the terms for the non-hydrostatic pressure equation
+        /// <summary>
+        /// Procedure calculating the terms for the non-hydrostatic pressure equation
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void TERMIPterms(int NI, int NJ, int NK)
         {
@@ -36,7 +41,7 @@ namespace GRAMM_2001
                     double[] AT_L = Program.AT[i][j];
                     double[] AW_L = Program.AW[i][j];
                     float[] AREA_L = Program.AREA[i][j];
-                    float[] AREAX_L = Program.AREAX[i][j];
+                    float[] AREAX_L = Program.AREAXImm[i][j];
                     float[] AREAY_L = Program.AREAY[i][j];
                     float[] AREAZX_L = Program.AREAZX[i][j];
                     float[] AREAZY_L = Program.AREAZY[i][j];
@@ -82,7 +87,7 @@ namespace GRAMM_2001
                                     + (AREAZX_LL * (AREAX_L[k - 1] + AREAZX_L[k - 1]) +
                                        AREAZY_LL * (AREAY_L[k - 1] + AREAZY_L[k - 1]))
                                     * (RHOM1_AIMM1);
-                                AE_L[kn] = Program.AREAX[i + 1][j][k - 1] * AREAZX_LL * RHOM1_AIMM1;
+                                AE_L[kn] = Program.AREAXImm[i + 1][j][k - 1] * AREAZX_LL * RHOM1_AIMM1;
                                 AN_L[kn] = Program.AREAY[i][j + 1][k - 1] * AREAZY_LL * RHOM1_AIMM1;
                             }
                             else
@@ -116,7 +121,7 @@ namespace GRAMM_2001
                                 * RHO_AIM;
                             AW_L[kn] = AREAX_LL * (AREASUMX_LL) * (RHO_AIM);
                             AS_L[kn] = AREAY_LL * (AREASUMY_LL) * (RHO_AIM);
-                            AE_L[kn] = Program.AREAX[i + 1][j][k] * AREASUMX_LL * RHO_AIM;
+                            AE_L[kn] = Program.AREAXImm[i + 1][j][k] * AREASUMX_LL * RHO_AIM;
                             AN_L[kn] = Program.AREAY[i][j + 1][k] * AREASUMY_LL * RHO_AIM;
                         }
                     }

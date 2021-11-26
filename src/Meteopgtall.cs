@@ -100,7 +100,9 @@ namespace GRAMM_2001
                             }
                         }
                         if (myreader.EndOfStream)
+                        {
                             extended_meteofile = true;
+                        }
                     }
                 }
             }

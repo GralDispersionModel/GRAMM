@@ -18,6 +18,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Write GRAMM online data 
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void GrammOnline(int NI, int NJ, int NK)
         { // Schreibe Berechnungsdaten für GRAMM Online
 
@@ -141,9 +147,13 @@ namespace GRAMM_2001
 
                         string writefile;
                         if (Ausgabe < 20) // man könnte auf den Textteil "vp_" prüfen, ist unabhängiger, aber nicht so schnell
+                        {
                             writefile = filename + "_GRAMM.txt";
+                        }
                         else
+                        {
                             writefile = "GRAMM-" + filename + ".txt";
+                        }
 
                         using (StreamWriter wt = new StreamWriter(writefile)) // ausgabe des windfeldes - using = try-catch
                         {
@@ -253,7 +263,10 @@ namespace GRAMM_2001
                     case 14: //  ausgabe des sensiblen Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         val = Program.WQU[o][jj] / Program.DDX[o] / Program.DDY[jj];
                         if (double.IsInfinity(val) || double.IsNaN(val))
+                        {
                             val = -9999; // Error
+                        }
+
                         return Math.Round(val, 3);
 
                     case 15: // ausgabe des latenten Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
@@ -265,7 +278,10 @@ namespace GRAMM_2001
                     case 17: // ausgabe der inversen Monin-Obukhov Laenge fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         val = 1 / Program.OL[o][jj];
                         if (double.IsInfinity(val) || double.IsNaN(val))
+                        {
                             val = -9999; // Error
+                        }
+
                         return Math.Round(val, 3);
 
                     case 18: // ausgabe der Bodentemperatur fuer GRAMM Online Analyse mit Benutzeroberflaeche

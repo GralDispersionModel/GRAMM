@@ -13,6 +13,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Buffers;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
@@ -101,6 +103,7 @@ namespace GRAMM_2001
         ///Area of the grid cell in x-direction
         ///</summary>
         public static float[][][] AREAX = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        public static ImmutableArray<float[][]> AREAXImm;
         ///<summary>
         ///Area of the grid cell in y-direction
         ///</summary>
@@ -1667,5 +1670,17 @@ namespace GRAMM_2001
         ///Calculation of solar radiation
         ///</summary>
         public static RadiationCalculation RadiationModel;
+        ///<summary>
+        ///Array buffer for border cells of parallel calculated stripes
+        ///</summary>
+        public static System.Buffers.ArrayPool<double> GrammArrayPool = System.Buffers.ArrayPool<double>.Shared;
+        ///<summary>
+        ///Width of one parallel calculated stripe
+        ///</summary>
+        public const int StripeWidth = 30;
+        ///<summary>
+        ///Counter for changing the width of the stripes for each iteration
+        ///</summary>
+        public static byte StripeCounter = 0; 
     }
 }

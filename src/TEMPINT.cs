@@ -10,11 +10,6 @@
 ///</remarks>
 #endregion
 
-/*
- * This routine computes the initial wind- and temperature fields based on either
- * the file meteopgt.all representing a single point measurement and stability class or
- * on detailled profile and point measurements using a specific input format -> the file name is free in this case
-*/
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,6 +18,14 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// This routine computes the initial wind- and temperature fields based on either
+        /// the file meteopgt.all representing a single point measurement and stability class or
+        /// on detailled profile and point measurements using a specific input format -> the file name is free in this case
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void Temp_INIT(int NI, int NJ, int NK)
         {
             //local variables declaration block
@@ -111,15 +114,20 @@ namespace GRAMM_2001
                 Program.Z0[Program.inrec[0]][Program.jnrec[0]] = (float)(Program.Rauigkeit);
             }
             else // refresh (switching steady state output on/off 
+            {
                 Program.GRAMMin_File_Read(Program.IWETTER);
+            }
 
             //check whether original number of weather situations in meteopgt.all is exceeded
             if ((Program.IWETTER > Program.meteopgt_nr) && (Program.meteopgt_nr != 0))
             {
                 Console.WriteLine();
                 Console.WriteLine("GRAMM simulations finished. Press any key to continue...");
-                if (Program.IOUTPUT <= 0) 			// if not a SOUNDPLAN Project
-                    Console.ReadKey(true); 	// wait for a key input
+                if (Program.IOUTPUT <= 0)           // if not a SOUNDPLAN Project
+                {
+                    Console.ReadKey(true);     // wait for a key input
+                }
+
                 Environment.Exit(0); 		// Exit console
             }
 
@@ -130,8 +138,11 @@ namespace GRAMM_2001
                 Console.Write("GRAMM simulations for weather situations ");
                 Console.Write(IWetter_Console_First.ToString() + " to " + IWetter_Console_Last.ToString());
                 Console.WriteLine(" finished. Press any key to continue...");
-                if (Program.IOUTPUT <= 0) 			// if not a SOUNDPLAN Project
-                    Console.ReadKey(true); 	// wait for a key input
+                if (Program.IOUTPUT <= 0)           // if not a SOUNDPLAN Project
+                {
+                    Console.ReadKey(true);     // wait for a key input
+                }
+
                 Environment.Exit(0); 		// Exit console
             }
 
@@ -239,7 +250,10 @@ namespace GRAMM_2001
                                 }
                                 // in case of a retry
                                 if (Program.computation_retry > 0)
+                                {
                                     DTMAX = Math.Max(1.0, DTMAX / (2 * Program.computation_retry)); // try with a reduced max. time step 3.4.2017 Ku - Max(1.0)
+                                }
+
                                 if (Program.computation_retry > 1) //13.4.2017 Ku try a reduction of relax factors 
                                 {
                                     RELAXT *= 0.85;
@@ -436,13 +450,40 @@ namespace GRAMM_2001
                 //set initial values for relative humidity in %
                 if (((Program.METEO == "Y") || (Program.METEO == "y")) && (Program.ISTAT == 0))
                 {
-                    if (Program.AKLA == 1) Program.QUINIT = 0.3;
-                    if (Program.AKLA == 2) Program.QUINIT = 0.4;
-                    if (Program.AKLA == 3) Program.QUINIT = 0.5;
-                    if (Program.AKLA == 4) Program.QUINIT = 0.5;
-                    if (Program.AKLA == 5) Program.QUINIT = 0.7;
-                    if (Program.AKLA == 6) Program.QUINIT = 0.7;
-                    if (Program.AKLA == 7) Program.QUINIT = 0.8;
+                    if (Program.AKLA == 1)
+                    {
+                        Program.QUINIT = 0.3;
+                    }
+
+                    if (Program.AKLA == 2)
+                    {
+                        Program.QUINIT = 0.4;
+                    }
+
+                    if (Program.AKLA == 3)
+                    {
+                        Program.QUINIT = 0.5;
+                    }
+
+                    if (Program.AKLA == 4)
+                    {
+                        Program.QUINIT = 0.5;
+                    }
+
+                    if (Program.AKLA == 5)
+                    {
+                        Program.QUINIT = 0.7;
+                    }
+
+                    if (Program.AKLA == 6)
+                    {
+                        Program.QUINIT = 0.7;
+                    }
+
+                    if (Program.AKLA == 7)
+                    {
+                        Program.QUINIT = 0.8;
+                    }
                 }
 
                 //vertical temperature profile->not sure if needed here??
@@ -473,11 +514,18 @@ namespace GRAMM_2001
                 //computation of boundary-layer height (Hanna 1982)
                 USTinit = (WINDGE + 0.15) * 0.35 / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
                 if ((Program.Obini >= 0) && (Program.Obini < 100))
+                {
                     blh0 = Math.Min(0.4 * Math.Sqrt(USTinit * Program.Obini / Program.FN), 2000);
+                }
                 else if ((Program.Obini < 0) && (Program.Obini > -100))
+                {
                     blh0 = 800;
+                }
                 else
+                {
                     blh0 = Math.Min(0.2 * USTinit / Program.FN, 2000);
+                }
+
                 blh = blh0;
                 Console.WriteLine("Initial Boundary-Layer height: " + Convert.ToString(Math.Round(blh0, 0)) + "m");
                 Console.WriteLine("Fricition velocity: " + Convert.ToString(Math.Round(USTinit, 2)) + "m/s");
@@ -488,13 +536,21 @@ namespace GRAMM_2001
                 {
                     float factor_inv = 1f;
                     if (Wind_Velocity < 0.5F)
+                    {
                         factor_inv = 1;
+                    }
                     else if (Wind_Velocity >= 0.5F && Wind_Velocity < 1)
+                    {
                         factor_inv = 0.6f;
+                    }
                     else if (Wind_Velocity >= 1 && Wind_Velocity < 1.5)
+                    {
                         factor_inv = 0.4f;
+                    }
                     else if (Wind_Velocity >= 1.5)
+                    {
                         factor_inv = 0.2f;
+                    }
 
                     if (Program.Wind_Velocity >= 0.35F)
                     {
@@ -507,7 +563,9 @@ namespace GRAMM_2001
                     }
                     //INV_HEIGHT = (float)(Math.Max(400, INV_HEIGHT));
                     if (Program.AKLA == 7)
+                    {
                         Console.WriteLine("Inversion height: " + Convert.ToString(Math.Round(Inversion_Height, 0)) + "m");
+                    }
                 }
 
                 Parallel.For(1, NI + 1, Program.pOptions, i =>
@@ -685,17 +743,29 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM WESTERN BOUNDARY  [M]: ");
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI])) goto WESTERNBOUNDARY;
-                        SOUTHERNBOUNDARY:
+                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI]))
+                        {
+                            goto WESTERNBOUNDARY;
+                        }
+
+                    SOUTHERNBOUNDARY:
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ])) goto SOUTHERNBOUNDARY;
-                        SEALEVEL:
+                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ]))
+                        {
+                            goto SOUTHERNBOUNDARY;
+                        }
+
+                    SEALEVEL:
                         Console.Write("       HEIGHT ABOVE SEA LEVEL        [M]: ");
                         DISTZ[L][0] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if ((DISTZ[L][0] > Program.Z[NK + 1]) || (DISTZ[L][0] < Program.Z[1])) goto SEALEVEL;
+                        if ((DISTZ[L][0] > Program.Z[NK + 1]) || (DISTZ[L][0] < Program.Z[1]))
+                        {
+                            goto SEALEVEL;
+                        }
+
                         Console.Write("       HEIGHT ABOVE GROUND LEVEL     [M]: ");
                         HUG[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
@@ -734,7 +804,11 @@ namespace GRAMM_2001
                                         INDJ = j;
                                         INDK = k;
                                     }
-                                    if ((DISTX[L] >= Program.X[i]) && (DISTX[L] < Program.X[i + 1])) II = i;
+                                    if ((DISTX[L] >= Program.X[i]) && (DISTX[L] < Program.X[i + 1]))
+                                    {
+                                        II = i;
+                                    }
+
                                     if ((DISTY[L] >= Program.Y[j]) && (DISTY[L] < Program.Y[j + 1]))
                                     {
                                         JJ = j;
@@ -781,7 +855,9 @@ namespace GRAMM_2001
                         Console.Write("   MORE INPUT ??     (Y)ES ?    (N)O? ");
                         VARI = Console.ReadLine();
                         if ((VARI == "Y") || (VARI == "y"))
+                        {
                             goto GOTO98;
+                        }
                     }
                     //INPUT A VERTICAL PROFILE
                     else if (INPUT == 2)
@@ -808,12 +884,20 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM WESTERN BOUNDARY  [M]: ");
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI])) goto WESTERNBOUNDARY_V;
-                        SOUTHERNBOUNDARY_V:
+                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI]))
+                        {
+                            goto WESTERNBOUNDARY_V;
+                        }
+
+                    SOUTHERNBOUNDARY_V:
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ])) goto SOUTHERNBOUNDARY_V;
+                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ]))
+                        {
+                            goto SOUTHERNBOUNDARY_V;
+                        }
+
                         Console.WriteLine("      HEIGHT ABOVE GROUND LEVEL");
                         Console.Write("       FOR CLOSEST POINT TO GROUND   [M]: ");
                         HUG[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
@@ -824,7 +908,11 @@ namespace GRAMM_2001
                         Console.Write("       HEIGHT ABOVE SEA LEVEL        [M]: ");
                         DISTZ[L][M] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if ((DISTZ[L][M] > Program.Z[NK + 1])) goto SEALEVEL_V;
+                        if ((DISTZ[L][M] > Program.Z[NK + 1]))
+                        {
+                            goto SEALEVEL_V;
+                        }
+
                         Console.Write("       TEMPERATURE             [CELSIUS]: ");
                         TEMPI[L][M] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
@@ -857,7 +945,11 @@ namespace GRAMM_2001
                                         INDJ = j;
                                         INDK = k;
                                     }
-                                    if ((DISTX[L] >= Program.X[i]) && (DISTX[L] < Program.X[i + 1])) II = i;
+                                    if ((DISTX[L] >= Program.X[i]) && (DISTX[L] < Program.X[i + 1]))
+                                    {
+                                        II = i;
+                                    }
+
                                     if ((DISTY[L] >= Program.Y[j]) && (DISTY[L] < Program.Y[j + 1]))
                                     {
                                         JJ = j;
@@ -909,10 +1001,14 @@ namespace GRAMM_2001
                         Console.Write("   MORE INPUT ??     (Y)ES ?    (N)O? ");
                         VARI = Console.ReadLine();
                         if ((VARI == "Y") || (VARI == "y"))
+                        {
                             goto GOTO98;
+                        }
                     }
                     else
+                    {
                         goto GOTO98;
+                    }
 
                     //SAVE INPUT FILE
                     Console.WriteLine(" ");
@@ -1012,9 +1108,15 @@ namespace GRAMM_2001
                             {
                                 text = myreader.ReadLine().Split(new char[] { ',', ':', '(', ')' });
                                 if (text[0] == "*")
+                                {
                                     break;
+                                }
+
                                 if (text[0] == "**")
+                                {
                                     goto FINISH;
+                                }
+
                                 II = Convert.ToInt32(text[2]);
                                 JJ = Convert.ToInt32(text[3]);
                                 DISTZ[II][JJ] = Convert.ToDouble(text[1].Replace(".", Program.decsep));
@@ -1065,19 +1167,30 @@ namespace GRAMM_2001
                                 int J = Convert.ToInt32(text[3]);
                                 int K = Convert.ToInt32(text[4]);
                                 Program.T[II][J][K] = Convert.ToDouble(text[1].Replace(".", Program.decsep));
-                                if ((II != 1) || (J != 1) || (K != 1)) Program.T[II][J][K] = 0;
+                                if ((II != 1) || (J != 1) || (K != 1))
+                                {
+                                    Program.T[II][J][K] = 0;
+                                }
+
                                 text = myreader.ReadLine().Split(new char[] { ',', ':', '(', ')' });
                                 II = Convert.ToInt32(text[2]);
                                 J = Convert.ToInt32(text[3]);
                                 K = Convert.ToInt32(text[4]);
                                 Program.U[II][J][K] = Convert.ToDouble(text[1].Replace(".", Program.decsep));
-                                if ((II != 1) || (J != 1) || (K != 1)) Program.U[II][J][K] = 0;
+                                if ((II != 1) || (J != 1) || (K != 1))
+                                {
+                                    Program.U[II][J][K] = 0;
+                                }
+
                                 text = myreader.ReadLine().Split(new char[] { ',', ':', '(', ')' });
                                 II = Convert.ToInt32(text[2]);
                                 J = Convert.ToInt32(text[3]);
                                 K = Convert.ToInt32(text[4]);
                                 Program.V[II][J][K] = Convert.ToDouble(text[1].Replace(".", Program.decsep));
-                                if ((II != 1) || (J != 1) || (K != 1)) Program.V[II][J][K] = 0;
+                                if ((II != 1) || (J != 1) || (K != 1))
+                                {
+                                    Program.V[II][J][K] = 0;
+                                }
                             }
                         }
                         catch
@@ -1107,9 +1220,20 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            if (Program.T[i][j][k] != 0) Console.WriteLine("T(I,J,K)   : " + Convert.ToString(Program.T[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
-                            if (Program.U[i][j][k] != 0) Console.WriteLine("U(I,J,K)   : " + Convert.ToString(Program.U[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
-                            if (Program.V[i][j][k] != 0) Console.WriteLine("V(I,J,K)   : " + Convert.ToString(Program.V[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
+                            if (Program.T[i][j][k] != 0)
+                            {
+                                Console.WriteLine("T(I,J,K)   : " + Convert.ToString(Program.T[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
+                            }
+
+                            if (Program.U[i][j][k] != 0)
+                            {
+                                Console.WriteLine("U(I,J,K)   : " + Convert.ToString(Program.U[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
+                            }
+
+                            if (Program.V[i][j][k] != 0)
+                            {
+                                Console.WriteLine("V(I,J,K)   : " + Convert.ToString(Program.V[i][j][k].ToString("0.00")).PadLeft(8).Replace(Program.decsep, ".") + "," + i.ToString() + "," + j.ToString() + "," + k.ToString());
+                            }
                         }
                     }
                 });
@@ -1157,7 +1281,10 @@ namespace GRAMM_2001
                                     {
                                         MARK[n][m] = 0;
                                         if (TEMPI[n][m] == 0)
+                                        {
                                             break;
+                                        }
+
                                         DIFF = Program.ZSP[i][j][k] - DISTZ[n][m];
                                         if ((DIFF <= 0) && (DIFF > UNTO))
                                         {
@@ -1228,15 +1355,25 @@ namespace GRAMM_2001
                                                     if (MARK[o][p] == 1)
                                                     {
                                                         if ((DISTZ[n][m] - DISTZ[o][p] == 0))
+                                                        {
                                                             break;
+                                                        }
+
                                                         double TEMP2 = TEMPI[o][p];
                                                         double GEW2 = Math.Pow(DISTX[o] - Program.X[i] - Program.DDX[i] * 0.5, 2) + Math.Pow(DISTY[o] - Program.Y[j] - Program.DDY[j] * 0.5, 2);
                                                         if ((GEW1 == 0) && (GEW2 == 0))
+                                                        {
                                                             GEW = 0.00000000001;
+                                                        }
                                                         else if ((n == 0) && (GEW1 != 0) && (GEW2 != 0))
+                                                        {
                                                             GEW = Math.Sqrt(GEW1 + GEW2);
+                                                        }
                                                         else
+                                                        {
                                                             GEW = GEW1 + GEW2;
+                                                        }
+
                                                         SUMGEW += 1 / GEW;
                                                         Program.T[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (TEMP1 - TEMP2) / (DISTZ[n][m] - DISTZ[o][p]) + TEMP1) / GEW;
                                                     }
@@ -1246,7 +1383,11 @@ namespace GRAMM_2001
                                     }
                                 }
                                 //Weighting factors
-                                if (SUMGEW != 0) Program.T[i][j][k] /= SUMGEW;
+                                if (SUMGEW != 0)
+                                {
+                                    Program.T[i][j][k] /= SUMGEW;
+                                }
+
                                 SUMGEW = 1;
 
                                 //Influence of ground measurements
@@ -1256,15 +1397,23 @@ namespace GRAMM_2001
                                     {
                                         double DUMMY = Math.Sqrt(Math.Pow(DISTX[n] - Program.X[i] - Program.DDX[i] * 0.5, 2) + Math.Pow(DISTY[n] - Program.Y[j] - Program.DDY[j] * 0.5, 2));
                                         if (DUMMY == 0)
+                                        {
                                             GEW = 1 / 10000;
+                                        }
                                         else
+                                        {
                                             GEW = DUMMY / 500;
+                                        }
+
                                         SUMGEW += 1 / GEW;
                                         Program.T[i][j][k] += TEMPI[n][0] / GEW;
                                     }
                                 }
                                 //Weighting factors
-                                if (SUMGEW != 0) Program.T[i][j][k] /= SUMGEW;
+                                if (SUMGEW != 0)
+                                {
+                                    Program.T[i][j][k] /= SUMGEW;
+                                }
                             }
                         }
                     }
@@ -1285,7 +1434,9 @@ namespace GRAMM_2001
                         for (int k = 1; k <= NK; k++)
                         {
                             if ((Program.ZSP[i][j][k] >= HEIGHT) && (HEIGHT != 0))
+                            {
                                 Program.T[i][j][k] = TFIX + GRADIENT1 * (Program.ZSP[i][j][k] - ZSPFIX);
+                            }
                         }
                     }
                 });
@@ -1298,7 +1449,11 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            if (Program.T[i][j][k] == 0) M++;
+                            if (Program.T[i][j][k] == 0)
+                            {
+                                M++;
+                            }
+
                             O++;
                         }
                     }
@@ -1327,7 +1482,10 @@ namespace GRAMM_2001
                                 Program.W[i][j][k] = 0;
                                 SUMGEW = 0;
                                 if ((Program.U[i][j][k] != 0) && (Program.V[i][j][k] != 0))
+                                {
                                     continue;
+                                }
+
                                 UNT = Program.ZSP[i][j][k] - Program.AH[i][j];
                                 for (int n = 1; n <= L; n++)
                                 {
@@ -1368,7 +1526,11 @@ namespace GRAMM_2001
                                     {
                                         USTR = WINDU[IDUN][IDUM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
                                         GEW1 = Math.Pow((DISTX[IDUN] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDUN] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
-                                        if (GEW1 == 0) GEW1 = 0.000000000001;
+                                        if (GEW1 == 0)
+                                        {
+                                            GEW1 = 0.000000000001;
+                                        }
+
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
                                         VSTR = WINDV[IDUN][IDUM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
@@ -1378,7 +1540,11 @@ namespace GRAMM_2001
                                     {
                                         USTR = WINDU[IDON][IDOM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
                                         GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
-                                        if (GEW1 == 0) GEW1 = 0.000000000001;
+                                        if (GEW1 == 0)
+                                        {
+                                            GEW1 = 0.000000000001;
+                                        }
+
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
                                         VSTR = WINDV[IDON][IDOM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
@@ -1389,7 +1555,11 @@ namespace GRAMM_2001
                                         USTR = WINDU[IDUN][IDUM] + (WINDU[IDON][IDOM] - WINDU[IDUN][IDUM]) /
                                             (DISTZ[IDON][IDOM] - DISTZ[IDUN][IDUM]) * (Program.ZSP[i][j][k] - Program.AH[i][j] - DISTZ[IDUN][IDUM] + DIFFST);
                                         GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
-                                        if (GEW1 == 0) GEW1 = 0.000000000001;
+                                        if (GEW1 == 0)
+                                        {
+                                            GEW1 = 0.000000000001;
+                                        }
+
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
                                         VSTR = WINDV[IDUN][IDUM] + (WINDV[IDON][IDOM] - WINDV[IDUN][IDUM]) /
@@ -1400,15 +1570,26 @@ namespace GRAMM_2001
                                     else if ((IDO == 0) && (IDU == 1) && (UNT > 70) && (IDUM != 0))
                                     {
                                         GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
-                                        if (GEW1 == 0) GEW1 = 0.000000000001;
+                                        if (GEW1 == 0)
+                                        {
+                                            GEW1 = 0.000000000001;
+                                        }
+
                                         Program.U[i][j][k] += WINDU[IDUN][IDUM] / GEW1;
                                         Program.V[i][j][k] += WINDV[IDUN][IDUM] / GEW1;
                                         SUMGEW += 1 / GEW1;
                                     }
                                 }
                                 //weighting factors
-                                if (SUMGEW != 0) Program.U[i][j][k] /= SUMGEW;
-                                if (SUMGEW != 0) Program.V[i][j][k] /= SUMGEW;
+                                if (SUMGEW != 0)
+                                {
+                                    Program.U[i][j][k] /= SUMGEW;
+                                }
+
+                                if (SUMGEW != 0)
+                                {
+                                    Program.V[i][j][k] /= SUMGEW;
+                                }
                             }
                         }
                     }
@@ -1483,20 +1664,37 @@ namespace GRAMM_2001
                                                 MAUT = m;
                                                 for (int o = n; o <= L; o++)
                                                 {
-                                                    if (DUMMY == 1) MAUT = 0;
+                                                    if (DUMMY == 1)
+                                                    {
+                                                        MAUT = 0;
+                                                    }
+
                                                     DUMMY = 1;
                                                     for (int p = MAUT + 1; p <= 50; p++)
                                                     {
                                                         if (MARK[o][p] == 1)
                                                         {
-                                                            if ((DISTZ[n][m] - DISTZ[o][p]) == 0) break;
+                                                            if ((DISTZ[n][m] - DISTZ[o][p]) == 0)
+                                                            {
+                                                                break;
+                                                            }
+
                                                             USTR2 = WINDU[o][p];
                                                             VSTR2 = WINDV[o][p];
                                                             GEW2 = Math.Pow((DISTX[o] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[o] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
-                                                            if ((GEW1 == 0) && (GEW2 == 0)) GEW = 0.0000000001;
-                                                            else if ((n == 0) && (GEW1 != 0) && (GEW2 != 0)) GEW = Math.Sqrt(GEW1 + GEW2);
+                                                            if ((GEW1 == 0) && (GEW2 == 0))
+                                                            {
+                                                                GEW = 0.0000000001;
+                                                            }
+                                                            else if ((n == 0) && (GEW1 != 0) && (GEW2 != 0))
+                                                            {
+                                                                GEW = Math.Sqrt(GEW1 + GEW2);
+                                                            }
                                                             else
+                                                            {
                                                                 GEW = GEW1 + GEW2;
+                                                            }
+
                                                             SUMGEW += 1 / GEW;
                                                             Program.U[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (USTR1 - USTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
                                                             Program.V[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (VSTR1 - VSTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
@@ -1507,8 +1705,15 @@ namespace GRAMM_2001
                                         }
                                     }
                                     //weighting factors
-                                    if (SUMGEW != 0) Program.U[i][j][k] /= SUMGEW;
-                                    if (SUMGEW != 0) Program.V[i][j][k] /= SUMGEW;
+                                    if (SUMGEW != 0)
+                                    {
+                                        Program.U[i][j][k] /= SUMGEW;
+                                    }
+
+                                    if (SUMGEW != 0)
+                                    {
+                                        Program.V[i][j][k] /= SUMGEW;
+                                    }
 
                                     //if no value above exists - use no gradient for interpolation
                                     if (IDO == 0)
@@ -1592,7 +1797,11 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            if ((Program.U[i][j][k] == 0) && (Program.V[i][j][k] == 0)) M++;
+                            if ((Program.U[i][j][k] == 0) && (Program.V[i][j][k] == 0))
+                            {
+                                M++;
+                            }
+
                             O++;
                         }
                     }
@@ -1686,8 +1895,15 @@ namespace GRAMM_2001
                         //absolute temperature
                         Program.T[i][j][k] = Math.Round(Program.T[i][j][k], 2);
                         Program.TABS[i][j][k] = (float)(Program.T[i][j][k]);
-                        if (Program.TABS[i][j][k] < TMIN) TMIN = Program.TABS[i][j][k];
-                        if (Program.TABS[i][j][k] > TMAX) TMAX = Program.TABS[i][j][k];
+                        if (Program.TABS[i][j][k] < TMIN)
+                        {
+                            TMIN = Program.TABS[i][j][k];
+                        }
+
+                        if (Program.TABS[i][j][k] > TMAX)
+                        {
+                            TMAX = Program.TABS[i][j][k];
+                        }
 
                         //potential temperature
                         Program.T[i][j][k] *= Program.FACTOR[i][j][k];
@@ -1740,7 +1956,11 @@ namespace GRAMM_2001
             {
                 Int32 INDO = 0;
                 Int32 INDU = 0;
-                if (n > 1) Program.ZPROF[n] = Program.ZPROF[n - 1] + 500;
+                if (n > 1)
+                {
+                    Program.ZPROF[n] = Program.ZPROF[n - 1] + 500;
+                }
+
                 if (Program.ZPROF[n] > Program.ZSP[Program.AHMINI][Program.AHMINJ][NK])
                 {
                     //pressure profile above GRAMM domain
@@ -1801,7 +2021,11 @@ namespace GRAMM_2001
                 }
                 //compute absolute temperature based on absolute temperature
                 Program.TPROF[n] /= Math.Pow(PMEER / Program.PPROF[n], 0.287);
-                if (Program.TPROF[n] < 153.15) Program.TPROF[n] = 153.15;
+                if (Program.TPROF[n] < 153.15)
+                {
+                    Program.TPROF[n] = 153.15;
+                }
+
                 Program.VNORM[n] = 36.5419617 + 4.8939118 * (Program.ZPROF[n] * 0.001) +
                     4.1091542 * Math.Pow(Program.ZPROF[n] * 0.001, 2) - 0.1456879 * Math.Pow(Program.ZPROF[n] * 0.001, 3) + 0.0149291 * Math.Pow(Program.ZPROF[n] * 0.001, 4);
                 Program.VNORM[n] *= 1000;

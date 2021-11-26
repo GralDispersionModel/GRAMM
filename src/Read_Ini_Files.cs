@@ -18,6 +18,9 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Read the GRAMM.geb file
+        /// </summary>
         private static void Read_Gramm_Geb()
         {
             try
@@ -64,7 +67,11 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("Error when reading domain data from file 'GRAMM.geb' - Execution stopped - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
@@ -94,11 +101,18 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("Error when reading file 'chemistry.txt' - Execution stopped - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
 
+        /// <summary>
+        /// Define the size of all used arrays
+        /// </summary>
         private static void Define_Arrays()
         {
             NX1 = NX + 1;
@@ -355,6 +369,9 @@ namespace GRAMM_2001
             stabilityclass = CreateArray<Int16[]>(NX1, () => new Int16[NY1]);
         }
 
+        /// <summary>
+        /// Read the file IIN.dat
+        /// </summary>
         private static void Read_IIN_Dat()
         {
             try
@@ -488,11 +505,18 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("File 'IIN.dat' not found - Execution stopped  - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
 
+        /// <summary>
+        /// Read the file Receptor.dat
+        /// </summary>
         private static void Read_Receptor_Dat()
         {
             try
@@ -568,7 +592,11 @@ namespace GRAMM_2001
                     catch
                     {
                         Console.WriteLine("Error when reading receptor data from file 'Receptor_GRAMM.dat' - Execution stopped - press ESC to continue");
-                        while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                        while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                        {
+                            ;
+                        }
+
                         Environment.Exit(0);
                     }
                     myreader.Close();
@@ -621,6 +649,9 @@ namespace GRAMM_2001
             }
         }
 
+        /// <summary>
+        /// Reset array values to 0
+        /// </summary>
         private static void clear_arrays()
         {
             IDIV_Up = 0;        //5.4.2017 Ku Reset Counter for MASSOURCE Queue
@@ -686,6 +717,9 @@ namespace GRAMM_2001
             }
         }
 
+        /// <summary>
+        /// Read the number of max. used processor cores
+        /// </summary>
         public static void Max_Proc_File_Read()
         {
             //Set the maximum number of threads to be used in each parallelized region
@@ -707,7 +741,10 @@ namespace GRAMM_2001
             { }
         }
 
-        // read File GRAMMin.dat, if iWetter == 1 then intialize computation
+        /// <summary>
+        /// Read the file GRAMMin.dat, if iWetter == 1 then intialize computation
+        /// </summary>
+        /// <param name="iWetter"></param>
         public static void GRAMMin_File_Read(int iWetter)
         {
             try
@@ -722,10 +759,16 @@ namespace GRAMM_2001
                         {
                             text = myreader.ReadLine();
                             if (iWetter == 1)
+                            {
                                 Program.METEO = text;
+                            }
+
                             text = myreader.ReadLine();
                             if (iWetter == 1)
+                            {
                                 Program.Rauigkeit = Convert.ToDouble(text.Replace(".", Program.decsep));
+                            }
+
                             string[] text5 = new string[10];
                             text5 = myreader.ReadLine().Split(new char[] { ' ', ',', '\t', ';', '!' }, StringSplitOptions.RemoveEmptyEntries);
                             if (iWetter == 1)
@@ -733,7 +776,9 @@ namespace GRAMM_2001
                                 Program.IWETTER = Convert.ToInt16(text5[0]);
                                 Program.nr_cell_smooth = Convert.ToInt16(text5[1]);
                                 if (IWetter_Console_First > 0) // 11.4.17 Ku use arguments
+                                {
                                     Program.IWETTER = IWetter_Console_First;
+                                }
                             }
 
                             if (!myreader.EndOfStream)
@@ -743,17 +788,23 @@ namespace GRAMM_2001
                                 {
                                     Program.WriteSteadyState = true;
                                     if (iWetter == 1)
+                                    {
                                         Console.WriteLine("Write _steady_state.txt: yes");
+                                    }
                                 }
                                 else
                                 {
                                     Program.WriteSteadyState = false;
                                     if (iWetter == 1)
+                                    {
                                         Console.WriteLine("Write _steady_state.txt: no");
+                                    }
                                 }
                             }
                             else
+                            {
                                 Program.WriteSteadyState = false;
+                            }
 
                             //read original number of weather situations stored in meteopgt.all
                             Program.meteopgt_nr = 0;
@@ -774,8 +825,9 @@ namespace GRAMM_2001
                             Program.IWETTER = Convert.ToInt16(text);
 
                             if (IWetter_Console_First > 0) // 11.4.17 Ku use arguments
+                            {
                                 Program.IWETTER = IWetter_Console_First;
-
+                            }
                         }
                     }
                 }

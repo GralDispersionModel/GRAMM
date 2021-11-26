@@ -21,6 +21,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Init basic values
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void INITA(int NI, int NJ, int NK)
         {
             double B0 = 38.00699;
@@ -56,7 +62,10 @@ namespace GRAMM_2001
             {
                 double TSAT = 149.95 + (float)n;
                 double PSATN = 100000 * Math.Exp(B0 - B1 / TSAT + B2 * Math.Log(TSAT) + B3 * TSAT);
-                if (Program.PSAT[n] == 0) Program.PSAT[n] = PSATN;
+                if (Program.PSAT[n] == 0)
+                {
+                    Program.PSAT[n] = PSATN;
+                }
             }
 
             //Gravitational acceleration, general gas constant, heat capacity of air by constant pressure, evaporation heat of water
@@ -257,10 +266,22 @@ namespace GRAMM_2001
                     {
                         TPI[i][j] = 9; // local ridges in planes
                     }
-                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi >= 100) TPI[i][j] = 3;  // Upland incised drainages
-                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi <= -100) TPI[i][j] = 1; // V Shape valley
-                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi >= 100) TPI[i][j] = 10;  // Mountain Top
-                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi <= -100) TPI[i][j] = 8;  // local hilltop within broad valleys
+                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi >= 100)
+                    {
+                        TPI[i][j] = 3;  // Upland incised drainages
+                    }
+                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi <= -100)
+                    {
+                        TPI[i][j] = 1; // V Shape valley
+                    }
+                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi >= 100)
+                    {
+                        TPI[i][j] = 10;  // Mountain Top
+                    }
+                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi <= -100)
+                    {
+                        TPI[i][j] = 8;  // local hilltop within broad valleys
+                    }
                     else
                     {
                         TPI[i][j] = 2; // not found -> set to local valley in plain

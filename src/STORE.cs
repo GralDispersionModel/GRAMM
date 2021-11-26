@@ -20,6 +20,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Update border cells and boundary values
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void STOREcalculate(int NI, int NJ, int NK)
         {
@@ -275,7 +281,11 @@ namespace GRAMM_2001
 
                               for (int k = 1; k <= NK - 1; k++)
                               {
-                                  if (TE_L[k] <= 0) TE_L[k] = 0;
+                                  if (TE_L[k] <= 0)
+                                  {
+                                      TE_L[k] = 0;
+                                  }
+
                                   VISV_L[k] += Program.RELAXT * (0.09 * Pow2(TEN_L[k]) / DISSN_L[k] - VISV_L[k]);
                                   VISV_L[k] = Math.Max(Program.VISEL, VISV_L[k]);
                                   VISV_L[k] = Math.Min(50, VISV_L[k]);
@@ -310,11 +320,17 @@ namespace GRAMM_2001
                                 double DVDZ = 0.5 * Math.Sqrt(Pow2((U_L[k + 1] - U_L[k]) / DZZ) + Pow2((V_L[k + 1] - V_L[k]) / DZZ));
                                 double FRITSCH = 0;
                                 if ((RITSCH_L[k] > 0) && (RITSCH_L[k] <= 0.33))
+                                {
                                     FRITSCH = Pow2(1 - 3 * RITSCH_L[k]);
+                                }
                                 else if ((RITSCH_L[k] <= 0) && (RITSCH_L[k] > -0.048))
+                                {
                                     FRITSCH = Math.Pow(1 + 3 * RITSCH_L[k], -2);
+                                }
                                 else if (RITSCH_L[k] <= -0.048)
+                                {
                                     FRITSCH = 2.08 * Math.Pow(-RITSCH_L[k], 0.33);
+                                }
 
                                 VISV_L[k] = ALBL * ALBL * DVDZ * FRITSCH;
                                 VISV_L[k] = Math.Max(Program.VISEL, VISV_L[k]);

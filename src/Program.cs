@@ -42,6 +42,10 @@ namespace GRAMM_2001
         MAX. NUMBER OF CPUs Max_Proc.txt
         */
 
+        /// <summary>
+        /// GRAZ MESOSCALE MODELL GRAMM
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             // Arguments: "First Situation" "Final Situation" "Max. Time Step" "RelaxV" "RelaxT"
@@ -63,7 +67,7 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 21.09    < <          +";
+            string Info =     "+         > > G R A M M VERSION: 22.09    < <          +";
             Console.WriteLine(Info);
             if (unix)
             {
@@ -71,6 +75,10 @@ namespace GRAMM_2001
             }
 #if NETCOREAPP2_1 || NETCOREAPP2_0 || NETCOREAPP3_0
 Console.WriteLine("| .Net Core Version |");
+#endif
+
+#if NET6_0_OR_GREATER
+            Console.WriteLine("|                   .NET6 Version                      |");
 #endif
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine(" ");
@@ -150,11 +158,19 @@ Console.WriteLine("| .Net Core Version |");
             max_time_step_original = DTMAX;
 
             if (MaxTimeStep_Console > 0.99)
+            {
                 max_time_step_original = MaxTimeStep_Console;
+            }
+
             if (Relaxv_Console > 0.0099)
+            {
                 RELAXV = Relaxv_Console;
+            }
+
             if (Relaxt_Console > 0.0099)
+            {
                 RELAXT = Relaxt_Console;
+            }
 
             // Read number of max. used processors
             IPROC = 1;
@@ -199,34 +215,136 @@ Console.WriteLine("| .Net Core Version |");
             ICGW = false;
 
             Int32 INUMM = 0;
-            if (IFLAGS1 / 1000000 == 1) ICU = true;
-            if (ICU) INUMM += 1000000;
-            if ((IFLAGS1 - INUMM + 1) / 100000 == 1) ICV = true;
-            if (ICV) INUMM += 100000;
-            if ((IFLAGS1 - INUMM + 1) / 10000 == 1) ICW = true;
-            if (ICW) INUMM += 10000;
-            if ((IFLAGS1 - INUMM + 1) / 1000 == 1) ICPN = true;
-            if (ICPN) INUMM += 1000;
-            if ((IFLAGS1 - INUMM + 1) / 100 == 1) ICT = true;
-            if (ICT) INUMM += 100;
-            if ((IFLAGS1 - INUMM + 1) / 10 == 1) ICGW = true;
-            if (ICGW) INUMM += 10;
-            if ((IFLAGS1 - INUMM) == 1) IFOU = true;
+            if (IFLAGS1 / 1000000 == 1)
+            {
+                ICU = true;
+            }
+
+            if (ICU)
+            {
+                INUMM += 1000000;
+            }
+
+            if ((IFLAGS1 - INUMM + 1) / 100000 == 1)
+            {
+                ICV = true;
+            }
+
+            if (ICV)
+            {
+                INUMM += 100000;
+            }
+
+            if ((IFLAGS1 - INUMM + 1) / 10000 == 1)
+            {
+                ICW = true;
+            }
+
+            if (ICW)
+            {
+                INUMM += 10000;
+            }
+
+            if ((IFLAGS1 - INUMM + 1) / 1000 == 1)
+            {
+                ICPN = true;
+            }
+
+            if (ICPN)
+            {
+                INUMM += 1000;
+            }
+
+            if ((IFLAGS1 - INUMM + 1) / 100 == 1)
+            {
+                ICT = true;
+            }
+
+            if (ICT)
+            {
+                INUMM += 100;
+            }
+
+            if ((IFLAGS1 - INUMM + 1) / 10 == 1)
+            {
+                ICGW = true;
+            }
+
+            if (ICGW)
+            {
+                INUMM += 10;
+            }
+
+            if ((IFLAGS1 - INUMM) == 1)
+            {
+                IFOU = true;
+            }
 
             INUMM = 0;
-            if (IFLAGS2 / 1000000 == 1) ICBR = true;
-            if (ICBR) INUMM += 1000000;
-            if ((IFLAGS2 - INUMM + 1) / 100000 == 1) ICPR = true;
-            if (ICPR) INUMM += 100000;
-            if ((IFLAGS2 - INUMM + 1) / 10000 == 1) ICQU = true;
-            if (ICQU) INUMM += 10000;
-            if ((IFLAGS2 - INUMM + 1) / 1000 == 1) ICPSI = true;
-            if (ICPSI) INUMM += 1000;
-            if ((IFLAGS2 - INUMM + 1) / 100 == 1) ICTE = true;
-            if (ICTE) INUMM += 100;
-            if ((IFLAGS2 - INUMM + 1) / 10 == 1) ICTB = true;
-            if (ICTB) INUMM += 10;
-            if ((IFLAGS2 - INUMM) == 1) ICSTR = true;
+            if (IFLAGS2 / 1000000 == 1)
+            {
+                ICBR = true;
+            }
+
+            if (ICBR)
+            {
+                INUMM += 1000000;
+            }
+
+            if ((IFLAGS2 - INUMM + 1) / 100000 == 1)
+            {
+                ICPR = true;
+            }
+
+            if (ICPR)
+            {
+                INUMM += 100000;
+            }
+
+            if ((IFLAGS2 - INUMM + 1) / 10000 == 1)
+            {
+                ICQU = true;
+            }
+
+            if (ICQU)
+            {
+                INUMM += 10000;
+            }
+
+            if ((IFLAGS2 - INUMM + 1) / 1000 == 1)
+            {
+                ICPSI = true;
+            }
+
+            if (ICPSI)
+            {
+                INUMM += 1000;
+            }
+
+            if ((IFLAGS2 - INUMM + 1) / 100 == 1)
+            {
+                ICTE = true;
+            }
+
+            if (ICTE)
+            {
+                INUMM += 100;
+            }
+
+            if ((IFLAGS2 - INUMM + 1) / 10 == 1)
+            {
+                ICTB = true;
+            }
+
+            if (ICTB)
+            {
+                INUMM += 10;
+            }
+
+            if ((IFLAGS2 - INUMM) == 1)
+            {
+                ICSTR = true;
+            }
 
             //COMPUTE MODEL GRID
             Console.WriteLine(" *** GENERATING MODEL GRID *** ");
@@ -279,12 +397,18 @@ Console.WriteLine("| .Net Core Version |");
 
             //set further initial values
             if (ISTAT < 2)
+            {
                 INITB.INIT(NX, NY, NZ);
+            }
 
             Relax_Border(); // set reduction factors for the border cells
 
             //initialize the radiation model
-            if (((METEO != "Y") && (METEO != "y")) || (Program.ISTAT != 0)) TLIMIT = TLIMIT2;
+            if (((METEO != "Y") && (METEO != "y")) || (Program.ISTAT != 0))
+            {
+                TLIMIT = TLIMIT2;
+            }
+
             Boolean LGEOM = false;
             Boolean LGEOMW = false;
             Boolean LGEOMR = false;
@@ -309,7 +433,10 @@ Console.WriteLine("| .Net Core Version |");
                 //number of iteration
                 ITIME++;
 
-                if (ITIME % 20 == 0) Max_Proc_File_Read(); // read MaxProc at 20th time step
+                if (ITIME % 20 == 0)
+                {
+                    Max_Proc_File_Read(); // read MaxProc at 20th time step
+                }
 
                 //total simulation expressed in seconds
                 TJETZT = (float)ISTU * 3600 + (float)IMIN * 60 + REALTIME;
@@ -405,7 +532,10 @@ Console.WriteLine("| .Net Core Version |");
 
                         for (int II = 1; II <= 1000; II++)
                         {
-                            if (TJETZT1 >= 86400) TJETZT1 -= 86400;
+                            if (TJETZT1 >= 86400)
+                            {
+                                TJETZT1 -= 86400;
+                            }
                         }
                         RadiationModel.RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG_RAD, IMON_RAD, IJAHR, TJETZT1, NX, NY, NZ);
                         Console.WriteLine(ITAG_RAD.ToString() + "." + IMON_RAD.ToString() + " - " + ISTUD.ToString() + ":" + IMIND.ToString("D2"));
@@ -428,7 +558,10 @@ Console.WriteLine("| .Net Core Version |");
 
                                 for (int II = 1; II <= 1000; II++)
                                 {
-                                    if (TJETZT1 >= 86400) TJETZT1 -= 86400;
+                                    if (TJETZT1 >= 86400)
+                                    {
+                                        TJETZT1 -= 86400;
+                                    }
                                 }
                                 RadiationModel.RADIATRAD(LGEOM, LGEOMW, LGEOMR, ITAG, IMON, IJAHR, TJETZT1, NX, NY, NZ);
                                 Console.WriteLine(ITAG.ToString() + "." + IMON.ToString() + " - " + ISTUD.ToString() + ":" + IMIND.ToString("D2"));
@@ -577,7 +710,10 @@ Console.WriteLine("| .Net Core Version |");
             if (args.Length > (1 + _off)) // + 2 arguments -> first and last weather situation
             {
                 if (Int32.TryParse(args[0 + _off], out IWetter_Console_First))
+                {
                     Int32.TryParse(args[1 + _off], out IWetter_Console_Last);
+                }
+
                 if (IWetter_Console_Last < IWetter_Console_First || IWetter_Console_First < 1)
                 {
                     IWetter_Console_First = 0;
@@ -585,16 +721,28 @@ Console.WriteLine("| .Net Core Version |");
                 }
                 // Max. Time Step
                 if (args.Length > (2 + _off))
+                {
                     if (Double.TryParse(args[2 + _off], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out MaxTimeStep_Console) == false)
+                    {
                         MaxTimeStep_Console = 0;
+                    }
+                }
                 // RelaxV
                 if (args.Length > (3 + _off))
+                {
                     if (Double.TryParse(args[3 + _off], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out Relaxv_Console) == false)
+                    {
                         Relaxv_Console = 0;
+                    }
+                }
                 // RelaxT
                 if (args.Length > (4 + _off))
+                {
                     if (Double.TryParse(args[4 + _off], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out Relaxt_Console) == false)
+                    {
                         Relaxt_Console = 0;
+                    }
+                }
             }
 
             if (IWetter_Console_First > 0) // 11.04.17 Ku use arguments
@@ -608,7 +756,9 @@ Console.WriteLine("| .Net Core Version |");
                 try
                 {
                     if (File.Exists("albeq.dat"))
+                    {
                         File.Delete("albeq.dat");
+                    }
                 }
                 catch { }
             }
@@ -633,13 +783,28 @@ Console.WriteLine("| .Net Core Version |");
             double winkel = 0;
 
             if (v == 0)
+            {
                 winkel = 90;
+            }
             else
+            {
                 winkel = Math.Abs(Math.Atan(u / v)) * 180 / Math.PI;
+            }
 
-            if ((v > 0) && (u <= 0)) winkel = 180 - winkel;
-            if ((v >= 0) && (u > 0)) winkel = 180 + winkel;
-            if ((v < 0) && (u >= 0)) winkel = 360 - winkel;
+            if ((v > 0) && (u <= 0))
+            {
+                winkel = 180 - winkel;
+            }
+
+            if ((v >= 0) && (u > 0))
+            {
+                winkel = 180 + winkel;
+            }
+
+            if ((v < 0) && (u >= 0))
+            {
+                winkel = 360 - winkel;
+            }
 
             return winkel;
         }
@@ -650,17 +815,25 @@ Console.WriteLine("| .Net Core Version |");
             if (Brgrad > 0) // northern hemisphere
             {
                 if (Windspeed_meteopgt > 2 || AKLA < 5) // higher wind vel. or labile or neutral SC -> start radiation search at Mar
+                {
                     month_setting = 1;
+                }
                 else if (Windspeed_meteopgt > 4) // very high wind vel. -> start radiation search at Jun
+                {
                     month_setting = 2;
+                }
             }
             else // southern hemisphere
             {
                 month_setting = 2; // June to Mai
                 if (Windspeed_meteopgt > 2 || AKLA < 5) // higher wind vel. or labile or neutral SC -> start radiation search at Mar
+                {
                     month_setting = 1;
+                }
                 else if (Windspeed_meteopgt > 4) // very high wind vel. -> start radiation search at Jan
+                {
                     month_setting = 0;
+                }
             }
             return month_setting;
         }

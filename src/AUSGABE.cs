@@ -20,6 +20,13 @@ namespace GRAMM_2001
     partial class Program
     {
 
+        /// <summary>
+        /// Write result files to the calculation folder
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
+        /// <param name="intermediate"></param>
         public static void OUTPUT(int NI, int NJ, int NK, bool intermediate)
         {
             // force a garbage collection on the Large Object heap to clean up the envrionment
@@ -76,9 +83,13 @@ namespace GRAMM_2001
                         if (writesteadystate != null) // write file!
                         {
                             if (j == 1 + Program.nr_cell_smooth && i == 1 + Program.nr_cell_smooth) // Avoid blank raster data set for GUI
+                            {
                                 steadystateline += Convert.ToString((double)steadystatevalue + 0.01).Replace(Program.decsep, ".") + " ";
+                            }
                             else
+                            {
                                 steadystateline += Convert.ToString(steadystatevalue) + " ";
+                            }
                         }
                     }
 
@@ -184,7 +195,9 @@ namespace GRAMM_2001
                 writer.Write(NK);
                 writer.Write(GRAMMhorgridsize);
                 for (int i = 1; i <= NI; i++)
+                {
                     for (int j = 1; j <= NJ; j++)
+                    {
                         for (int k = 1; k <= NK; k++)
                         {
                             try
@@ -219,17 +232,23 @@ namespace GRAMM_2001
                             }
                             writer.Write(dummy);
                         }
+                    }
+                }
             }
             if (Program.IOUT == 3)
             {
                 for (int i = 1; i <= NI; i++)
+                {
                     for (int j = 1; j <= NJ; j++)
+                    {
                         for (int k = 1; k <= NK; k++)
                         {
                             writer.Write((float)Program.U[i][j][k]);
                             writer.Write((float)Program.V[i][j][k]);
                             writer.Write((float)Program.W[i][j][k]);
                         }
+                    }
+                }
             }
 
             writer.Close();

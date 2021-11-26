@@ -18,6 +18,18 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Init the radiation calculation
+        /// </summary>
+        /// <param name="LGEOM"></param>
+        /// <param name="LGEOMW"></param>
+        /// <param name="LGEOMR"></param>
+        /// <param name="ISTUD"></param>
+        /// <param name="AMIND"></param>
+        /// <param name="IMIND"></param>
+        /// <param name="ASECD"></param>
+        /// <param name="ISECD"></param>
+        /// <param name="Month_List"></param>
         public static void INIT_Radiation(ref bool LGEOM, ref bool LGEOMW, ref bool LGEOMR, ref int ISTUD, ref double AMIND,
         ref int IMIND, ref double ASECD, ref int ISECD, List<int>[] Month_List)
         {
@@ -50,9 +62,14 @@ namespace GRAMM_2001
                         {
                             ITAG = 21;
                             if (BGRAD > 0)
+                            {
                                 IMON = 6;
+                            }
                             else
+                            {
                                 IMON = 12;
+                            }
+
                             IJAHR = 2006;
                             ISTU = 6;
                             IMIN = 0;
@@ -121,7 +138,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
                             //reset hour to 6 o'clock as the sun rises dynamically
                             ISTU = 6;
@@ -196,7 +215,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
 
                             //reset hour to 12 o'clock as the sun goes down dynamically
@@ -281,7 +302,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
 
                             //reset hour to 9 o'clock as the sun proceedes dynamically
@@ -294,9 +317,14 @@ namespace GRAMM_2001
                         {
                             ITAG = 21;
                             if (BGRAD > 0)
+                            {
                                 IMON = 6;
+                            }
                             else
+                            {
                                 IMON = 12;
+                            }
+
                             IJAHR = 2006;
                             ISTU = 12;
                             IMIN = 0;
@@ -364,7 +392,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
                         }
                         else if (AKLA == 2)
@@ -437,7 +467,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
                         }
                         else if (AKLA == 3)
@@ -519,7 +551,9 @@ namespace GRAMM_2001
                                     }
                                 }
                                 if (exit)
+                                {
                                     break;
+                                }
                             }
                         }
                     } // option dynamic sunrise
@@ -573,7 +607,9 @@ namespace GRAMM_2001
                                 }
                             }
                             if (exit)
+                            {
                                 break;
+                            }
                         }
                     }
                     else if (AKLA == 5)

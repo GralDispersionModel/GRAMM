@@ -18,6 +18,12 @@ namespace GRAMM_2001
 {
     class INITB
     {
+        /// <summary>
+        /// Init specific values
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void INIT(int NI, int NJ, int NK)
         {
             double UINIT = Program.U[1][1][NK];
@@ -32,16 +38,24 @@ namespace GRAMM_2001
 
             //initial turbulent kinetic energy
             if ((UINIT == 0) && (VINIT == 0))
+            {
                 TEINIT = 0.01;
+            }
             else
+            {
                 TEINIT = TURBIN * (Math.Pow(UINIT, 2) + Math.Pow(VINIT, 2));
+            }
 
             //turbulent eddy viscosity
             double VISINIT = 0;
             if (TEINIT > 0)
+            {
                 VISINIT = Program.CK * Math.Sqrt(TEINIT) * 10;
+            }
             else if (TEINIT == 0)
+            {
                 VISINIT = Program.VISEL;
+            }
 
             //computing specific humidity from relative humidity
 
@@ -197,13 +211,22 @@ namespace GRAMM_2001
                 {
                     //friction velocity
                     Program.UST[i][j] = 0;
-                    if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.UST[i][j] = 0.15;
+                    if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
+                        Program.UST[i][j] = 0.15;
+                    }
+
                     Program.USTV[i][j] = 0;
-                    if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
+                    if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
+                        Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
+                    }
 
                     //initial values for stability classes
                     if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
                         Program.stabilityclass[i][j] = Program.AKLA;
+                    }
 
                     //characteristic potential temperature
                     Program.TST[i][j] = 0;
@@ -342,7 +365,10 @@ namespace GRAMM_2001
                         Program.U1N[i][j][k] = U_L[k];
                         Program.U2N[i][j][k] = U_L[k];
                         Program.UN[i][j][k] = U_L[k];
-                        if (Program.UN[i][j][k] > 50) Console.WriteLine("U-component: " + Convert.ToString(Math.Round(Program.UN[i][j][k], 1)) + "m/s");
+                        if (Program.UN[i][j][k] > 50)
+                        {
+                            Console.WriteLine("U-component: " + Convert.ToString(Math.Round(Program.UN[i][j][k], 1)) + "m/s");
+                        }
 
                         //Geostrophic wind estimation
                         if (k < NK)
@@ -743,7 +769,11 @@ namespace GRAMM_2001
                         Program.ALBEDO[i][j] = DUMMY1;
                         Program.FW[i][j] = (float)DUMMY3;
                         Program.Z0[i][j] = (float)(DUMMY2);
-                        if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.Z0[i][j] = (float)(Program.Rauigkeit);
+                        if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                        {
+                            Program.Z0[i][j] = (float)(Program.Rauigkeit);
+                        }
+
                         Program.EPSG[i][j] = DUMMY6;
                         Program.ALAMBDA[i][j] = (float)(DUMMY5);
                         Program.RHOB[i][j] = (float)(Program.ALAMBDA[i][j] / DUMMY4 / Program.CPBOD);
@@ -768,17 +798,34 @@ namespace GRAMM_2001
                                 if (kb < Program.NZB)
                                 {
                                     if (Program.AKLA == 7)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 6)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 5)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 1)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 2)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 3)
+                                    {
                                         Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    }
                                 }
                                 else
                                 {
