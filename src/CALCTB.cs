@@ -17,7 +17,13 @@ namespace GRAMM_2001
 {
     partial class Program
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// Calculate the new soil temperature
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void Calctb_calculate(int NI, int NJ, int NK)
         {
             double EINTRAG1 = 0;

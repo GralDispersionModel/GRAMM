@@ -10,11 +10,7 @@
 ///</remarks>
 #endregion
 
-using System;
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace GRAMM_2001
 {
@@ -31,7 +27,6 @@ namespace GRAMM_2001
         {
             lock (copyFrom.SyncRoot)
             {
-                int i = 0;
                 // if (Avx.IsSupported)
                 // {
                 //     fixed (double* source = copyFrom, dest = copyTo)
@@ -43,7 +38,7 @@ namespace GRAMM_2001
                 //         }
                 //     }
                 // }
-                for (; i < copyFrom.Length; i++)
+                for (int i = 0; i < copyFrom.Length; i++)
                 {
                     copyTo[i] = copyFrom[i];
                 }
@@ -85,8 +80,7 @@ namespace GRAMM_2001
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void CopyArraySourceLen(double[] copyFrom, double[] copyTo)
         {
-            int i = 0;
-            for (; i < copyFrom.Length; i++)
+            for (int i = 0; i < copyFrom.Length; i++)
             {
                 copyTo[i] = copyFrom[i];
             }
@@ -118,7 +112,6 @@ namespace GRAMM_2001
         {
             lock (copyTo.SyncRoot)
             {
-                int i = 0;
                 // if (Avx.IsSupported)
                 // {
                 //     fixed (double* source = copyFrom, dest = copyTo)
@@ -129,8 +122,8 @@ namespace GRAMM_2001
                 //             Avx.Store(dest + i, Avx.LoadVector256(source + i));
                 //         }
                 //     }
-                // }
-                for (; i < copyTo.Length; i++)
+                // }            
+                for (int i = 0; i < copyTo.Length; i++)
                 {
                     copyTo[i] = copyFrom[i];
                 }

@@ -20,6 +20,12 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Calculate U, V and W wind components
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void UVWIMPcalculate(int NI, int NJ, int NK)
         {
@@ -41,7 +47,7 @@ namespace GRAMM_2001
                         double[] DIMU_L = Program.DIMU[i][j];
                         double[] DIMV_L = Program.DIMV[i][j];
                         double[] DIMW_L = Program.DIMW[i][j];
-                        
+
                         float[] F1U_L = Program.F1U[i][j];
                         float[] F2U_L = Program.F2U[i][j];
                         float[] F1V_L = Program.F1V[i][j];
@@ -52,7 +58,7 @@ namespace GRAMM_2001
                         float[] RHOBZ_L = Program.RHOBZ[i][j];
                         double[] QUN_L = Program.QUN[i][j];
                         double[] QBZ_L = Program.QBZ[i][j];
-                        
+
                         double[] V1N_LR = Program.V1N[i][j];
                         double[] U1N_LR = Program.U1N[i][j];
                         float[] VOL_L = Program.VOL[i][j];
@@ -94,7 +100,7 @@ namespace GRAMM_2001
                             F1V_L[kn] = (float)(AP0_L[k] * V1_L[k] + f1); // Temp array
                             F2V_L[kn] = (float)(AP0_L[k] * V2_L[k] + f1 + f2); // Temp array
                         }
-                        
+
                         for (int kn = 1; kn <= 2 * (NK_P - 1); ++kn)
                         {
                             int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
@@ -122,262 +128,119 @@ namespace GRAMM_2001
                 });
 
 
-                int range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                int range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, i =>
                 Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int i = range.Item1; i < range.Item2; ++i)
-                    {
-                        int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                        for (int j = 2; j <= NJ_P - 1; ++j)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NJ_P, NK_P, false, false, true);
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, ih =>
                 Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int i = range.Item2 - 1; i >= range.Item1; --i)
-                    {
-                        int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                        for (int j = NJ_P - 1; j >= 2; --j)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NJ_P, NK_P, true, true, true);
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
                 Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
                 {
                     int NK_P = NK; int NI_P = NI;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int j = range.Item2 - 1; j >= range.Item1; --j)
-                    {
-                        int border = Math.Min(j - range.Item1, range.Item2 - 1 - j);
-                        for (int i = NI_P - 1; i >= 2; --i)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NI_P, NK_P, true, true, false);
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, j =>
                 Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
                 {
                     int NK_P = NK; int NI_P = NI;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int j = range.Item1; j < range.Item2; ++j)
-                    {
-                        int border = Math.Min(j - range.Item1, range.Item2 - 1 - j);
-                        for (int i = 2; i <= NI_P - 1; ++i)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NI_P, NK_P, false, false, false);
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, ih =>
                 Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int i = range.Item2 - 1; i >= range.Item1; --i)
-                    {
-                        int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                        for (int j = 2; j <= NJ_P - 1; ++j)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NJ_P, NK_P, true, false, true);
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, i =>
                 Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int i = range.Item1; i < range.Item2; ++i)
-                    {
-                        int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                        for (int j = NJ_P - 1; j >= 2; --j)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NJ_P, NK_P, false, true, true);
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
                 Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
                 {
                     int NK_P = NK; int NI_P = NI;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int j = range.Item2 - 1; j >= range.Item1; --j)
-                    {
-                        int border = Math.Min(j - range.Item1, range.Item2 - 1 - j);
-                        for (int i = 2; i <= NI_P - 1; ++i)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NI_P, NK_P, true, false, false);
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, j =>
                 Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
                 {
                     int NK_P = NK; int NI_P = NI;
-                    double[] U1N_LR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
-                    double[] U2N_LR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
-                    double[] V1N_LR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
-                    double[] V2N_LR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
-                    double[] W1N_LR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
-                    double[] W2N_LR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
-                    for (int j = range.Item1; j < range.Item2; ++j)
-                    {
-                        int border = Math.Min(j - range.Item1, range.Item2 - 1 - j);
-                        for (int i = 2; i <= NI_P - 1; ++i)
-                        {
-                            UIMPKernel(i, j, NK_P, border, U1N_LR, V1N_LR, W1N_LR, U2N_LR, V2N_LR, W2N_LR);
-                        }
-                    }
-                    Program.GrammArrayPool.Return(U1N_LR);
-                    Program.GrammArrayPool.Return(V1N_LR);
-                    Program.GrammArrayPool.Return(W1N_LR);
-                    Program.GrammArrayPool.Return(U2N_LR);
-                    Program.GrammArrayPool.Return(V2N_LR);
-                    Program.GrammArrayPool.Return(W2N_LR);
+                    UIMPKernel(range, NI_P, NK_P, false, false, false);
                 });
             }
         }
-         
+
+        /// <summary>
+        /// Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
+        /// </summary>
+        /// <param name="range">Range for the outer loop</param>
+        /// <param name="InnerLoopNmax">Maximum for the inner loop</param>
+        /// <param name="outerLoopDir">true=--, false=++</param>
+        /// <param name="innerLoopDir">true=--, false=++</param>
+        /// <param name="isOuterLoopI">true=outer loop = i, false=outer loop = j</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        private static void UIMPKernel(int i, int j, int NK_P, int border, double[] U1N_LRR, double[] V1N_LRR, double[] W1N_LRR, double[] U2N_LRR, double[] V2N_LRR, double[] W2N_LRR)
+        [SkipLocalsInit]
+        private static void UIMPKernel(System.Tuple<int, int> range, int InnerLoopNmax, int NK_P, bool outerLoopDir, bool innerLoopDir, bool isOuterLoopI)
         {
-            Unsafe.SkipInit(out double DIMU); 
-            Unsafe.SkipInit(out double DIMV); 
-            Unsafe.SkipInit(out double DIMW); 
+            Unsafe.SkipInit(out double DIMU);
+            Unsafe.SkipInit(out double DIMV);
+            Unsafe.SkipInit(out double DIMW);
             Unsafe.SkipInit(out double help);
             Unsafe.SkipInit(out double as1);
             Unsafe.SkipInit(out double aw1);
@@ -390,184 +253,253 @@ namespace GRAMM_2001
             Span<double> QIMV = stackalloc double[knmax];
             Span<double> PIMW = stackalloc double[knmax];
             Span<double> QIMW = stackalloc double[knmax];
-            
-            float relaxv = (float)(Program.RELAXV * Program.Relax_Border_factor[i][j]);
-            ReadOnlySpan<float> AE2_L = Program.AE2[i][j];
-            ReadOnlySpan<float> AN2_L = Program.AN2[i][j];
-            ReadOnlySpan<float> AIM_L = Program.AIM[i][j];
-            ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
-            ReadOnlySpan<float> AS1_L = Program.AS1[i][j];
-            ReadOnlySpan<float> AW1_L = Program.AW1[i][j];
-            ReadOnlySpan<float> BIM_L = Program.BIM[i][j];
-            ReadOnlySpan<float> CIM_L = Program.CIM[i][j];
-            ReadOnlySpan<float> F1U_L = Program.F1U[i][j];
-            ReadOnlySpan<float> F2U_L = Program.F2U[i][j];
-            ReadOnlySpan<float> F1V_L = Program.F1V[i][j];
-            ReadOnlySpan<float> F2V_L = Program.F2V[i][j];
-            ReadOnlySpan<float> F1W_L = Program.F1W[i][j];
-            ReadOnlySpan<float> F2W_L = Program.F2W[i][j];
-            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-            ReadOnlySpan <double> U1Ni_L  = Program.U1N[i + 1][j];
-            ReadOnlySpan <double> U1NJ_P_L = Program.U1N[i][j + 1];
-            ReadOnlySpan <double> U2Ni_L = Program.U2N[i - 1][j];
-            ReadOnlySpan <double> U2NJ_P_L = Program.U2N[i][j - 1];
-            ReadOnlySpan <double> V1Ni_L = Program.V1N[i + 1][j];
-            ReadOnlySpan <double> V1NJ_P_L = Program.V1N[i][j + 1];
-            ReadOnlySpan <double> V2Ni_L = Program.V2N[i - 1][j];
-            ReadOnlySpan <double> V2NJ_P_L = Program.V2N[i][j - 1];
-            ReadOnlySpan <double> W1Ni_L = Program.W1N[i + 1][j];
-            ReadOnlySpan <double> W1NJ_P_L = Program.W1N[i][j + 1];
-            ReadOnlySpan <double> W2Ni_L = Program.W2N[i - 1][j];
-            ReadOnlySpan <double> W2NJ_P_L = Program.W2N[i][j - 1];
+            double[] U1N_LRR = Program.GrammArrayPool.Rent(Program.U1N[1][1].Length);
+            double[] U2N_LRR = Program.GrammArrayPool.Rent(Program.U2N[1][1].Length);
+            double[] V1N_LRR = Program.GrammArrayPool.Rent(Program.V1N[1][1].Length);
+            double[] V2N_LRR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
+            double[] W1N_LRR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
+            double[] W2N_LRR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
 
-            double[] U1N_LR;
-            double[] V1N_LR;
-            double[] W1N_LR;
-            double[] U2N_LR;
-            double[] V2N_LR;
-            double[] W2N_LR;
-
-            //Avoid race conditions at the border cells of the sequential calculated stripes
-            if (border < 2)
+            for (int outerLoop = range.Item1; outerLoop < range.Item2; ++outerLoop)
             {
-                U1N_LR = U1N_LRR;
-                V1N_LR = V1N_LRR;
-                W1N_LR = W1N_LRR;
-                U2N_LR = U2N_LRR;
-                V2N_LR = V2N_LRR;
-                W2N_LR = W2N_LRR;
-                Program.CopyArraySourceLen(Program.U1N[i][j], U1N_LR);
-                Program.CopyArraySourceLen(Program.V1N[i][j], V1N_LR);
-                Program.CopyArraySourceLen(Program.W1N[i][j], W1N_LR);
-                Program.CopyArraySourceLen(Program.U2N[i][j], U2N_LR);
-                Program.CopyArraySourceLen(Program.V2N[i][j], V2N_LR);
-                Program.CopyArraySourceLen(Program.W2N[i][j], W2N_LR);
-            }
-            else
-            {
-                U1N_LR = Program.U1N[i][j];
-                V1N_LR = Program.V1N[i][j];
-                W1N_LR = Program.W1N[i][j];
-                U2N_LR = Program.U2N[i][j];
-                V2N_LR = Program.V2N[i][j];
-                W2N_LR = Program.W2N[i][j];
-            }
-
-            float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]) * RHO_L[1] * AREA_L[1];
-            Unsafe.SkipInit(out double aim);
-            Unsafe.SkipInit(out double bim);
-            Unsafe.SkipInit(out double cim);
-
-            int m = 2;
-            for (int kn = 1; kn < PIMU.Length; ++kn)
-            {
-                int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                //Coefficients for the lower half-cell
-                if (m == 2)
+                int outerL = outerLoop;
+                int border = Math.Min(outerL - range.Item1, range.Item2 - 1 - outerL);
+                if (outerLoopDir)
                 {
-                    aw1 = AW1_L[k];
-                    as1 = AS1_L[k];
-
-                    // U - Component
-                    DIMU = aw1 * U2Ni_L[k] + as1 * U2NJ_P_L[k] + F1U_L[kn];
-                    DIMV = aw1 * V2Ni_L[k] + as1 * V2NJ_P_L[k] + F1V_L[kn];
-                    DIMW = aw1 * W2Ni_L[k] + as1 * W2NJ_P_L[k] + F1W_L[kn];
-
-                    aim = AIM_L[kn];
-                    bim = BIM_L[kn];
-                    //Recurrence formula
-                    if (k == 1)
+                    outerL = range.Item2 - (outerLoop - range.Item1) - 1;
+                }
+                for (int innerLoop = 2; innerLoop < InnerLoopNmax; ++innerLoop)
+                {
+                    int innerL = innerLoop;
+                    if (innerLoopDir)
                     {
-                        help = 1 / aim;
-                        DIMU -= U1N_LR[k] * USTxUSTV;
-                        PIMU[kn] = bim * help;
-                        QIMU[kn] = DIMU * help;
-
-                        DIMV -= V1N_LR[k] * USTxUSTV;
-                        PIMV[kn] = bim * help;
-                        QIMV[kn] = DIMV * help;
-
-                        DIMW -= W1N_LR[k] * USTxUSTV;
-                        PIMW[kn] = bim * help;
-                        QIMW[kn] = DIMW * help;
+                        innerL = InnerLoopNmax - innerLoop + 1;
+                    }
+                    int i = 0;
+                    int j = 0;
+                    if (isOuterLoopI)
+                    {
+                        i = outerL;
+                        j = innerL;
                     }
                     else
                     {
-                        cim = CIM_L[kn];
-                        help = 1 / (aim - cim * PIMU[kn - 1]);
-                        PIMU[kn] = bim * help;
-                        QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
-
-                        help = 1 / (aim - cim * PIMV[kn - 1]);
-                        PIMV[kn] = bim * help;
-                        QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
-
-                        help = 1 / (aim - cim * PIMW[kn - 1]);
-                        PIMW[kn] = bim * help;
-                        QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
+                        i = innerL;
+                        j = outerL;
                     }
-                    m--;
-                }
-                else
-                {
-                    ae2 = AE2_L[k];
-                    an2 = AN2_L[k];
+                   
+                    float relaxv = (float)(Program.RELAXV * Program.Relax_Border_factor[i][j]);
+                    ReadOnlySpan<float> AE2_L = Program.AE2[i][j];
+                    ReadOnlySpan<float> AN2_L = Program.AN2[i][j];
+                    ReadOnlySpan<float> AIM_L = Program.AIM[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                    ReadOnlySpan<float> AS1_L = Program.AS1[i][j];
+                    ReadOnlySpan<float> AW1_L = Program.AW1[i][j];
+                    ReadOnlySpan<float> BIM_L = Program.BIM[i][j];
+                    ReadOnlySpan<float> CIM_L = Program.CIM[i][j];
+                    ReadOnlySpan<float> F1U_L = Program.F1U[i][j];
+                    ReadOnlySpan<float> F2U_L = Program.F2U[i][j];
+                    ReadOnlySpan<float> F1V_L = Program.F1V[i][j];
+                    ReadOnlySpan<float> F2V_L = Program.F2V[i][j];
+                    ReadOnlySpan<float> F1W_L = Program.F1W[i][j];
+                    ReadOnlySpan<float> F2W_L = Program.F2W[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                    double[] U1Ni_L = Program.U1N[i + 1][j];
+                    double[] U1NJ_P_L = Program.U1N[i][j + 1];
+                    double[] U2Ni_L = Program.U2N[i - 1][j];
+                    double[] U2NJ_P_L = Program.U2N[i][j - 1];
+                    double[] V1Ni_L = Program.V1N[i + 1][j];
+                    double[] V1NJ_P_L = Program.V1N[i][j + 1];
+                    double[] V2Ni_L = Program.V2N[i - 1][j];
+                    double[] V2NJ_P_L = Program.V2N[i][j - 1];
+                    double[] W1Ni_L = Program.W1N[i + 1][j];
+                    double[] W1NJ_P_L = Program.W1N[i][j + 1];
+                    double[] W2Ni_L = Program.W2N[i - 1][j];
+                    double[] W2NJ_P_L = Program.W2N[i][j - 1];
 
-                    //Coefficients for the upper half-cell
-                    // U - Component
-                    DIMU = ae2 * U1Ni_L[k] + an2 * U1NJ_P_L[k] + F2U_L[kn];
-                    DIMV = ae2 * V1Ni_L[k] + an2 * V1NJ_P_L[k] + F2V_L[kn];
-                    DIMW = ae2 * W1Ni_L[k] + an2 * W1NJ_P_L[k] + F2W_L[kn];
+                    double[] U1N_LR;
+                    double[] V1N_LR;
+                    double[] W1N_LR;
+                    double[] U2N_LR;
+                    double[] V2N_LR;
+                    double[] W2N_LR;
 
-                    aim = AIM_L[kn];
-                    bim = BIM_L[kn];
-                    if (k == 1)
+                    //Avoid race conditions at the border cells of the sequential calculated stripes
+                    if (border < 2)
                     {
-                        DIMU -= U2N_LR[k] * USTxUSTV;
-                        DIMV -= V2N_LR[k] * USTxUSTV;
-                        DIMW -= W2N_LR[k] * USTxUSTV;
+                        U1N_LR = U1N_LRR;
+                        V1N_LR = V1N_LRR;
+                        W1N_LR = W1N_LRR;
+                        U2N_LR = U2N_LRR;
+                        V2N_LR = V2N_LRR;
+                        W2N_LR = W2N_LRR;
+                        //No lock here, because other threads are reading
+                        Program.CopyArraySourceLen(Program.U1N[i][j], U1N_LR);
+                        Program.CopyArraySourceLen(Program.V1N[i][j], V1N_LR);
+                        Program.CopyArraySourceLen(Program.W1N[i][j], W1N_LR);
+                        Program.CopyArraySourceLen(Program.U2N[i][j], U2N_LR);
+                        Program.CopyArraySourceLen(Program.V2N[i][j], V2N_LR);
+                        Program.CopyArraySourceLen(Program.W2N[i][j], W2N_LR);
                     }
-                    //Recurrence formula
-                    cim = CIM_L[kn];
-                    help = 1 / (aim - cim * PIMU[kn - 1]);
-                    PIMU[kn] = bim * help;
-                    QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
+                    else
+                    {
+                        U1N_LR = Program.U1N[i][j];
+                        V1N_LR = Program.V1N[i][j];
+                        W1N_LR = Program.W1N[i][j];
+                        U2N_LR = Program.U2N[i][j];
+                        V2N_LR = Program.V2N[i][j];
+                        W2N_LR = Program.W2N[i][j];
+                    }
 
-                    help = 1 / (aim - cim * PIMV[kn - 1]);
-                    PIMV[kn] = bim * help;
-                    QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
+                    float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]) * RHO_L[1] * AREA_L[1];
+                    Unsafe.SkipInit(out double aim);
+                    Unsafe.SkipInit(out double bim);
+                    Unsafe.SkipInit(out double cim);
 
-                    help = 1 / (aim - cim * PIMW[kn - 1]);
-                    PIMW[kn] = bim * help;
-                    QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
-                    m = 2;
+                    int m = 2;
+                    for (int kn = 1; kn < PIMU.Length; ++kn)
+                    {
+                        int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
+                                              //Coefficients for the lower half-cell
+                        if (m == 2)
+                        {
+                            aw1 = AW1_L[k];
+                            as1 = AS1_L[k];
+
+                            // UVW - Component
+                            if (border < 2)
+                            {
+                                lock (U2Ni_L.SyncRoot)
+                                {
+                                    lock (U2NJ_P_L.SyncRoot)
+                                    {
+                                        DIMU = aw1 * U2Ni_L[k] + as1 * U2NJ_P_L[k] + F1U_L[kn];
+                                    }
+                                }
+                                lock (V2Ni_L.SyncRoot)
+                                {
+                                    lock (V2NJ_P_L.SyncRoot)
+                                    {
+                                        DIMV = aw1 * V2Ni_L[k] + as1 * V2NJ_P_L[k] + F1V_L[kn];
+                                    }
+                                }
+                                lock (W2Ni_L.SyncRoot)
+                                {
+                                    lock (W2NJ_P_L.SyncRoot)
+                                    {
+                                        DIMW = aw1 * W2Ni_L[k] + as1 * W2NJ_P_L[k] + F1W_L[kn];
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                DIMU = aw1 * U2Ni_L[k] + as1 * U2NJ_P_L[k] + F1U_L[kn];
+                                DIMV = aw1 * V2Ni_L[k] + as1 * V2NJ_P_L[k] + F1V_L[kn];
+                                DIMW = aw1 * W2Ni_L[k] + as1 * W2NJ_P_L[k] + F1W_L[kn];
+                            }
+                            aim = AIM_L[kn];
+                            bim = BIM_L[kn];
+                            //Recurrence formula
+                            if (k == 1)
+                            {
+                                help = 1 / aim;
+                                DIMU -= U1N_LR[k] * USTxUSTV;
+                                PIMU[kn] = bim * help;
+                                QIMU[kn] = DIMU * help;
+
+                                DIMV -= V1N_LR[k] * USTxUSTV;
+                                PIMV[kn] = bim * help;
+                                QIMV[kn] = DIMV * help;
+
+                                DIMW -= W1N_LR[k] * USTxUSTV;
+                                PIMW[kn] = bim * help;
+                                QIMW[kn] = DIMW * help;
+                            }
+                            else
+                            {
+                                cim = CIM_L[kn];
+                                help = 1 / (aim - cim * PIMU[kn - 1]);
+                                PIMU[kn] = bim * help;
+                                QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
+
+                                help = 1 / (aim - cim * PIMV[kn - 1]);
+                                PIMV[kn] = bim * help;
+                                QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
+
+                                help = 1 / (aim - cim * PIMW[kn - 1]);
+                                PIMW[kn] = bim * help;
+                                QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
+                            }
+                            m--;
+                        }
+                        else
+                        {
+                            ae2 = AE2_L[k];
+                            an2 = AN2_L[k];
+
+                            //Coefficients for the upper half-cell
+                            // U - Component
+                            DIMU = ae2 * U1Ni_L[k] + an2 * U1NJ_P_L[k] + F2U_L[kn];
+                            DIMV = ae2 * V1Ni_L[k] + an2 * V1NJ_P_L[k] + F2V_L[kn];
+                            DIMW = ae2 * W1Ni_L[k] + an2 * W1NJ_P_L[k] + F2W_L[kn];
+
+                            aim = AIM_L[kn];
+                            bim = BIM_L[kn];
+                            if (k == 1)
+                            {
+                                DIMU -= U2N_LR[k] * USTxUSTV;
+                                DIMV -= V2N_LR[k] * USTxUSTV;
+                                DIMW -= W2N_LR[k] * USTxUSTV;
+                            }
+                            //Recurrence formula
+                            cim = CIM_L[kn];
+                            help = 1 / (aim - cim * PIMU[kn - 1]);
+                            PIMU[kn] = bim * help;
+                            QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
+
+                            help = 1 / (aim - cim * PIMV[kn - 1]);
+                            PIMV[kn] = bim * help;
+                            QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
+
+                            help = 1 / (aim - cim * PIMW[kn - 1]);
+                            PIMW[kn] = bim * help;
+                            QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
+                            m = 2;
+                        }
+                    }
+
+                    //Obtain new UVW-components
+                    for (int kn = PIMU.Length - 1; kn > 1; --kn)
+                    {
+                        int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
+                        U2N_LR[k] += (relaxv * (PIMU[kn] * U1N_LR[k + 1] + QIMU[kn] - U2N_LR[k]));
+                        V2N_LR[k] += (relaxv * (PIMV[kn] * V1N_LR[k + 1] + QIMV[kn] - V2N_LR[k]));
+                        W2N_LR[k] += (relaxv * (PIMW[kn] * W1N_LR[k + 1] + QIMW[kn] - W2N_LR[k]));
+
+                        --kn;
+                        k = 1 + kn >> 1;
+                        U1N_LR[k] += (relaxv * (PIMU[kn] * U2N_LR[k] + QIMU[kn] - U1N_LR[k]));
+                        V1N_LR[k] += (relaxv * (PIMV[kn] * V2N_LR[k] + QIMV[kn] - V1N_LR[k]));
+                        W1N_LR[k] += (relaxv * (PIMW[kn] * W2N_LR[k] + QIMW[kn] - W1N_LR[k]));
+                    }
+                    //Avoid race conditions at the border cells of the sequential calculated stripes
+                    if (border < 2)
+                    {
+                        Program.CopyArrayLockDest(U1N_LR, Program.U1N[i][j]);
+                        Program.CopyArrayLockDest(V1N_LR, Program.V1N[i][j]);
+                        Program.CopyArrayLockDest(W1N_LR, Program.W1N[i][j]);
+                        Program.CopyArrayLockDest(U2N_LR, Program.U2N[i][j]);
+                        Program.CopyArrayLockDest(V2N_LR, Program.V2N[i][j]);
+                        Program.CopyArrayLockDest(W2N_LR, Program.W2N[i][j]);
+                    }
                 }
             }
-
-            //Obtain new UVW-components
-            for (int kn = PIMU.Length - 1; kn > 1; --kn)
-            {
-                int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                U2N_LR[k] += (relaxv * (PIMU[kn] * U1N_LR[k + 1] + QIMU[kn] - U2N_LR[k]));
-                V2N_LR[k] += (relaxv * (PIMV[kn] * V1N_LR[k + 1] + QIMV[kn] - V2N_LR[k]));
-                W2N_LR[k] += (relaxv * (PIMW[kn] * W1N_LR[k + 1] + QIMW[kn] - W2N_LR[k]));
-
-                --kn;
-                k = 1 + kn >> 1;
-                U1N_LR[k] += (relaxv * (PIMU[kn] * U2N_LR[k] + QIMU[kn] - U1N_LR[k]));
-                V1N_LR[k] += (relaxv * (PIMV[kn] * V2N_LR[k] + QIMV[kn] - V1N_LR[k]));
-                W1N_LR[k] += (relaxv * (PIMW[kn] * W2N_LR[k] + QIMW[kn] - W1N_LR[k]));
-            }
-            //Avoid race conditions at the border cells of the sequential calculated stripes
-            if (border < 2)
-            {
-                Program.CopyArrayLockDest(U1N_LR, Program.U1N[i][j]);
-                Program.CopyArrayLockDest(V1N_LR, Program.V1N[i][j]);
-                Program.CopyArrayLockDest(W1N_LR, Program.W1N[i][j]);
-                Program.CopyArrayLockDest(U2N_LR, Program.U2N[i][j]);
-                Program.CopyArrayLockDest(V2N_LR, Program.V2N[i][j]);
-                Program.CopyArrayLockDest(W2N_LR, Program.W2N[i][j]);
-            }
-        }  
+            Program.GrammArrayPool.Return(U1N_LRR);
+            Program.GrammArrayPool.Return(V1N_LRR);
+            Program.GrammArrayPool.Return(W1N_LRR);
+            Program.GrammArrayPool.Return(U2N_LRR);
+            Program.GrammArrayPool.Return(V2N_LRR);
+            Program.GrammArrayPool.Return(W2N_LRR);
+        }
     }
 }
