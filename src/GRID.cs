@@ -13,11 +13,15 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Read the file ggeom.asc
+        /// </summary>
         public static void GEOM()
         {
             //read values from file ggeom.asc
@@ -107,6 +111,7 @@ namespace GRAMM_2001
                             }
                         }
                     }
+                    Program.AREAXImm = ImmutableArray.Create(Program.AREAX);
                     Console.Write(".");
 
                     //obtain areas in y-direction
@@ -409,9 +414,15 @@ namespace GRAMM_2001
             double DZB0 = 0.02 / 2.3;
             Program.DWB[1] = 0;
             for (n = 2; n <= Program.NZB; n++)
+            {
                 Program.DWB[n] = (float)(DZB0 * Math.Pow(2.3, n - 2));
+            }
+
             for (n = 2; n <= Program.NZB - 1; n++)
+            {
                 Program.DZB[n] = 0.5F * (Program.DWB[n] + Program.DWB[n + 1]);
+            }
+
             Program.DZB[1] = Program.DZB[2];
             Program.DZB[Program.NZB] = Program.DZB[Program.NZB - 1];
 
@@ -481,8 +492,15 @@ namespace GRAMM_2001
                                          DELZM = 0;
                                      }
                                      Program.ZZ[1] = Program.Z[1];
-                                     if (k < Program.NZ) Program.ZZ[k + 1] = 0.5F * (Program.Z[k + 1] + Program.Z[k]);
-                                     if ((Program.AH[i][j] >= (Program.Z[k] - DELZM)) && (Program.AH[i][j] < (Program.Z[k] - DELZP))) Program.KST[i][j] = Math.Max(k + 1, 1);
+                                     if (k < Program.NZ)
+                                     {
+                                         Program.ZZ[k + 1] = 0.5F * (Program.Z[k + 1] + Program.Z[k]);
+                                     }
+
+                                     if ((Program.AH[i][j] >= (Program.Z[k] - DELZM)) && (Program.AH[i][j] < (Program.Z[k] - DELZP)))
+                                     {
+                                         Program.KST[i][j] = Math.Max(k + 1, 1);
+                                     }
 
                                      for (int kk = 1; kk <= Program.NZ; kk++)
                                      {
