@@ -163,7 +163,7 @@ namespace GRAMM_2001
                                 wt.WriteLine("nrows         " + NJ.ToString(CultureInfo.InvariantCulture));
                                 wt.WriteLine("xllcorner     " + Program.IKOOA.ToString(CultureInfo.InvariantCulture));
                                 wt.WriteLine("yllcorner     " + Program.JKOOA.ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("cellsize      " + Program.DDX[1].ToString(CultureInfo.InvariantCulture));
+                                wt.WriteLine("cellsize      " + Program.DDXImm[1].ToString(CultureInfo.InvariantCulture));
                                 wt.WriteLine("NODATA_value  " + "-9999");
 
                                 for (int jj = NJ; jj >= 1; jj--)
@@ -190,7 +190,7 @@ namespace GRAMM_2001
                                 for (int k = 1; k <= Program.NZ; k++)
                                 {
                                     //wt.Write(Convert.ToString(value(Ausgabe,0,k,LX,LY)).Replace(Program.decsep, ".") + " " + Convert.ToString(value(Ausgabe,1,k,LX,LY)).Replace(Program.decsep, ".") + " ");
-                                    wt.WriteLine(Math.Round(Program.ZSP[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + value(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                    wt.WriteLine(Math.Round(Program.ZSPImm[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + value(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
                                 }
                             }
 
@@ -261,7 +261,7 @@ namespace GRAMM_2001
                         return Math.Round(Program.EPSG[o][jj] * (Program.RL[o][jj] - Program.SIGMA * Math.Pow(Program.TB[o][jj][2], 4)), 3);
 
                     case 14: //  ausgabe des sensiblen Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                        val = Program.WQU[o][jj] / Program.DDX[o] / Program.DDY[jj];
+                        val = Program.WQU[o][jj] / Program.DDXImm[o] / Program.DDYImm[jj];
                         if (double.IsInfinity(val) || double.IsNaN(val))
                         {
                             val = -9999; // Error
@@ -270,7 +270,7 @@ namespace GRAMM_2001
                         return Math.Round(val, 3);
 
                     case 15: // ausgabe des latenten Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                        return Math.Round(Program.XWQ[o][jj] * Program.RHO[o][jj][1] * Program.UST[o][jj] * Program.ALW * (Program.QU[o][jj][1] - Program.QUG[o][jj]) / 1000, 3);
+                        return Math.Round(Program.XWQ[o][jj] * Program.RHOImm[o][jj][1] * Program.UST[o][jj] * Program.ALW * (Program.QU[o][jj][1] - Program.QUG[o][jj]) / 1000, 3);
 
                     case 16: //  ausgabe der Schubspannungsgeschwindigkeit fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         return Math.Round(Program.UST[o][jj], 3);

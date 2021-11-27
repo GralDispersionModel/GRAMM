@@ -122,7 +122,7 @@ namespace GRAMM_2001
                         float[] VG1_L = Program.VG1[i][j];
                         float[] UG2_L = Program.UG2[i][j];
                         float[] VG2_L = Program.VG2[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        float[] ZSP_L = Program.ZSPImm[i][j];
 
                         for (int k = 1; k <= NK; k++)
                         {
@@ -202,18 +202,18 @@ namespace GRAMM_2001
                     }
                     else
                     {
-                        z1 = Program.ZSP[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz] - 1] - Program.AH[Program.inrec[ianz]][Program.jnrec[ianz]];
+                        z1 = Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz] - 1] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]];
                         u1 = Program.UN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz] - 1];
                         v1 = Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz] - 1];
                     }
 
-                    Linear_interpolation(z1, Program.ZSP[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AH[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], u1, Program.UN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
+                    Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], u1, Program.UN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
                     Program.Urec[ianz] += wind * Program.DT / 3600;
-                    Linear_interpolation(z1, Program.ZSP[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AH[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], v1, Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
+                    Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], v1, Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
                     Program.Vrec[ianz] += wind * Program.DT / 3600;
 
                     double T2 = 0;
-                    Linear_interpolation(0.0, Program.ZSP[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.AH[Program.inrec[ianz]][Program.jnrec[ianz]], 2.0, Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.0, Program.TABS[Program.inrec[ianz]][Program.jnrec[ianz]][1] - 273.0, ref T2);
+                    Linear_interpolation(0.0, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], 2.0, Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.0, Program.TABS[Program.inrec[ianz]][Program.jnrec[ianz]][1] - 273.0, ref T2);
                     Program.Trec[ianz] += T2 * Program.DT / 3600;
                     Program.Globradrec[ianz] += Program.GLOBRAD[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.DT / 3600;
                     Program.Soilheatfluxrec[ianz] += (Program.ALAMBDA[Program.inrec[ianz]][Program.jnrec[ianz]] * (Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][3] - Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2]) / Program.DWB[3] -
@@ -224,9 +224,9 @@ namespace GRAMM_2001
                         Program.Soilheatfluxrec[ianz] = 0.0;
                     }
                     Program.Longradrec[ianz] += (Program.RL[Program.inrec[ianz]][Program.jnrec[ianz]] - Program.EPSG[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.SIGMA * Pow4(Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2])) * Program.DT / 3600;
-                    Program.Sensheatfluxrec[ianz] += Program.WQU[Program.inrec[ianz]][Program.jnrec[ianz]] / Program.DDX[1] / Program.DDY[1] * Program.DT / 3600;
+                    Program.Sensheatfluxrec[ianz] += Program.WQU[Program.inrec[ianz]][Program.jnrec[ianz]] / Program.DDXImm[1] / Program.DDYImm[1] * Program.DT / 3600;
                     double ALW1 = Program.ALW - 2300 * (Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.15);
-                    Program.Latheatfluxrec[ianz] += Program.XWQ[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.RHO[Program.inrec[ianz]][Program.jnrec[ianz]][1] * Program.UST[Program.inrec[ianz]][Program.jnrec[ianz]] * ALW1 * (Program.QU[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.QUG[Program.inrec[ianz]][Program.jnrec[ianz]]) * 0.001 * Program.DT / 3600;
+                    Program.Latheatfluxrec[ianz] += Program.XWQ[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.RHOImm[Program.inrec[ianz]][Program.jnrec[ianz]][1] * Program.UST[Program.inrec[ianz]][Program.jnrec[ianz]] * ALW1 * (Program.QU[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.QUG[Program.inrec[ianz]][Program.jnrec[ianz]]) * 0.001 * Program.DT / 3600;
                 }
             }
 
@@ -304,7 +304,7 @@ namespace GRAMM_2001
                     {
                         for (int j = 2; j <= NJ - 1; j++)
                         {
-                            float[] ZSP_L = Program.ZSP[i][j];
+                            float[] ZSP_L = Program.ZSPImm[i][j];
                             double[] U_L = Program.U[i][j];
                             double[] V_L = Program.V[i][j];
                             double[] VISV_L = Program.VISV[i][j];
@@ -315,7 +315,7 @@ namespace GRAMM_2001
                                 Program.ZI[i][j] = 0;
                                 double DZZ = (ZSP_L[k + 1] - ZSP_L[k]);
                                 double ALUN = Math.Abs(Program.FN) / (0.007 * Program.UST[i][j]);
-                                double ALBL = Program.CK * (ZSP_L[k] - Program.AH[i][j]) /
+                                double ALBL = Program.CK * (ZSP_L[k] - Program.AHImm[i][j]) /
                                    (1 + Program.CK * (ZSP_L[k] - ZSP_L[1]) * ALUN);
                                 double DVDZ = 0.5 * Math.Sqrt(Pow2((U_L[k + 1] - U_L[k]) / DZZ) + Pow2((V_L[k + 1] - V_L[k]) / DZZ));
                                 double FRITSCH = 0;
@@ -337,7 +337,7 @@ namespace GRAMM_2001
 
                                 if (k == 1)
                                 {
-                                    VISV_L[k] = 0.4 * Program.UST[i][j] * (ZSP_L[k] - Program.AH[i][j]);
+                                    VISV_L[k] = 0.4 * Program.UST[i][j] * (ZSP_L[k] - Program.AHImm[i][j]);
                                 }
                             }
                         }
@@ -455,8 +455,8 @@ namespace GRAMM_2001
                     {
                         if (j == 1)
                         {
-                            float RHO3 = Program.RHO[i][1][k];
-                            float RHO4 = Program.RHO[i][NJ][k];
+                            float RHO3 = Program.RHOImm[i][1][k];
+                            float RHO4 = Program.RHOImm[i][NJ][k];
 
                             Program.U2NRHO[i][1][k] = (float)(Program.U[i][1][k] * RHO3);
                             Program.U1NRHO[i][NJ][k] = (float)(Program.U[i][NJ][k] * RHO4);
@@ -470,8 +470,8 @@ namespace GRAMM_2001
 
                         if (i == 1)
                         {
-                            float RHO1 = Program.RHO[1][j][k];
-                            float RHO2 = Program.RHO[NI][j][k];
+                            float RHO1 = Program.RHOImm[1][j][k];
+                            float RHO2 = Program.RHOImm[NI][j][k];
 
                             Program.U2NRHO[1][j][k] = (float)(Program.U[1][j][k] * RHO1);
                             Program.U1NRHO[NI][j][k] = (float)(Program.U[NI][j][k] * RHO2);

@@ -380,10 +380,10 @@ namespace GRAMM_2001
                         YP = Program.Y[j];
                         YS = Program.Y[j - 1];
                         YN = Program.Y[j + 1];
-                        ZW = Program.AH[i - 1][j];
-                        ZE = Program.AH[i + 1][j];
-                        ZS = Program.AH[i][j - 1];
-                        ZN = Program.AH[i][j + 1];
+                        ZW = Program.AHImm[i - 1][j];
+                        ZE = Program.AHImm[i + 1][j];
+                        ZS = Program.AHImm[i][j - 1];
+                        ZN = Program.AHImm[i][j + 1];
 
                         //Inclination and exposition
                         float HX = (float)((ZE - ZW) / (XE - XW)); // inclination gradients of the ground
@@ -515,7 +515,7 @@ namespace GRAMM_2001
                     SinIe = Mye * MathF.Cos(Alfa[i][j]) + CosHe * MathF.Sin(Alfa[i][j]) * MathF.Cos(Eta - Beta[i][j]);
                     SinI = My * MathF.Cos(Alfa[i][j]) + CosH * MathF.Sin(Alfa[i][j]) * MathF.Cos(Eta - Beta[i][j]);
 
-                    ThetaB = CLThet(i, j, Program.AH[i][j], Omega, DOmega, ThetaB);
+                    ThetaB = CLThet(i, j, Program.AHImm[i][j], Omega, DOmega, ThetaB);
                     ThetaOld = -90 * GrRa;
 
                     for (int k = Program.KST[i][j] - 1; k <= Program.NZ; k++)
@@ -666,7 +666,7 @@ namespace GRAMM_2001
                 Omega = DOmega * (N - 1) + DOmega * 0.5F;                                    //compute sectors
                 float AlfEff = -Alfa[i][j] * MathF.Cos(Beta[i][j] - Omega);                 //actual angle
                                                                                             //Compute horizons of surroundings
-                Theta = CLThet(i, j, Program.AH[i][j], Omega, DOmega, Theta);
+                Theta = CLThet(i, j, Program.AHImm[i][j], Omega, DOmega, Theta);
                 float TheS = (float)Math.Max(Theta, AlfEff);
                 double DQi = MathF.Cos(AlfEff) * 0.5F * (MathF.Pow(MathF.Sin(TheS), 2) - MathF.Pow(MathF.Sin(AlfEff), 2))
                     - MathF.Sin(AlfEff) * 0.5F * ((MathF.Sin(2 * TheS) - MathF.Sin(2 * AlfEff)) * 0.5
@@ -734,7 +734,7 @@ namespace GRAMM_2001
                         if (Program.X[IZ] > (Program.X[I] + Dx2))     //no point between OM1 and OM2
                         {
                             XSum = (Program.X[IZ] + Program.X[IZ - 1]) * 0.5F - Program.X[I];
-                            ZSum = (Program.AH[IZ][JZ] + Program.AH[IZ - 1][JZ]) * 0.5F - Hoehe;
+                            ZSum = (Program.AHImm[IZ][JZ] + Program.AHImm[IZ - 1][JZ]) * 0.5F - Hoehe;
                         }
                         else                                          //numbers up to OM2
                         {
@@ -745,7 +745,7 @@ namespace GRAMM_2001
                             {
                                 Nenner++;
                                 XSum += Program.X[IZ] - Program.X[I];
-                                ZSum += Program.AH[IZ][JZ] - Hoehe;
+                                ZSum += Program.AHImm[IZ][JZ] - Hoehe;
                                 IZ++;
                             }
                             XSum /= Nenner;
@@ -796,7 +796,7 @@ namespace GRAMM_2001
                         if (Program.Y[JZ] < (Program.Y[J] + Dy2))
                         {
                             YSum = (Program.Y[JZ] + Program.Y[JZ + 1]) * 0.5F - Program.Y[J];
-                            ZSum = (Program.AH[IZ][JZ] + Program.AH[IZ][JZ + 1]) * 0.5F - Hoehe;
+                            ZSum = (Program.AHImm[IZ][JZ] + Program.AHImm[IZ][JZ + 1]) * 0.5F - Hoehe;
                         }
                         else
                         {
@@ -807,7 +807,7 @@ namespace GRAMM_2001
                             {
                                 Nenner++;
                                 YSum += Program.Y[JZ] - Program.Y[J];
-                                ZSum += Program.AH[IZ][JZ] - Hoehe;
+                                ZSum += Program.AHImm[IZ][JZ] - Hoehe;
                                 JZ--;
                             }
                             YSum /= Nenner;
@@ -858,7 +858,7 @@ namespace GRAMM_2001
                         if (Program.X[IZ] < (Program.X[I] + Dx2))
                         {
                             XSum = (Program.X[IZ] + Program.X[IZ + 1]) * 0.5F - Program.X[I];
-                            ZSum = (Program.AH[IZ][JZ] + Program.AH[IZ + 1][JZ]) * 0.5F - Hoehe;
+                            ZSum = (Program.AHImm[IZ][JZ] + Program.AHImm[IZ + 1][JZ]) * 0.5F - Hoehe;
                         }
                         else
                         {
@@ -869,7 +869,7 @@ namespace GRAMM_2001
                             {
                                 Nenner++;
                                 XSum += Program.X[IZ] - Program.X[I];
-                                ZSum += Program.AH[IZ][JZ] - Hoehe;
+                                ZSum += Program.AHImm[IZ][JZ] - Hoehe;
                                 IZ--;
                             }
                             XSum /= Nenner;
@@ -920,7 +920,7 @@ namespace GRAMM_2001
                         if (Program.Y[JZ] > (Program.Y[J] + Dy2))
                         {
                             YSum = (Program.Y[JZ] + Program.Y[JZ - 1]) * 0.5F - Program.Y[J];
-                            ZSum = (Program.AH[IZ][JZ] + Program.AH[IZ][JZ - 1]) * 0.5F - Hoehe;
+                            ZSum = (Program.AHImm[IZ][JZ] + Program.AHImm[IZ][JZ - 1]) * 0.5F - Hoehe;
                         }
                         else
                         {
@@ -931,7 +931,7 @@ namespace GRAMM_2001
                             {
                                 Nenner++;
                                 YSum += Program.Y[JZ] - Program.Y[J];
-                                ZSum += Program.AH[IZ][JZ] - Hoehe;
+                                ZSum += Program.AHImm[IZ][JZ] - Hoehe;
                                 JZ++;
                             }
                             YSum /= Nenner;

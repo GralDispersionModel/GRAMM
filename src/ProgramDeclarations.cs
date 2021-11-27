@@ -84,6 +84,10 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][] AH = CreateArray<float[]>(1, () => new float[1]);
         ///<summary>
+        ///Height of the surface immutable
+        ///</summary>
+        public static ImmutableArray<float[]> AHImm;
+        ///<summary>
         /// Height of the bassins and valleys
         ///</summary>
         public static float[][] AH_Bassins = CreateArray<float[]>(1, () => new float[1]);
@@ -100,34 +104,65 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][][] VOL = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Volume of grid cells immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> VOLImm;
+        ///<summary>
         ///Area of the grid cell in x-direction
         ///</summary>
         public static float[][][] AREAX = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        ///Area of the grid cell in x-direction immutable
+        ///</summary>
         public static ImmutableArray<float[][]> AREAXImm;
         ///<summary>
         ///Area of the grid cell in y-direction
         ///</summary>
         public static float[][][] AREAY = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
-        ///Bottom area of the grid cell
+        ///Area of the grid cell in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAYImm;
+        ///<summary>
+        ///Bottom area of the grid cell in z-direction
         ///</summary>
         public static float[][][] AREAZ = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
-        ///Projection of the ground area of the grid cell in z-direction
+        ///Bottom area of the grid cell in z-direction immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAZImm;
+        ///<summary>
+        ///Projection of the ground area of the grid cell 
         ///</summary>
         public static float[][][] AREA = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        ///Projection of the ground area of the grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAImm;
         ///<summary>
         ///Area between the two halfs of the grid cell
         ///</summary>
         public static float[][][] AREAXYZ = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        ///Area between the two halfs of the grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAXYZImm;
+        ///<summary>
         /// Projection of the ground area of the grid cell in x-direction
         ///</summary>
         public static float[][][] AREAZX = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Projection of the ground area of the grid cell in x-direction immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAZXImm;
+        ///<summary>
         /// Projection of the ground area of the grid cell in y-direction
         ///</summary>
         public static float[][][] AREAZY = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        /// Projection of the ground area of the grid cell in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> AREAZYImm;
         ///<summary>
         /// Heights of the corner points of each grid cell
         ///</summary>
@@ -137,13 +172,25 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][][] ZSP = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Height of the centre point of each grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> ZSPImm;
+        ///<summary>
         ///Horizontal grid size in x-direction
         ///</summary>
         public static float[] DDX = new float[1];
         ///<summary>
+        ///Horizontal grid size in x-direction immutable
+        ///</summary>
+        public static ImmutableArray<float> DDXImm;
+        ///<summary>
         ///Horizontal grid size in y-direction
         ///</summary>
         public static float[] DDY = new float[1];
+        ///<summary>
+        ///Horizontal grid size in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float> DDYImm;
         ///<summary>
         ///Distance between neighbouring grid cells in x-direction
         ///</summary>
@@ -284,6 +331,10 @@ namespace GRAMM_2001
         ///Density of the air
         ///</summary>
         public static float[][][] RHO = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        ///Density of the air immutable
+        ///</summary>
+        public static ImmutableArray<float[][]> RHOImm;
         ///<summary>
         ///Average wind speed in x-direction over the two half-cells at time t+1
         ///</summary>

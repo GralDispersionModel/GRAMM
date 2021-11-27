@@ -61,7 +61,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         //Avoid race conditions at the border cells of the sequential calculated stripes
                         if (border < 2)
                         {
@@ -80,7 +80,7 @@ namespace GRAMM_2001
                         }
                         ReadOnlySpan<double> QUNjM_L = Program.QUN[i][j - 1];
                         ReadOnlySpan<double> QUNjP_L = Program.QUN[i][j + 1];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -176,8 +176,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -272,8 +272,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -368,8 +368,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -464,8 +464,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -561,8 +561,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -656,8 +656,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];
@@ -751,8 +751,8 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> A_PS_L = Program.A_PS[i][j];
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                        ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
                         double UST_L = Program.UST[i][j];
                         float XWQ_L = Program.XWQ[i][j];
                         double QUG_L = Program.QUG[i][j];

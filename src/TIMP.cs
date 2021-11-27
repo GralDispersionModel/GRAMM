@@ -34,8 +34,8 @@ namespace GRAMM_2001
                     ReadOnlySpan<double> NBZKP_L = Program.NBZKP[i][j];
                     ReadOnlySpan<double> PNBZKP_L = Program.PNBZKP[i][j];
                     double[] RADIATION_L = Program.RADIATION[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                    ReadOnlySpan<float> VOL_J = Program.VOL[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan<float> VOL_J = Program.VOLImm[i][j];
 
                     for (int k = 1; k <= NK - 1; ++k)
                     {
@@ -91,7 +91,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -184,7 +184,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -278,7 +278,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -372,7 +372,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -466,7 +466,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -559,7 +559,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -652,7 +652,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
@@ -746,7 +746,7 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];

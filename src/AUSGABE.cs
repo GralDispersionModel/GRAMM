@@ -29,10 +29,6 @@ namespace GRAMM_2001
         /// <param name="intermediate"></param>
         public static void OUTPUT(int NI, int NJ, int NK, bool intermediate)
         {
-            // force a garbage collection on the Large Object heap to clean up the envrionment
-            //GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect();
-
             //Check for quasi-steady-state requirement (VDI 3783-7) -> the lateral region where topography is smoothed is not considered
             if (Program.REALTIME > 0.8 * Program.DTI)
             {
@@ -47,9 +43,9 @@ namespace GRAMM_2001
                         writesteadystate = new StreamWriter(filename);
                         writesteadystate.WriteLine("ncols         " + Convert.ToString(NI - 2 * Program.nr_cell_smooth));
                         writesteadystate.WriteLine("nrows         " + Convert.ToString(NJ - 2 * Program.nr_cell_smooth));
-                        writesteadystate.WriteLine("xllcorner     " + Convert.ToString(Program.IKOOA + Program.nr_cell_smooth * Program.DDX[1]));
-                        writesteadystate.WriteLine("yllcorner     " + Convert.ToString(Program.JKOOA + Program.nr_cell_smooth * Program.DDX[1]));
-                        writesteadystate.WriteLine("cellsize      " + Convert.ToString(Program.DDX[1]));
+                        writesteadystate.WriteLine("xllcorner     " + Convert.ToString(Program.IKOOA + Program.nr_cell_smooth * Program.DDXImm[1]));
+                        writesteadystate.WriteLine("yllcorner     " + Convert.ToString(Program.JKOOA + Program.nr_cell_smooth * Program.DDXImm[1]));
+                        writesteadystate.WriteLine("cellsize      " + Convert.ToString(Program.DDXImm[1]));
                         writesteadystate.WriteLine("NODATA_value  " + "-9999");
                     }
                     catch { }
@@ -184,7 +180,7 @@ namespace GRAMM_2001
             BinaryWriter writer = new BinaryWriter(File.Open(wndfilename, FileMode.Create));
             int header = -1;
             Int16 dummy;
-            float GRAMMhorgridsize = (float)Program.DDX[1];
+            float GRAMMhorgridsize = (float)Program.DDXImm[1];
 
             //there are two different formats: IOUTPUT = 0 (standard output for GRAL-GUI users) and IOUTPUT = 3 for SOUNDPLAN USERS
             if (Program.IOUT == 0)

@@ -35,9 +35,9 @@ namespace GRAMM_2001
             LogfileGrammCoreWrite(err);
             err = "  West  (abs): " + Program.GRAMM_West.ToString();
             LogfileGrammCoreWrite(err);
-            err = "  East  (abs): " + Convert.ToString((Int32)(Program.GRAMM_West + Program.NX * Program.DDX[1]));
+            err = "  East  (abs): " + Convert.ToString((Int32)(Program.GRAMM_West + Program.NX * Program.DDXImm[1]));
             LogfileGrammCoreWrite(err);
-            err = "  North (abs): " + Convert.ToString((Int32)(Program.GRAMM_South + Program.NY * Program.DDY[1]));
+            err = "  North (abs): " + Convert.ToString((Int32)(Program.GRAMM_South + Program.NY * Program.DDYImm[1]));
             LogfileGrammCoreWrite(err);
             err = "  South (abs): " + Program.GRAMM_South.ToString();
             LogfileGrammCoreWrite(err);

@@ -82,7 +82,7 @@ namespace GRAMM_2001
 
                         if (Program.AKLA == 7 && Program.METEO.ToUpper() == "Y" && Program.ISTAT == 0)
                         {
-                            //if (Program.AH[i][j] - 30 < Program.AH_Bassins[i][j])
+                            //if (Program.AHImm[i][j] - 30 < Program.AH_Bassins[i][j])
                             if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
                             {
                                 if (Program.Wind_Velocity >= 0.35F) // lower humidity at the ground and above the inversion height
@@ -94,7 +94,7 @@ namespace GRAMM_2001
                                     QBZ_L[k] = 18.02F / 28.96F * PDST / (PBZ_L[k] / 0.95 - PDST) * 1000;
                                 }
                             }
-                            else if ((Program.ZSP[i][j][k] - Program.AH_Bassins[i][j]) > Program.Inversion_Height)
+                            else if ((Program.ZSPImm[i][j][k] - Program.AH_Bassins[i][j]) > Program.Inversion_Height)
                             {
                                 QBZ_L[k] *= 0.4;
                             }
@@ -219,7 +219,7 @@ namespace GRAMM_2001
                     Program.USTV[i][j] = 0;
                     if ((Program.METEO == "Y") || (Program.METEO == "y"))
                     {
-                        Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
+                        Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSPImm[3][3][1] - Program.AHImm[3][3]) / Program.Rauigkeit);
                     }
 
                     //initial values for stability classes
@@ -253,7 +253,7 @@ namespace GRAMM_2001
                         DUMMY -= Program.DWB[kb];
                         //Dependency on height above sea level -> note that the dependency on latitude is taken into account in the calculation of TBINIT1 (tempint.cs)
                         double DELTA_TB = Program.TINIT - Program.TBINIT; //this is the desired temperature difference between the surface and the air temperature at the ground
-                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
 
                         /*
                          * !Oettl, 7.Juni 2013 - Versuch die oberste Schicht der Erdbodentemperatur in Abhängigkeit von der AKLA abweichend zur Lufttemperatur darüber einzustellen
@@ -267,11 +267,11 @@ namespace GRAMM_2001
                                 if (Program.AKLA == 7)
                                 {
                                     // Kuntner 28.6.2018: reduce the ground temperature continously, beginning at the lowest ground level
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (Program.TBINIT1)) * DUMMY - 2;
+                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (Program.TBINIT1)) * DUMMY - 2;
 
                                     /*
                                     // Kuntner 28.6.2018: reduce the temperature at the ground of valleys and bassins
-                                    if ((Program.AH[i][j] - 40) < Program.AH_Bassins[i][j])
+                                    if ((Program.AHImm[i][j] - 40) < Program.AH_Bassins[i][j])
                                     //if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
                                     {
                                         Program.TB[i][j][kb] -= 2 * (Program.NZB - kb) / ((float) Program.NZB);
@@ -280,11 +280,11 @@ namespace GRAMM_2001
                                 }
                                 if (Program.AKLA == 6)
                                 {
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
 
                                     /*
                                     // Kuntner 28.6.2018: reduce the temperature at the ground of valleys and bassins
-                                    if ((Program.AH[i][j] - 20) < Program.AH_Bassins[i][j])
+                                    if ((Program.AHImm[i][j] - 20) < Program.AH_Bassins[i][j])
                                     //if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
                                     {
                                         Program.TB[i][j][kb] -= 2 * (Program.NZB - kb) / ((float) Program.NZB);
@@ -293,7 +293,7 @@ namespace GRAMM_2001
                                 }
                                 if (Program.AKLA == 5)
                                 {
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                 }
 
                                 /*
@@ -335,7 +335,7 @@ namespace GRAMM_2001
                             }
                             else
                             {
-                                Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AH[i][j];
+                                Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AHImm[i][j];
                             }
                         }
 
@@ -358,8 +358,8 @@ namespace GRAMM_2001
 
                     for (int k = NK; k >= 1; k--)
                     {
-                        Program.U1NRHO[i][j][k] = (float)(U_L[k] * Program.RHO[i][j][k]);
-                        Program.U2NRHO[i][j][k] = (float)(U_L[k] * Program.RHO[i][j][k]);
+                        Program.U1NRHO[i][j][k] = (float)(U_L[k] * Program.RHOImm[i][j][k]);
+                        Program.U2NRHO[i][j][k] = (float)(U_L[k] * Program.RHOImm[i][j][k]);
                         Program.U1[i][j][k] = U_L[k];
                         Program.U2[i][j][k] = U_L[k];
                         Program.U1N[i][j][k] = U_L[k];
@@ -461,8 +461,8 @@ namespace GRAMM_2001
 
                     for (int k = NK; k >= 1; k--)
                     {
-                        Program.V1NRHO[i][j][k] = (float)(V_L[k] * Program.RHO[i][j][k]);
-                        Program.V2NRHO[i][j][k] = (float)(V_L[k] * Program.RHO[i][j][k]);
+                        Program.V1NRHO[i][j][k] = (float)(V_L[k] * Program.RHOImm[i][j][k]);
+                        Program.V2NRHO[i][j][k] = (float)(V_L[k] * Program.RHOImm[i][j][k]);
                         Program.V1[i][j][k] = V_L[k];
                         Program.V2[i][j][k] = V_L[k];
                         Program.V1N[i][j][k] = V_L[k];
@@ -625,13 +625,13 @@ namespace GRAMM_2001
                                 {
                                     //CORINE CLASS 111 CONTINUOUS URBAN FABRIC
                                     if (Program.Z0[i][j] >= 1.2)
-                                        Program.AWQ[i][j] = 40 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 40 * Program.DDXImm[i] * Program.DDYImm[j];
                                     //CORINE CLASS 112 DISCONTINUOUS URBAN FABRIC
                                     if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 4))
-                                        Program.AWQ[i][j] = 20 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 20 * Program.DDXImm[i] * Program.DDYImm[j];
                                     //CORINE CLASS 121 INUDSTRIAL UNITS
                                     if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 3.5))
-                                        Program.AWQ[i][j] = 50 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 50 * Program.DDXImm[i] * Program.DDYImm[j];
                                 }
                             }
                             */
@@ -799,37 +799,37 @@ namespace GRAMM_2001
                                 {
                                     if (Program.AKLA == 7)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
 
                                     if (Program.AKLA == 6)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
 
                                     if (Program.AKLA == 5)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
 
                                     if (Program.AKLA == 1)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
 
                                     if (Program.AKLA == 2)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
 
                                     if (Program.AKLA == 3)
                                     {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
                                     }
                                 }
                                 else
                                 {
-                                    Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AH[i][j];
+                                    Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AHImm[i][j];
                                 }
                                 Program.TG[i][j] = Program.TB[i][j][2];
                                 Program.TBN[i][j][kb] = Program.TB[i][j][kb];
@@ -847,7 +847,7 @@ namespace GRAMM_2001
             {
                 for (int j = 2; j < NJ; j++)
                 {
-                    ARSUM += Program.DDX[i] * Program.DDY[j] * 0.000001;
+                    ARSUM += Program.DDXImm[i] * Program.DDYImm[j] * 0.000001;
                     for (int k = 1; k < NK; k++)
                     {
                         IZELL++;

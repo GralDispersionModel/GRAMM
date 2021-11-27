@@ -53,17 +53,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -71,13 +71,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -139,17 +139,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -157,13 +157,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -224,17 +224,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -242,13 +242,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -308,17 +308,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -326,13 +326,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -393,17 +393,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -411,13 +411,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -479,17 +479,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -497,13 +497,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -563,17 +563,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -581,13 +581,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -649,17 +649,17 @@ namespace GRAMM_2001
 
                             if (k > 1)
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k - 1]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k - 1]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k - 1]) - 0.00065;
                             }
                             else
                             {
-                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]);
-                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSP[i][j][k + 1] + Program.ZSP[i][j][k]) - 0.00065;
+                                DUDZ = (Program.U[i][j][k + 1] - Program.U[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DVDZ = (Program.V[i][j][k + 1] - Program.V[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DWDZ = (Program.W[i][j][k + 1] - Program.W[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]);
+                                DTDZ = (Program.T[i][j][k + 1] - Program.T[i][j][k]) / (Program.ZSPImm[i][j][k + 1] + Program.ZSPImm[i][j][k]) - 0.00065;
                             }
 
                             //production-terms for the dissipation rate
@@ -667,13 +667,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)

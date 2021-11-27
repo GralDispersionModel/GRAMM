@@ -40,8 +40,8 @@ namespace GRAMM_2001
                         ref double GlobRad = ref Program.GLOBRAD[i][j]; 
 
                         int k = 1;
-                        double ANUE = Program.VISEL / Program.RHO[i][j][k];
-                        double Z1 = Program.ZSP[i][j][k] - Program.AH[i][j];
+                        double ANUE = Program.VISEL / Program.RHOImm[i][j][k];
+                        double Z1 = Program.ZSPImm[i][j][k] - Program.AHImm[i][j];
                         double ZETA = Math.Max(Z1 - Program.Z0[i][j], 0.1) / OL;
 
                         double PHIM = 0;
@@ -105,7 +105,7 @@ namespace GRAMM_2001
                         //compute wind speed at 10m above ground level
                         for (int k1 = 1; k1 <= NK; k1++)
                         {
-                            if (Program.ZSP[i][j][k1] - Program.AH[i][j] >= 10)
+                            if (Program.ZSPImm[i][j][k1] - Program.AHImm[i][j] >= 10)
                             {
                                 ischnitt = k1;
                                 break;
@@ -114,7 +114,7 @@ namespace GRAMM_2001
                         //compute temperature gradient over a vertical distance of >=90m
                         for (int k1 = 1; k1 <= NK; k1++)
                         {
-                            if (Program.ZSP[i][j][k1] - Program.AH[i][j] >= 90)
+                            if (Program.ZSPImm[i][j][k1] - Program.AHImm[i][j] >= 90)
                             {
                                 ischnitt_plus1 = Math.Max(k1, 2);
                                 break;
@@ -127,15 +127,15 @@ namespace GRAMM_2001
                         {
                             Uunten = Program.U[i][j][ischnitt - 1];
                             Vunten = Program.V[i][j][ischnitt - 1];
-                            Umittel = Uunten + (Uoben - Uunten) / (Program.ZSP[i][j][ischnitt] - Program.ZSP[i][j][ischnitt - 1]) *
-                            (10 - Program.ZSP[i][j][ischnitt - 1] + Program.AH[i][j]);
-                            Vmittel = Vunten + (Voben - Vunten) / (Program.ZSP[i][j][ischnitt] - Program.ZSP[i][j][ischnitt - 1]) *
-                            (10 - Program.ZSP[i][j][ischnitt - 1] + Program.AH[i][j]);
+                            Umittel = Uunten + (Uoben - Uunten) / (Program.ZSPImm[i][j][ischnitt] - Program.ZSPImm[i][j][ischnitt - 1]) *
+                            (10 - Program.ZSPImm[i][j][ischnitt - 1] + Program.AHImm[i][j]);
+                            Vmittel = Vunten + (Voben - Vunten) / (Program.ZSPImm[i][j][ischnitt] - Program.ZSPImm[i][j][ischnitt - 1]) *
+                            (10 - Program.ZSPImm[i][j][ischnitt - 1] + Program.AHImm[i][j]);
                         }
                         else
                         {
-                            Umittel = Uoben / (Program.ZSP[i][j][ischnitt] - Program.AH[i][j]) * 10;
-                            Vmittel = Voben / (Program.ZSP[i][j][ischnitt] - Program.AH[i][j]) * 10;
+                            Umittel = Uoben / (Program.ZSPImm[i][j][ischnitt] - Program.AHImm[i][j]) * 10;
+                            Vmittel = Voben / (Program.ZSPImm[i][j][ischnitt] - Program.AHImm[i][j]) * 10;
                         }
                         double wg = Math.Sqrt(Umittel * Umittel + Vmittel * Vmittel);
 
@@ -243,14 +243,14 @@ namespace GRAMM_2001
                   {
                       for (int j = 2; j <= NJ_P - 1; j++)
                       {
-                          double DZZZ = 1 / (Program.ZSP[i][j][1] - Program.AH[i][j]);
+                          double DZZZ = 1 / (Program.ZSPImm[i][j][1] - Program.AHImm[i][j]);
                           double DTDZ = ((Program.T[i][j][1] + Program.TBZ1) * (1 + 0.00061 * Program.QU[i][j][1]) -
                                          Program.TB[i][j][2] * Program.FAC[i][j][1] * (1 + 0.00061 * Program.QUG[i][j])) * DZZZ;
                           double DUDZ = Pow2(Program.U[i][j][1] * DZZZ);
                           double DVDZ = Pow2(Program.V[i][j][1] * DZZZ);
                           double DGDZ = DUDZ + DVDZ;
                           double[] RITSCH_L = Program.RITSCH[i][j];
-                          float[] ZSP_L = Program.ZSP[i][j];
+                          float[] ZSP_L = Program.ZSPImm[i][j];
                           double[] T_L = Program.T[i][j];
                           double[] QU_L = Program.QU[i][j];
                           double[] U_L = Program.U[i][j];
@@ -319,8 +319,8 @@ namespace GRAMM_2001
                 for (int j = 2; j <= NJ_P - 1; j++)
                 {
                     int k = 1;
-                    double DDX_DDY = Program.DDX[i] * Program.DDY[j];
-                    float RHO_L = (float)(Program.RHO[i][j][k] * Program.UST[i][j]);
+                    double DDX_DDY = Program.DDXImm[i] * Program.DDYImm[j];
+                    float RHO_L = (float)(Program.RHOImm[i][j][k] * Program.UST[i][j]);
                     float XWQ_L = Program.XWQ[i][j];
                     double QU_L = Program.QU[i][j][k];
                     // float PBZ_L = Program.PBZ[i][j][k];

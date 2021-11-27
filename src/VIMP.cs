@@ -36,7 +36,7 @@ namespace GRAMM_2001
                         double[] DIMV_L = Program.DIMV[i][j];
                         float[] F1V_L = Program.F1V[i][j];
                         float[] F2V_L = Program.F2V[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        float[] RHO_L = Program.RHOImm[i][j];
                         double[] U1N_L = Program.U1N[i][j];
                         double[] UG_L = Program.UG[i][j];
                         float[] VOL_L = Program.VOL[i][j];
@@ -83,13 +83,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -190,13 +190,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -297,13 +297,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -402,13 +402,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -508,13 +508,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -612,13 +612,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -718,13 +718,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -822,13 +822,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            float[] AREA_L = Program.AREAImm[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            float[] RHO_L = Program.RHOImm[i][j];
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 

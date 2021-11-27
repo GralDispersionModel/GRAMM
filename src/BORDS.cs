@@ -99,10 +99,10 @@ namespace GRAMM_2001
                   {
                       for (int j = 1; j <= NJ; j++)
                       {
-                          float[] ZSP_L = Program.ZSP[i][j];
+                          float[] ZSP_L = Program.ZSPImm[i][j];
                           double[] UG_L = Program.UG[i][j];
                           double[] VG_L = Program.VG[i][j];
-                          double AH = Program.AH[i][j];
+                          double AH = Program.AHImm[i][j];
                           double Delta_L = 0;
 
                           for (int k = 1; k <= NK; k++)

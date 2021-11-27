@@ -47,11 +47,11 @@ namespace GRAMM_2001
                      float[] AE2_L = Program.AE2[i][j];
                      float[] AN2_L = Program.AN2[i][j];
                      float[] AIM_L = Program.AIM[i][j];
-                     ReadOnlySpan <float> AREA_L = Program.AREA[i][j];
+                     ReadOnlySpan <float> AREA_L = Program.AREAImm[i][j];
                      ReadOnlySpan <float> AREAX_L = Program.AREAXImm[i][j];
-                     ReadOnlySpan <float> AREAZX_L = Program.AREAZX[i][j];
-                     ReadOnlySpan <float> AREAZY_L = Program.AREAZY[i][j];
-                     ReadOnlySpan <float> AREAY_L = Program.AREAY[i][j];
+                     ReadOnlySpan <float> AREAZX_L = Program.AREAZXImm[i][j];
+                     ReadOnlySpan <float> AREAZY_L = Program.AREAZYImm[i][j];
+                     ReadOnlySpan <float> AREAY_L = Program.AREAYImm[i][j];
                      float[] AP0_L = Program.AP0[i][j];
                      float[] AS1_L = Program.AS1[i][j];
                      float[] AW1_L = Program.AW1[i][j];
@@ -60,7 +60,7 @@ namespace GRAMM_2001
                      double[] DIMU_L = Program.DIMU[i][j];
                      double[] DIMV_L = Program.DIMV[i][j];
                      double[] DIMW_L = Program.DIMW[i][j];
-                     ReadOnlySpan <float> RHO_L = Program.RHO[i][j];
+                     ReadOnlySpan <float> RHO_L = Program.RHOImm[i][j];
                      ReadOnlySpan <double> U_L = Program.U[i][j];
                      ReadOnlySpan <double> U1_L = Program.U1[i][j];
                      ReadOnlySpan <double> U2_L = Program.U2[i][j];
@@ -71,14 +71,14 @@ namespace GRAMM_2001
                      ReadOnlySpan <double> W2_L = Program.W2[i][j];
                      double[] VISH_L = Program.VISH[i][j];
                      double[] VISV_L = Program.VISV[i][j];
-                     ReadOnlySpan <float> VOL_L = Program.VOL[i][j];
-                     ReadOnlySpan <float> ZSP_L = Program.ZSP[i][j];
+                     ReadOnlySpan <float> VOL_L = Program.VOLImm[i][j];
+                     ReadOnlySpan <float> ZSP_L = Program.ZSPImm[i][j];
 
                      int m = 2;
 
                      if ((i > 1) && (j > 1) && (i < NI_P) && (j < NJ_P))
                      {
-                         DDX_Rez = 1 / Program.DDX[i]; DDY_Rez = 1 / Program.DDY[j];
+                         DDX_Rez = 1 / Program.DDXImm[i]; DDY_Rez = 1 / Program.DDYImm[j];
                      }
 
                      for (int kn = 1; kn <= 2 * NK_P; kn++)
@@ -142,7 +142,7 @@ namespace GRAMM_2001
                              AREA_T1 = AREAX_L[k] + AREAZX_L[k];
                              AREA_T2 = AREAY_L[k] + AREAZY_L[k];
                              AREA_T3 = Program.AREAXImm[i + 1][j][k];
-                             AREA_T4 = Program.AREAY[i][j + 1][k];
+                             AREA_T4 = Program.AREAYImm[i][j + 1][k];
                              VISH_T1 = 1 / (VISH + VISH_IM);
                              VISH_T2 = 1 / (VISH + VISH_JM);
 
@@ -203,14 +203,14 @@ namespace GRAMM_2001
                              if (i > 1)
                              {
                                  DW1 = 4 * VISH * VISH_IM * VISH_T1 *
-                                AREAX_L[k] * DDX_Rez * 0.5 * (RHO + Program.RHO[i - 1][j][k]);
+                                AREAX_L[k] * DDX_Rez * 0.5 * (RHO + Program.RHOImm[i - 1][j][k]);
                              }
 
                              DS = 0;
                              if (j > 1)
                              {
                                  DS = 4 * VISH * VISH_JM * VISH_T2 *
-                                AREAY_L[k] * DDY_Rez * 0.5 * (RHO + Program.RHO[i][j - 1][k]);
+                                AREAY_L[k] * DDY_Rez * 0.5 * (RHO + Program.RHOImm[i][j - 1][k]);
                              }
 
                              //Advection terms
@@ -228,7 +228,7 @@ namespace GRAMM_2001
 
                              if (i > 1)
                              {
-                                 FW1 = 0.5 * (U1_L[k] * RHO + Program.U2[i - 1][j][k] * Program.RHO[i - 1][j][k]) * AREAX_L[k];
+                                 FW1 = 0.5 * (U1_L[k] * RHO + Program.U2[i - 1][j][k] * Program.RHOImm[i - 1][j][k]) * AREAX_L[k];
                              }
                              else
                              {
@@ -237,7 +237,7 @@ namespace GRAMM_2001
 
                              if (j > 1)
                              {
-                                 FS = 0.5 * (V1_L[k] * RHO + V2_L_M * Program.RHO[i][j - 1][k]) * AREAY_L[k];
+                                 FS = 0.5 * (V1_L[k] * RHO + V2_L_M * Program.RHOImm[i][j - 1][k]) * AREAY_L[k];
                              }
                              else
                              {
@@ -389,7 +389,7 @@ namespace GRAMM_2001
                              if (i < NI_P)
                              {
                                  DE2 = 4 * VISH * VISH_I * VISH_R2 *
-                                AREA_T3 * DDX_Rez * 0.5 * (RHO + Program.RHO[i + 1][j][k]);
+                                AREA_T3 * DDX_Rez * 0.5 * (RHO + Program.RHOImm[i + 1][j][k]);
                              }
 
                              DS2 = 0;
@@ -399,7 +399,7 @@ namespace GRAMM_2001
                              if (j < NJ_P)
                              {
                                  DN2 = 4 * VISH * VISH_J * VISH_R1 *
-                                AREA_T4 * DDY_Rez * 0.5 * (RHO + Program.RHO[i][j + 1][k]);
+                                AREA_T4 * DDY_Rez * 0.5 * (RHO + Program.RHOImm[i][j + 1][k]);
                              }
 
                              DT2 = 0;
@@ -412,7 +412,7 @@ namespace GRAMM_2001
                              //Advection terms
                              if (i < NI_P)
                              {
-                                 FE2 = 0.5 * (U2_L[k] * RHO + Program.U1[i + 1][j][k] * Program.RHO[i + 1][j][k]) * AREA_T3;
+                                 FE2 = 0.5 * (U2_L[k] * RHO + Program.U1[i + 1][j][k] * Program.RHOImm[i + 1][j][k]) * AREA_T3;
                              }
                              else
                              {
@@ -425,7 +425,7 @@ namespace GRAMM_2001
 
                              if (j < NJ_P)
                              {
-                                 FN2 = 0.5 * (V2_L[k] * RHO + Program.V1[i][j + 1][k] * Program.RHO[i][j + 1][k]) * AREA_T4;
+                                 FN2 = 0.5 * (V2_L[k] * RHO + Program.V1[i][j + 1][k] * Program.RHOImm[i][j + 1][k]) * AREA_T4;
                              }
                              else
                              {

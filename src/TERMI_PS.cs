@@ -30,25 +30,25 @@ namespace GRAMM_2001
                 double PEAST, PWEST, PSOUTH, PNORTH, PBOTTOM, PTOP;
                 double VISH1, AREA;
                 double RHO_I1, RHO_IM1, RHO_J1, RHO_JM1;
-                double DDX_Rez = 1 / Program.DDX[i];
+                double DDX_Rez = 1 / Program.DDXImm[i];
                 float RHO;
 
                 for (int j = 2; j <= NJ - 1; j++)
                 {
-                    ReadOnlySpan <float> AREA_L = Program.AREA[i][j];
+                    ReadOnlySpan <float> AREA_L = Program.AREAImm[i][j];
                     ReadOnlySpan <float> AREAX_L = Program.AREAXImm[i][j];
-                    ReadOnlySpan <float> AREAY_L = Program.AREAY[i][j];
-                    ReadOnlySpan <float> AREAZX_L = Program.AREAZX[i][j];
-                    ReadOnlySpan <float> AREAZY_L = Program.AREAZY[i][j];
-                    ReadOnlySpan <float> RHO_L = Program.RHO[i][j];
-                    ReadOnlySpan <float> ZSP_L = Program.ZSP[i][j];
-                    ReadOnlySpan <float> VOL_L = Program.VOL[i][j];
+                    ReadOnlySpan <float> AREAY_L = Program.AREAYImm[i][j];
+                    ReadOnlySpan <float> AREAZX_L = Program.AREAZXImm[i][j];
+                    ReadOnlySpan <float> AREAZY_L = Program.AREAZYImm[i][j];
+                    ReadOnlySpan <float> RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan <float> ZSP_L = Program.ZSPImm[i][j];
+                    ReadOnlySpan <float> VOL_L = Program.VOLImm[i][j];
                     ReadOnlySpan <float> AREAXiP = Program.AREAXImm[i + 1][j];
-                    ReadOnlySpan <float> AREAXjP = Program.AREAY[i][j + 1];
-                    ReadOnlySpan <float> RhoiP = Program.RHO[i + 1][j];
-                    ReadOnlySpan <float> RhoiM = Program.RHO[i - 1][j];
-                    ReadOnlySpan <float> RhojP = Program.RHO[i][j + 1];
-                    ReadOnlySpan <float> RhojM = Program.RHO[i][j - 1];
+                    ReadOnlySpan <float> AREAXjP = Program.AREAYImm[i][j + 1];
+                    ReadOnlySpan <float> RhoiP = Program.RHOImm[i + 1][j];
+                    ReadOnlySpan <float> RhoiM = Program.RHOImm[i - 1][j];
+                    ReadOnlySpan <float> RhojP = Program.RHOImm[i][j + 1];
+                    ReadOnlySpan <float> RhojM = Program.RHOImm[i][j - 1];
 
                     ReadOnlySpan <double> UN_L = Program.UN[i][j];
                     ReadOnlySpan <double> VN_L = Program.VN[i][j];
@@ -72,7 +72,7 @@ namespace GRAMM_2001
                     double[] B_PS_L = Program.B_PS[i][j];
                     double[] C_PS_L = Program.C_PS[i][j];
                     
-                    double DDY_Rez = 1 / Program.DDY[j];
+                    double DDY_Rez = 1 / Program.DDYImm[j];
 
                     for (int k = 1; k <= NK; k++)
                     {

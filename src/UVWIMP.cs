@@ -1,7 +1,7 @@
 ﻿#region Copyright
 ///<remarks>
 /// <GRAMM Mesoscale Model>
-/// Copyright (C) [2019]  [Dietmar Oettl, Markus Kuntner]
+/// Copyright (C) [2021]  [Markus Kuntner]
 /// This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation version 3 of the License
 /// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace GRAMM_2001
 {
@@ -54,14 +53,14 @@ namespace GRAMM_2001
                         float[] F2V_L = Program.F2V[i][j];
                         float[] F1W_L = Program.F1W[i][j];
                         float[] F2W_L = Program.F2W[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        float[] RHO_L = Program.RHOImm[i][j];
                         float[] RHOBZ_L = Program.RHOBZ[i][j];
                         double[] QUN_L = Program.QUN[i][j];
                         double[] QBZ_L = Program.QBZ[i][j];
 
                         double[] V1N_LR = Program.V1N[i][j];
                         double[] U1N_LR = Program.U1N[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        float[] VOL_L = Program.VOLImm[i][j];
                         double[] UG_L = Program.UG[i][j];
                         double[] VG_L = Program.VG[i][j];
                         double[] W1N_LR = Program.W1N[i][j];
@@ -292,7 +291,9 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> AE2_L = Program.AE2[i][j];
                     ReadOnlySpan<float> AN2_L = Program.AN2[i][j];
                     ReadOnlySpan<float> AIM_L = Program.AIM[i][j];
-                    ReadOnlySpan<float> AREA_L = Program.AREA[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j];
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j];
                     ReadOnlySpan<float> AS1_L = Program.AS1[i][j];
                     ReadOnlySpan<float> AW1_L = Program.AW1[i][j];
                     ReadOnlySpan<float> BIM_L = Program.BIM[i][j];
@@ -303,7 +304,7 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> F2V_L = Program.F2V[i][j];
                     ReadOnlySpan<float> F1W_L = Program.F1W[i][j];
                     ReadOnlySpan<float> F2W_L = Program.F2W[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
                     double[] U1Ni_L = Program.U1N[i + 1][j];
                     double[] U1NJ_P_L = Program.U1N[i][j + 1];
                     double[] U2Ni_L = Program.U2N[i - 1][j];
@@ -351,7 +352,8 @@ namespace GRAMM_2001
                         W2N_LR = Program.W2N[i][j];
                     }
 
-                    float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]) * RHO_L[1] * AREA_L[1];
+                    double USTxUSTVW = Program.UST[i][j] * Program.USTV[i][j] * RHO_L[1];
+                    double USTxUSTV  = USTxUSTVW * AREA_L[1];                 
                     Unsafe.SkipInit(out double aim);
                     Unsafe.SkipInit(out double bim);
                     Unsafe.SkipInit(out double cim);
@@ -360,7 +362,8 @@ namespace GRAMM_2001
                     for (int kn = 1; kn < PIMU.Length; ++kn)
                     {
                         int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                                              //Coefficients for the lower half-cell
+                        int knM1 = kn - 1;
+                        //Coefficients for the lower half-cell
                         if (m == 2)
                         {
                             aw1 = AW1_L[k];
@@ -411,24 +414,24 @@ namespace GRAMM_2001
                                 PIMV[kn] = bim * help;
                                 QIMV[kn] = DIMV * help;
 
-                                DIMW -= W1N_LR[k] * USTxUSTV;
+                                DIMW -= W1N_LR[k] * USTxUSTVW * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
                                 PIMW[kn] = bim * help;
                                 QIMW[kn] = DIMW * help;
                             }
                             else
                             {
                                 cim = CIM_L[kn];
-                                help = 1 / (aim - cim * PIMU[kn - 1]);
+                                help = 1 / (aim - cim * PIMU[knM1]);
                                 PIMU[kn] = bim * help;
-                                QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
+                                QIMU[kn] = (DIMU + cim * QIMU[knM1]) * help;
 
-                                help = 1 / (aim - cim * PIMV[kn - 1]);
+                                help = 1 / (aim - cim * PIMV[knM1]);
                                 PIMV[kn] = bim * help;
-                                QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
+                                QIMV[kn] = (DIMV + cim * QIMV[knM1]) * help;
 
-                                help = 1 / (aim - cim * PIMW[kn - 1]);
+                                help = 1 / (aim - cim * PIMW[knM1]);
                                 PIMW[kn] = bim * help;
-                                QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
+                                QIMW[kn] = (DIMW + cim * QIMW[knM1]) * help;
                             }
                             m--;
                         }
@@ -449,21 +452,22 @@ namespace GRAMM_2001
                             {
                                 DIMU -= U2N_LR[k] * USTxUSTV;
                                 DIMV -= V2N_LR[k] * USTxUSTV;
-                                DIMW -= W2N_LR[k] * USTxUSTV;
+                                DIMW -= W2N_LR[k] * USTxUSTVW * MathF.Sqrt(Pow2(AREAZX_L[k]) + Pow2(AREAZY_L[k]));
+                                
                             }
                             //Recurrence formula
                             cim = CIM_L[kn];
-                            help = 1 / (aim - cim * PIMU[kn - 1]);
+                            help = 1 / (aim - cim * PIMU[knM1]);
                             PIMU[kn] = bim * help;
-                            QIMU[kn] = (DIMU + cim * QIMU[kn - 1]) * help;
+                            QIMU[kn] = (DIMU + cim * QIMU[knM1]) * help;
 
-                            help = 1 / (aim - cim * PIMV[kn - 1]);
+                            help = 1 / (aim - cim * PIMV[knM1]);
                             PIMV[kn] = bim * help;
-                            QIMV[kn] = (DIMV + cim * QIMV[kn - 1]) * help;
+                            QIMV[kn] = (DIMV + cim * QIMV[knM1]) * help;
 
-                            help = 1 / (aim - cim * PIMW[kn - 1]);
+                            help = 1 / (aim - cim * PIMW[knM1]);
                             PIMW[kn] = bim * help;
-                            QIMW[kn] = (DIMW + cim * QIMW[kn - 1]) * help;
+                            QIMW[kn] = (DIMW + cim * QIMW[knM1]) * help;
                             m = 2;
                         }
                     }
@@ -472,9 +476,10 @@ namespace GRAMM_2001
                     for (int kn = PIMU.Length - 1; kn > 1; --kn)
                     {
                         int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                        U2N_LR[k] += (relaxv * (PIMU[kn] * U1N_LR[k + 1] + QIMU[kn] - U2N_LR[k]));
-                        V2N_LR[k] += (relaxv * (PIMV[kn] * V1N_LR[k + 1] + QIMV[kn] - V2N_LR[k]));
-                        W2N_LR[k] += (relaxv * (PIMW[kn] * W1N_LR[k + 1] + QIMW[kn] - W2N_LR[k]));
+                        int kP1 = k + 1;
+                        U2N_LR[k] += (relaxv * (PIMU[kn] * U1N_LR[kP1] + QIMU[kn] - U2N_LR[k]));
+                        V2N_LR[k] += (relaxv * (PIMV[kn] * V1N_LR[kP1] + QIMV[kn] - V2N_LR[k]));
+                        W2N_LR[k] += (relaxv * (PIMW[kn] * W1N_LR[kP1] + QIMW[kn] - W2N_LR[k]));
 
                         --kn;
                         k = 1 + kn >> 1;

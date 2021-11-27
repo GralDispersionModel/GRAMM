@@ -111,7 +111,6 @@ namespace GRAMM_2001
                             }
                         }
                     }
-                    Program.AREAXImm = ImmutableArray.Create(Program.AREAX);
                     Console.Write(".");
 
                     //obtain areas in y-direction
@@ -391,7 +390,22 @@ namespace GRAMM_2001
                     }
                 }
             }
-            Console.WriteLine(".");
+
+            Console.Write("I");
+            Program.AHImm = ImmutableArray.Create(Program.AH);
+            Program.ZSPImm = ImmutableArray.Create(Program.ZSP);
+            Program.VOLImm = ImmutableArray.Create(Program.VOL);
+            Program.DDXImm = ImmutableArray.Create(Program.DDX);
+            Program.DDYImm = ImmutableArray.Create(Program.DDY);
+            Program.AREAImm = ImmutableArray.Create(Program.AREA);
+            Program.AREAXImm = ImmutableArray.Create(Program.AREAX);
+            Program.AREAYImm = ImmutableArray.Create(Program.AREAY);
+            Program.AREAZXImm = ImmutableArray.Create(Program.AREAZX);
+            Program.AREAZYImm = ImmutableArray.Create(Program.AREAZY);
+            Program.AREAZImm = ImmutableArray.Create(Program.AREAZ);
+            Program.AREAXYZImm = ImmutableArray.Create(Program.AREAXYZ);
+
+            Console.WriteLine("I");
 
             //check whether array dimensions given in the input file GRAMM.geb meets the one of the input file ggeom.asc
             if (NX != Program.NX)
@@ -428,15 +442,15 @@ namespace GRAMM_2001
 
             //projection of z-surface in z-direction
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
-                           {
-                               for (int j = 1; j <= Program.NY; j++)
-                               {
-                                   for (int k = 1; k <= Program.NZ; k++)
-                                   {
-                                       Program.AREA[i][j][k] = Program.DDX[i] * Program.DDY[j];
-                                   }
-                               }
-                           });
+            {
+                for (int j = 1; j <= Program.NY; j++)
+                {
+                    for (int k = 1; k <= Program.NZ; k++)
+                    {
+                        Program.AREA[i][j][k] = Program.DDX[i] * Program.DDYImm[j];
+                    }
+                }
+            });
 
             //computation of minimum and maximum surface elevation and of the area separating the two half-cells
             Program.AHMIN = 100000;
@@ -475,60 +489,60 @@ namespace GRAMM_2001
 
             //computation of geometry data for the radiation model
             Parallel.For(1, Program.NX + 1, Program.pOptions, i =>
-                         {
-                             for (int j = 1; j <= Program.NY; j++)
-                             {
-                                 Program.KST[i][j] = 2;
-                                 for (int k = 1; k <= Program.NZ; k++)
-                                 {
-                                     double DELZP = 0.5F * (Program.Z[k + 1] - Program.Z[k]);
-                                     double DELZM;
-                                     if (k > 1)
-                                     {
-                                         DELZM = 0.5F * (Program.Z[k] - Program.Z[k - 1]);
-                                     }
-                                     else
-                                     {
-                                         DELZM = 0;
-                                     }
-                                     Program.ZZ[1] = Program.Z[1];
-                                     if (k < Program.NZ)
-                                     {
-                                         Program.ZZ[k + 1] = 0.5F * (Program.Z[k + 1] + Program.Z[k]);
-                                     }
+            {
+                for (int j = 1; j <= Program.NY; j++)
+                {
+                    Program.KST[i][j] = 2;
+                    for (int k = 1; k <= Program.NZ; k++)
+                    {
+                        double DELZP = 0.5F * (Program.Z[k + 1] - Program.Z[k]);
+                        double DELZM;
+                        if (k > 1)
+                        {
+                            DELZM = 0.5F * (Program.Z[k] - Program.Z[k - 1]);
+                        }
+                        else
+                        {
+                            DELZM = 0;
+                        }
+                        Program.ZZ[1] = Program.Z[1];
+                        if (k < Program.NZ)
+                        {
+                            Program.ZZ[k + 1] = 0.5F * (Program.Z[k + 1] + Program.Z[k]);
+                        }
 
-                                     if ((Program.AH[i][j] >= (Program.Z[k] - DELZM)) && (Program.AH[i][j] < (Program.Z[k] - DELZP)))
-                                     {
-                                         Program.KST[i][j] = Math.Max(k + 1, 1);
-                                     }
+                        if ((Program.AH[i][j] >= (Program.Z[k] - DELZM)) && (Program.AH[i][j] < (Program.Z[k] - DELZP)))
+                        {
+                            Program.KST[i][j] = Math.Max(k + 1, 1);
+                        }
 
-                                     for (int kk = 1; kk <= Program.NZ; kk++)
-                                     {
-                                         if (k > 1)
-                                         {
-                                             if ((Program.ZSP[i][j][kk] >= Program.ZZ[k - 1]) && (Program.ZSP[i][j][kk] < Program.ZZ[k]))
-                                             {
-                                                 Program.NBZKP[i][j][kk] = k;
-                                                 Program.PNBZKP[i][j][kk] = (Program.ZSP[i][j][kk] - Program.ZZ[k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]);
-                                             }
-                                             else if (Program.ZSP[i][j][kk] >= Program.ZZ[Program.NZ])
-                                             {
-                                                 Program.NBZKP[i][j][kk] = Program.NZ;
-                                                 Program.PNBZKP[i][j][kk] = 1;
-                                             }
-                                         }
-                                         else
-                                         {
-                                             if (Program.ZSP[i][j][kk] < Program.ZZ[k])
-                                             {
-                                                 Program.NBZKP[i][j][kk] = k;
-                                                 Program.PNBZKP[i][j][kk] = 1;
-                                             }
-                                         }
-                                     }
-                                 }
-                             }
-                         });
+                        for (int kk = 1; kk <= Program.NZ; kk++)
+                        {
+                            if (k > 1)
+                            {
+                                if ((Program.ZSP[i][j][kk] >= Program.ZZ[k - 1]) && (Program.ZSP[i][j][kk] < Program.ZZ[k]))
+                                {
+                                    Program.NBZKP[i][j][kk] = k;
+                                    Program.PNBZKP[i][j][kk] = (Program.ZSP[i][j][kk] - Program.ZZ[k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]);
+                                }
+                                else if (Program.ZSP[i][j][kk] >= Program.ZZ[Program.NZ])
+                                {
+                                    Program.NBZKP[i][j][kk] = Program.NZ;
+                                    Program.PNBZKP[i][j][kk] = 1;
+                                }
+                            }
+                            else
+                            {
+                                if (Program.ZSP[i][j][kk] < Program.ZZ[k])
+                                {
+                                    Program.NBZKP[i][j][kk] = k;
+                                    Program.PNBZKP[i][j][kk] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
 
         }
 

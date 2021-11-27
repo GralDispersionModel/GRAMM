@@ -246,7 +246,7 @@ namespace GRAMM_2001
                                 //in case of higher wind speed initialization, the divergence increases at large time steps
                                 if (WINDGE > 0.2) //3.4.2017 Ku
                                 {   // max time step = Rastersize/4/Windge
-                                    Program.DTMAX = Math.Min(Program.DTMAX, Math.Max(1.5, Program.DDX[1] * 0.25 / WINDGE)); //3.4.2017 Ku
+                                    Program.DTMAX = Math.Min(Program.DTMAX, Math.Max(1.5, Program.DDXImm[1] * 0.25 / WINDGE)); //3.4.2017 Ku
                                 }
                                 // in case of a retry
                                 if (Program.computation_retry > 0)
@@ -292,7 +292,7 @@ namespace GRAMM_2001
                 //The simulation time is modified according to the stability class and wind speed
                 if (Program.TLIMIT2 <= 1)
                 {
-                    Program.TLIMIT = Math.Sqrt(Math.Pow(Program.DDX[3] * NI, 2) + Math.Pow(Program.DDY[3] * NJ, 2)) / WINDGE * Program.TLIMIT2;
+                    Program.TLIMIT = Math.Sqrt(Math.Pow(Program.DDXImm[3] * NI, 2) + Math.Pow(Program.DDYImm[3] * NJ, 2)) / WINDGE * Program.TLIMIT2;
                     Program.DTI = Program.TLIMIT;
                 }
                 else if ((Program.ISTAT == 0) && (Program.IPGT == 1))
@@ -489,15 +489,15 @@ namespace GRAMM_2001
                 //vertical temperature profile->not sure if needed here??
                 for (int k = 1; k <= NK; k++)
                 {
-                    Program.T[Program.AHMINI][Program.AHMINJ][k] = Program.TINIT + GRADIENT * (Program.ZSP[Program.AHMINI][Program.AHMINJ][k] - 0);
-                    if (Program.ZSP[Program.AHMINI][Program.AHMINJ][k] - Program.AHMIN > Program.ZNEUT)
+                    Program.T[Program.AHMINI][Program.AHMINJ][k] = Program.TINIT + GRADIENT * (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - 0);
+                    if (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - Program.AHMIN > Program.ZNEUT)
                     {
                         Program.T[Program.AHMINI][Program.AHMINJ][k] = TMAX;
                     }
                     if (Program.T[Program.AHMINI][Program.AHMINJ][k] > TMAX)
                     {
                         TMAX = Math.Max(TMAX, Program.T[Program.AHMINI][Program.AHMINJ][k]);
-                        HMAX = Math.Max(HMAX, Program.ZSP[Program.AHMINI][Program.AHMINJ][k]);
+                        HMAX = Math.Max(HMAX, Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k]);
                     }
                 }
 
@@ -512,7 +512,7 @@ namespace GRAMM_2001
                 }
 
                 //computation of boundary-layer height (Hanna 1982)
-                USTinit = (WINDGE + 0.15) * 0.35 / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
+                USTinit = (WINDGE + 0.15) * 0.35 / Math.Log((Program.ZSPImm[3][3][1] - Program.AHImm[3][3]) / Program.Rauigkeit);
                 if ((Program.Obini >= 0) && (Program.Obini < 100))
                 {
                     blh0 = Math.Min(0.4 * Math.Sqrt(USTinit * Program.Obini / Program.FN), 2000);
@@ -574,31 +574,31 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            Program.T[i][j][k] = Program.TINIT + GRADIENT * Program.ZSP[i][j][k];
+                            Program.T[i][j][k] = Program.TINIT + GRADIENT * Program.ZSPImm[i][j][k];
 
                             if (Program.AKLA == 7)
                             {
                                 if (Program.Wind_Velocity >= 0.35F)
                                 {
                                     // Kuntner 28.6.2018: initialization like SC6, but lower temperature
-                                    Program.T[i][j][k] = Program.TINIT + 2 + GRADIENT * Program.ZSP[i][j][k];
+                                    Program.T[i][j][k] = Program.TINIT + 2 + GRADIENT * Program.ZSPImm[i][j][k];
                                 }
                                 else // low wind velocities
                                 {
                                     //in case of stability class 7 (strongly stable) ans low wind velocities it is assumed that strong ground inversions have already developed
                                     //these suppress the development of cold air drainage flows in this zone
                                     //the initial air temperature at ground is set 5K below the surface temperature -> probably not correct because the surface temperature is set equal to the air temperature in all cases in INITB.cs
-                                    if ((Program.ZSP[i][j][k] - Program.AHMIN) <= Inversion_Height)
+                                    if ((Program.ZSPImm[i][j][k] - Program.AHMIN) <= Inversion_Height)
                                     {
-                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * (Program.ZSP[i][j][k] - Program.AHMIN);
+                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
                                     }
-                                    else if ((Program.ZSP[i][j][k] - Program.AHMIN) > Inversion_Height)
+                                    else if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Inversion_Height)
                                     {
-                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * Inversion_Height + GRADIENT * (Math.Max(0, Program.ZSP[i][j][k] - Program.AHMIN - Inversion_Height));
+                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * Inversion_Height + GRADIENT * (Math.Max(0, Program.ZSPImm[i][j][k] - Program.AHMIN - Inversion_Height));
                                     }
-                                    else if ((Program.ZSP[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                    else if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                     {
-                                        Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSP[i][j][k] - Program.ZSP[i][j][k - 1]);
+                                        Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
                                     }
                                 }
                             }
@@ -606,47 +606,47 @@ namespace GRAMM_2001
                             //in case of stability class 6 (moderatly stable) cold air drainage flows are assumed to be strongest.
                             else if (Program.AKLA == 6)
                             {
-                                Program.T[i][j][k] = Program.TINIT + 10 + GRADIENT * Program.ZSP[i][j][k];
+                                Program.T[i][j][k] = Program.TINIT + 10 + GRADIENT * Program.ZSPImm[i][j][k];
 
-                                if ((Program.ZSP[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSP[i][j][k] - Program.ZSP[i][j][k - 1]);
+                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
                                 }
                             }
                             //in case of stability class 1 (strongly convective) temperature need to be high enough, otherwise thunderstorms develop
                             else if (Program.AKLA == 1)
                             {
-                                Program.T[i][j][k] = Program.TINIT + 15 + GRADIENT * Program.ZSP[i][j][k];
+                                Program.T[i][j][k] = Program.TINIT + 15 + GRADIENT * Program.ZSPImm[i][j][k];
 
-                                if ((Program.ZSP[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSP[i][j][k] - Program.ZSP[i][j][k - 1]);
+                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
                                 }
                             }
                             else if (Program.AKLA == 2 || Program.AKLA == 3)
                             {
-                                Program.T[i][j][k] = Program.TINIT + 5 + GRADIENT * Program.ZSP[i][j][k];
+                                Program.T[i][j][k] = Program.TINIT + 5 + GRADIENT * Program.ZSPImm[i][j][k];
 
-                                if ((Program.ZSP[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSP[i][j][k] - Program.ZSP[i][j][k - 1]);
+                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
                                 }
                             }
 
                             if (Program.ISTAT == 1)
                             {
-                                if ((Program.ZSP[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = Program.TINIT - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + GRADIENT * (Program.ZSP[i][j][k] - Program.ZNEUT - Program.AHMIN);
+                                    Program.T[i][j][k] = Program.TINIT - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + GRADIENT * (Program.ZSPImm[i][j][k] - Program.ZNEUT - Program.AHMIN);
                                 }
                                 else
                                 {
-                                    Program.T[i][j][k] = Program.TINIT - 0.09 * (Program.ZSP[i][j][k] - Program.AHMIN);
+                                    Program.T[i][j][k] = Program.TINIT - 0.09 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
                                 }
                             }
 
-                            Program.U[i][j][k] = WU * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / Program.ANEMO, windexpon);
-                            Program.V[i][j][k] = WV * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / Program.ANEMO, windexpon);
+                            Program.U[i][j][k] = WU * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / Program.ANEMO, windexpon);
+                            Program.V[i][j][k] = WV * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / Program.ANEMO, windexpon);
                         }
                     }
                 });
@@ -743,7 +743,7 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM WESTERN BOUNDARY  [M]: ");
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI]))
+                        if (DISTX[L] > (Program.X[NI] + Program.DDXImm[NI]))
                         {
                             goto WESTERNBOUNDARY;
                         }
@@ -752,7 +752,7 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ]))
+                        if (DISTY[L] > (Program.Y[NJ] + Program.DDYImm[NJ]))
                         {
                             goto SOUTHERNBOUNDARY;
                         }
@@ -796,9 +796,9 @@ namespace GRAMM_2001
                             {
                                 for (int k = 1; k <= NK; k++)
                                 {
-                                    if ((DISTX[L] == (Program.X[i] + Program.DDX[i] * 0.5F)) &&
-                                       (DISTY[L] == (Program.Y[j] + Program.DDY[j] * 0.5F)) &&
-                                        DISTZ[L][0] == Program.ZSP[i][j][k])
+                                    if ((DISTX[L] == (Program.X[i] + Program.DDXImm[i] * 0.5F)) &&
+                                       (DISTY[L] == (Program.Y[j] + Program.DDYImm[j] * 0.5F)) &&
+                                        DISTZ[L][0] == Program.ZSPImm[i][j][k])
                                     {
                                         INDI = i;
                                         INDJ = j;
@@ -812,7 +812,7 @@ namespace GRAMM_2001
                                     if ((DISTY[L] >= Program.Y[j]) && (DISTY[L] < Program.Y[j + 1]))
                                     {
                                         JJ = j;
-                                        MINH = Math.Abs(Program.ZSP[i][j][k] - DISTZ[L][0]);
+                                        MINH = Math.Abs(Program.ZSPImm[i][j][k] - DISTZ[L][0]);
                                         if (MINH <= ZABST)
                                         {
                                             ZABST = MINH;
@@ -884,7 +884,7 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM WESTERN BOUNDARY  [M]: ");
                         DISTX[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTX[L] > (Program.X[NI] + Program.DDX[NI]))
+                        if (DISTX[L] > (Program.X[NI] + Program.DDXImm[NI]))
                         {
                             goto WESTERNBOUNDARY_V;
                         }
@@ -893,7 +893,7 @@ namespace GRAMM_2001
                         Console.Write("       DISTANCE FROM SOUTHERN BOUNDARY  [M]: ");
                         DISTY[L] = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
                         Console.WriteLine(" ");
-                        if (DISTY[L] > (Program.Y[NJ] + Program.DDY[NJ]))
+                        if (DISTY[L] > (Program.Y[NJ] + Program.DDYImm[NJ]))
                         {
                             goto SOUTHERNBOUNDARY_V;
                         }
@@ -937,9 +937,9 @@ namespace GRAMM_2001
                             {
                                 for (int k = 1; k <= NK; k++)
                                 {
-                                    if ((DISTX[L] == (Program.X[i] + Program.DDX[i] * 0.5F)) &&
-                                       (DISTY[L] == (Program.Y[j] + Program.DDY[j] * 0.5F)) &&
-                                        DISTZ[L][M] == Program.ZSP[i][j][k])
+                                    if ((DISTX[L] == (Program.X[i] + Program.DDXImm[i] * 0.5F)) &&
+                                       (DISTY[L] == (Program.Y[j] + Program.DDYImm[j] * 0.5F)) &&
+                                        DISTZ[L][M] == Program.ZSPImm[i][j][k])
                                     {
                                         INDI = i;
                                         INDJ = j;
@@ -953,7 +953,7 @@ namespace GRAMM_2001
                                     if ((DISTY[L] >= Program.Y[j]) && (DISTY[L] < Program.Y[j + 1]))
                                     {
                                         JJ = j;
-                                        MINH = Math.Abs(Program.ZSP[i][j][k] - DISTZ[L][M]);
+                                        MINH = Math.Abs(Program.ZSPImm[i][j][k] - DISTZ[L][M]);
                                         if (MINH <= ZABST)
                                         {
                                             ZABST = MINH;
@@ -1138,7 +1138,7 @@ namespace GRAMM_2001
                                                 if ((DISTY[i] >= Program.Y[jjj]) && (DISTY[i] < Program.X[jjj + 1]))
                                                 {
                                                     int JJJJ = jjj;
-                                                    MINH = Math.Abs(Program.ZSP[iii][jjj][kkk] - DISTZ[II][JJ]);
+                                                    MINH = Math.Abs(Program.ZSPImm[iii][jjj][kkk] - DISTZ[II][JJ]);
                                                     if (MINH <= ZABST)
                                                     {
                                                         ZABST = MINH;
@@ -1285,7 +1285,7 @@ namespace GRAMM_2001
                                             break;
                                         }
 
-                                        DIFF = Program.ZSP[i][j][k] - DISTZ[n][m];
+                                        DIFF = Program.ZSPImm[i][j][k] - DISTZ[n][m];
                                         if ((DIFF <= 0) && (DIFF > UNTO))
                                         {
                                             UNTO = DIFF;
@@ -1346,7 +1346,7 @@ namespace GRAMM_2001
                                         if (MARK[n][m] == 1)
                                         {
                                             double TEMP1 = TEMPI[n][m];
-                                            double GEW1 = Math.Pow(DISTX[n] - Program.X[i] - Program.DDX[i] * 0.5, 2) + Math.Pow(DISTY[n] - Program.Y[j] - Program.DDY[j] * 0.5, 2);
+                                            double GEW1 = Math.Pow(DISTX[n] - Program.X[i] - Program.DDXImm[i] * 0.5, 2) + Math.Pow(DISTY[n] - Program.Y[j] - Program.DDYImm[j] * 0.5, 2);
                                             Int32 MAUT = m;
                                             for (int o = n; o <= L; o++)
                                             {
@@ -1360,7 +1360,7 @@ namespace GRAMM_2001
                                                         }
 
                                                         double TEMP2 = TEMPI[o][p];
-                                                        double GEW2 = Math.Pow(DISTX[o] - Program.X[i] - Program.DDX[i] * 0.5, 2) + Math.Pow(DISTY[o] - Program.Y[j] - Program.DDY[j] * 0.5, 2);
+                                                        double GEW2 = Math.Pow(DISTX[o] - Program.X[i] - Program.DDXImm[i] * 0.5, 2) + Math.Pow(DISTY[o] - Program.Y[j] - Program.DDYImm[j] * 0.5, 2);
                                                         if ((GEW1 == 0) && (GEW2 == 0))
                                                         {
                                                             GEW = 0.00000000001;
@@ -1375,7 +1375,7 @@ namespace GRAMM_2001
                                                         }
 
                                                         SUMGEW += 1 / GEW;
-                                                        Program.T[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (TEMP1 - TEMP2) / (DISTZ[n][m] - DISTZ[o][p]) + TEMP1) / GEW;
+                                                        Program.T[i][j][k] += ((Program.ZSPImm[i][j][k] - DISTZ[n][m]) * (TEMP1 - TEMP2) / (DISTZ[n][m] - DISTZ[o][p]) + TEMP1) / GEW;
                                                     }
                                                 }
                                             }
@@ -1393,9 +1393,9 @@ namespace GRAMM_2001
                                 //Influence of ground measurements
                                 for (int n = 1; n <= L; n++)
                                 {
-                                    if ((TEMPI[n][0] != 0) && (Math.Abs(DISTZ[n][0] - Program.ZSP[i][j][k]) < 20))
+                                    if ((TEMPI[n][0] != 0) && (Math.Abs(DISTZ[n][0] - Program.ZSPImm[i][j][k]) < 20))
                                     {
-                                        double DUMMY = Math.Sqrt(Math.Pow(DISTX[n] - Program.X[i] - Program.DDX[i] * 0.5, 2) + Math.Pow(DISTY[n] - Program.Y[j] - Program.DDY[j] * 0.5, 2));
+                                        double DUMMY = Math.Sqrt(Math.Pow(DISTX[n] - Program.X[i] - Program.DDXImm[i] * 0.5, 2) + Math.Pow(DISTY[n] - Program.Y[j] - Program.DDYImm[j] * 0.5, 2));
                                         if (DUMMY == 0)
                                         {
                                             GEW = 1 / 10000;
@@ -1420,10 +1420,10 @@ namespace GRAMM_2001
                 }
                 for (int k = 1; k <= NK; k++)
                 {
-                    if ((Program.ZSP[Program.AHMINI][Program.AHMINJ][k] >= HEIGHT) && (HEIGHT != 0))
+                    if ((Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] >= HEIGHT) && (HEIGHT != 0))
                     {
                         TFIX = Program.T[Program.AHMINI][Program.AHMINJ][k - 1];
-                        ZSPFIX = Program.ZSP[Program.AHMINI][Program.AHMINJ][k - 1];
+                        ZSPFIX = Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k - 1];
                         break;
                     }
                 }
@@ -1433,9 +1433,9 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            if ((Program.ZSP[i][j][k] >= HEIGHT) && (HEIGHT != 0))
+                            if ((Program.ZSPImm[i][j][k] >= HEIGHT) && (HEIGHT != 0))
                             {
-                                Program.T[i][j][k] = TFIX + GRADIENT1 * (Program.ZSP[i][j][k] - ZSPFIX);
+                                Program.T[i][j][k] = TFIX + GRADIENT1 * (Program.ZSPImm[i][j][k] - ZSPFIX);
                             }
                         }
                     }
@@ -1486,7 +1486,7 @@ namespace GRAMM_2001
                                     continue;
                                 }
 
-                                UNT = Program.ZSP[i][j][k] - Program.AH[i][j];
+                                UNT = Program.ZSPImm[i][j][k] - Program.AHImm[i][j];
                                 for (int n = 1; n <= L; n++)
                                 {
                                     IDOM = 0;
@@ -1503,7 +1503,7 @@ namespace GRAMM_2001
                                         if ((WINDU[n][m] != 0) || (WINDV[n][m] != 0))
                                         {
                                             DIFFST = Math.Max(DISTZ[n][0], DISTZ[n][1]) - HUG[n];
-                                            DIFF = (Program.ZSP[i][j][k] - Program.AH[i][j]) - (DISTZ[n][m] - DIFFST);
+                                            DIFF = (Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) - (DISTZ[n][m] - DIFFST);
                                             if ((DIFF <= 0) && (DIFF > UNTO))
                                             {
                                                 IDON = n;
@@ -1524,8 +1524,8 @@ namespace GRAMM_2001
                                     double GEW1 = 0;
                                     if ((IDO == 0) && (IDU == 1) && (UNT <= 70))
                                     {
-                                        USTR = WINDU[IDUN][IDUM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
-                                        GEW1 = Math.Pow((DISTX[IDUN] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDUN] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                        USTR = WINDU[IDUN][IDUM] * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
+                                        GEW1 = Math.Pow((DISTX[IDUN] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[IDUN] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                         if (GEW1 == 0)
                                         {
                                             GEW1 = 0.000000000001;
@@ -1533,13 +1533,13 @@ namespace GRAMM_2001
 
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
-                                        VSTR = WINDV[IDUN][IDUM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
+                                        VSTR = WINDV[IDUN][IDUM] * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / (DISTZ[IDUN][IDUM] - DIFFST), 0.25);
                                         Program.V[i][j][k] += VSTR / GEW1;
                                     }
                                     else if ((IDO == 1) && (IDU == 0))
                                     {
-                                        USTR = WINDU[IDON][IDOM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
-                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                        USTR = WINDU[IDON][IDOM] * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
+                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                         if (GEW1 == 0)
                                         {
                                             GEW1 = 0.000000000001;
@@ -1547,14 +1547,14 @@ namespace GRAMM_2001
 
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
-                                        VSTR = WINDV[IDON][IDOM] * Math.Pow((Program.ZSP[i][j][k] - Program.AH[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
+                                        VSTR = WINDV[IDON][IDOM] * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / (DISTZ[IDON][IDOM] - DIFFST), 0.25);
                                         Program.V[i][j][k] += VSTR / GEW1;
                                     }
                                     else if ((IDO == 1) && (IDU == 1))
                                     {
                                         USTR = WINDU[IDUN][IDUM] + (WINDU[IDON][IDOM] - WINDU[IDUN][IDUM]) /
-                                            (DISTZ[IDON][IDOM] - DISTZ[IDUN][IDUM]) * (Program.ZSP[i][j][k] - Program.AH[i][j] - DISTZ[IDUN][IDUM] + DIFFST);
-                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                            (DISTZ[IDON][IDOM] - DISTZ[IDUN][IDUM]) * (Program.ZSPImm[i][j][k] - Program.AHImm[i][j] - DISTZ[IDUN][IDUM] + DIFFST);
+                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                         if (GEW1 == 0)
                                         {
                                             GEW1 = 0.000000000001;
@@ -1563,13 +1563,13 @@ namespace GRAMM_2001
                                         Program.U[i][j][k] += USTR / GEW1;
                                         SUMGEW += 1 / GEW1;
                                         VSTR = WINDV[IDUN][IDUM] + (WINDV[IDON][IDOM] - WINDV[IDUN][IDUM]) /
-                                            (DISTZ[IDON][IDOM] - DISTZ[IDUN][IDUM]) * (Program.ZSP[i][j][k] - Program.AH[i][j] - DISTZ[IDUN][IDUM] + DIFFST);
+                                            (DISTZ[IDON][IDOM] - DISTZ[IDUN][IDUM]) * (Program.ZSPImm[i][j][k] - Program.AHImm[i][j] - DISTZ[IDUN][IDUM] + DIFFST);
                                         Program.V[i][j][k] += VSTR / GEW1;
                                     }
                                     //interpolation above Prandtl-layer
                                     else if ((IDO == 0) && (IDU == 1) && (UNT > 70) && (IDUM != 0))
                                     {
-                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                        GEW1 = Math.Pow((DISTX[IDON] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[IDON] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                         if (GEW1 == 0)
                                         {
                                             GEW1 = 0.000000000001;
@@ -1628,7 +1628,7 @@ namespace GRAMM_2001
                                             MARK[n][m] = 0;
                                             if ((WINDU[n][m] != 0) || (WINDV[n][m] != 0))
                                             {
-                                                DIFF = Program.ZSP[i][j][k] - DISTZ[n][m];
+                                                DIFF = Program.ZSPImm[i][j][k] - DISTZ[n][m];
                                                 if ((DIFF <= 0) && (DIFF > UNTO))
                                                 {
                                                     IDON = n;
@@ -1659,7 +1659,7 @@ namespace GRAMM_2001
                                             {
                                                 USTR1 = WINDU[n][m];
                                                 VSTR1 = WINDV[n][m];
-                                                GEW1 = Math.Pow((DISTX[n] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[n] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                                GEW1 = Math.Pow((DISTX[n] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[n] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                                 DUMMY = 0;
                                                 MAUT = m;
                                                 for (int o = n; o <= L; o++)
@@ -1681,7 +1681,7 @@ namespace GRAMM_2001
 
                                                             USTR2 = WINDU[o][p];
                                                             VSTR2 = WINDV[o][p];
-                                                            GEW2 = Math.Pow((DISTX[o] - Program.X[i] - Program.DDX[i] * 0.5F), 2) + Math.Pow((DISTY[o] - Program.Y[j] - Program.DDY[j] * 0.5F), 2);
+                                                            GEW2 = Math.Pow((DISTX[o] - Program.X[i] - Program.DDXImm[i] * 0.5F), 2) + Math.Pow((DISTY[o] - Program.Y[j] - Program.DDYImm[j] * 0.5F), 2);
                                                             if ((GEW1 == 0) && (GEW2 == 0))
                                                             {
                                                                 GEW = 0.0000000001;
@@ -1696,8 +1696,8 @@ namespace GRAMM_2001
                                                             }
 
                                                             SUMGEW += 1 / GEW;
-                                                            Program.U[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (USTR1 - USTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
-                                                            Program.V[i][j][k] += ((Program.ZSP[i][j][k] - DISTZ[n][m]) * (VSTR1 - VSTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
+                                                            Program.U[i][j][k] += ((Program.ZSPImm[i][j][k] - DISTZ[n][m]) * (USTR1 - USTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
+                                                            Program.V[i][j][k] += ((Program.ZSPImm[i][j][k] - DISTZ[n][m]) * (VSTR1 - VSTR2) / (DISTZ[n][m] - DISTZ[o][p]) + USTR1) / GEW;
                                                         }
                                                     }
                                                 }
@@ -1830,7 +1830,7 @@ namespace GRAMM_2001
                 Console.Write("   SURFACE PRESSURE AT SEA LEVEL            =  ");
                 PMEER = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
             }
-            Program.POBEN = PMEER * Math.Exp(-Program.ZSP[2][2][NK] / 8000);
+            Program.POBEN = PMEER * Math.Exp(-Program.ZSPImm[2][2][NK] / 8000);
 
         GOTO1234:
 
@@ -1844,7 +1844,7 @@ namespace GRAMM_2001
                         double THARM = 0;
                         for (int m = k; m <= NK - 1; m++)
                         {
-                            THARM += (Program.ZSP[i][j][m + 1] - Program.ZSP[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
+                            THARM += (Program.ZSPImm[i][j][m + 1] - Program.ZSPImm[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
                         }
                         //pressure profile
                         Program.PBZ[i][j][k] = (float)(Program.POBEN * Math.Exp(Program.GERD / Program.GASCON * THARM));
@@ -1877,7 +1877,7 @@ namespace GRAMM_2001
                         double THARM = 0;
                         for (int m = k; m <= NK - 1; m++)
                         {
-                            THARM += (Program.ZSP[i][j][m + 1] - Program.ZSP[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
+                            THARM += (Program.ZSPImm[i][j][m + 1] - Program.ZSPImm[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
                         }
 
                         //pressure profile
@@ -1929,7 +1929,7 @@ namespace GRAMM_2001
             Console.WriteLine();
             for (int k = NK; k >= 1; k--)
             {
-                Console.WriteLine("  HEIGHT : " + Convert.ToString(Math.Round(Program.ZSP[I][J1][k], 1).ToString("0.0")).PadLeft(6) +
+                Console.WriteLine("  HEIGHT : " + Convert.ToString(Math.Round(Program.ZSPImm[I][J1][k], 1).ToString("0.0")).PadLeft(6) +
                     "   Tpot = " + Convert.ToString(Math.Round(Program.T[I][J1][k], 2).ToString("0.00")).PadLeft(6) +
                     "   T = " + Convert.ToString(Math.Round(Program.TABS[I][J1][k], 2).ToString("0.00")).PadLeft(6) +
                     "   P = " + Convert.ToString(Math.Round(Program.PBZ[I][J1][k], 2).ToString("0")).PadLeft(9) +
@@ -1961,14 +1961,14 @@ namespace GRAMM_2001
                     Program.ZPROF[n] = Program.ZPROF[n - 1] + 500;
                 }
 
-                if (Program.ZPROF[n] > Program.ZSP[Program.AHMINI][Program.AHMINJ][NK])
+                if (Program.ZPROF[n] > Program.ZSPImm[Program.AHMINI][Program.AHMINJ][NK])
                 {
                     //pressure profile above GRAMM domain
                     Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][NK];
                     //temperature profile above GRAMM domain
                     Program.PPROF[n] = PMEER * Math.Exp(-Program.ZPROF[n] / 8000);
                 }
-                else if (Program.ZPROF[n] <= Program.ZSP[Program.AHMINI][Program.AHMINJ][NK])
+                else if (Program.ZPROF[n] <= Program.ZSPImm[Program.AHMINI][Program.AHMINJ][NK])
                 {
                     //temperature and pressure profile within GRAMM domain
                     UNTU = -100000;
@@ -1979,7 +1979,7 @@ namespace GRAMM_2001
                     double GRADP = 0;
                     for (int m = 1; m <= NK; m++)
                     {
-                        DIFF = Program.ZSP[Program.AHMINI][Program.AHMINJ][m] - Program.ZPROF[n];
+                        DIFF = Program.ZSPImm[Program.AHMINI][Program.AHMINJ][m] - Program.ZPROF[n];
                         if ((DIFF >= 0) && (DIFF < UNTO))
                         {
                             UNTO = DIFF;
@@ -1994,29 +1994,29 @@ namespace GRAMM_2001
                     if (INDO == 0)
                     {
                         GRAD = (Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU] - Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU - 1]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU - 1]);
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU - 1]);
                         GRADP = (Program.PBZ[Program.AHMINI][Program.AHMINJ][INDU] - Program.PBZ[Program.AHMINI][Program.AHMINJ][INDU - 1]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU - 1]);
-                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU]) * GRAD;
-                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDU] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU]) * GRADP;
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU - 1]);
+                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU]) * GRAD;
+                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDU] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU]) * GRADP;
                     }
                     else if (INDU == 0)
                     {
                         GRAD = (Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] - Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO + 1]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO + 1]);
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO + 1]);
                         GRADP = (Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] - Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO + 1]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO + 1]);
-                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO]) * GRAD;
-                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO]) * GRADP;
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO + 1]);
+                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO]) * GRAD;
+                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO]) * GRADP;
                     }
                     else
                     {
                         GRAD = (Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] - Program.TBZ[Program.AHMINI][Program.AHMINJ][INDU]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU]);
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU]);
                         GRADP = (Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] - Program.PBZ[Program.AHMINI][Program.AHMINJ][INDU]) /
-                            (Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDU]);
-                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO]) * GRAD;
-                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSP[Program.AHMINI][Program.AHMINJ][INDO]) * GRADP;
+                            (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDU]);
+                        Program.TPROF[n] = Program.TBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO]) * GRAD;
+                        Program.PPROF[n] = Program.PBZ[Program.AHMINI][Program.AHMINJ][INDO] + (Program.ZPROF[n] - Program.ZSPImm[Program.AHMINI][Program.AHMINJ][INDO]) * GRADP;
                     }
                 }
                 //compute absolute temperature based on absolute temperature

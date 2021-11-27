@@ -305,19 +305,19 @@ namespace GRAMM_2001
                         }
                         else if (i < Program.nr_cell_smooth)
                         {
-                            factor = 1 - Math.Abs((AH[Program.nr_cell_smooth][j] - AH[1][j]) / (2 * Program.DDX[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[Program.nr_cell_smooth][j] - Program.AHImm[1][j]) / (2 * Program.DDXImm[1] * Program.nr_cell_smooth));
                         }
                         else if (j < Program.nr_cell_smooth)
                         {
-                            factor = 1 - Math.Abs((AH[i][Program.nr_cell_smooth] - AH[i][1]) / (2 * Program.DDY[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[i][Program.nr_cell_smooth] - Program.AHImm[i][1]) / (2 * Program.DDYImm[1] * Program.nr_cell_smooth));
                         }
                         else if (i > BorderE)
                         {
-                            factor = 1 - Math.Abs((AH[NX - Program.nr_cell_smooth][j] - AH[NX][j]) / (2 * Program.DDX[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[NX - Program.nr_cell_smooth][j] - Program.AHImm[NX][j]) / (2 * Program.DDXImm[1] * Program.nr_cell_smooth));
                         }
                         else if (j > BorderS)
                         {
-                            factor = 1 - Math.Abs((AH[i][NY - Program.nr_cell_smooth] - AH[i][NY]) / (2 * Program.DDY[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[i][NY - Program.nr_cell_smooth] - Program.AHImm[i][NY]) / (2 * Program.DDYImm[1] * Program.nr_cell_smooth));
                         }
 
                         // check transition area
