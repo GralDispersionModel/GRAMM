@@ -11,6 +11,7 @@
 #endregion
 
 using System.Runtime.CompilerServices;
+using System;
 
 namespace GRAMM_2001
 {
@@ -22,8 +23,8 @@ namespace GRAMM_2001
         /// <param name="copyFrom">Source</param>
         /// <param name="copyTo">Destination</param>
         /// <param name="length">Number of elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public static void CopyArrayLockSource(double[] copyFrom, double[] copyTo)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        public static unsafe void CopyArrayLockSource(double[] copyFrom, double[] copyTo)
         {
             lock (copyFrom.SyncRoot)
             {
@@ -38,10 +39,15 @@ namespace GRAMM_2001
                 //         }
                 //     }
                 // }
-                for (int i = 0; i < copyFrom.Length; i++)
+                fixed (double* source = copyFrom, dest = copyTo)
                 {
-                    copyTo[i] = copyFrom[i];
+                    long length = copyFrom.LongLength * sizeof(double);
+                    Buffer.MemoryCopy(source, dest, length, length);
                 }
+                // for (int i = 0; i < copyFrom.Length; i++)
+                // {
+                //     copyTo[i] = copyFrom[i];
+                // }
             }
         }
 
@@ -51,7 +57,7 @@ namespace GRAMM_2001
         /// <param name="copyFrom">Source</param>
         /// <param name="copyTo">Destination</param>
         /// <param name="length">Number of elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
         public static void CopyArray(double[] copyFrom, double[] copyTo, int length)
         {
             int i = 0;
@@ -77,13 +83,18 @@ namespace GRAMM_2001
         /// <param name="copyFrom">Source</param>
         /// <param name="copyTo">Destination</param>
         /// <param name="length">Number of elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public static void CopyArraySourceLen(double[] copyFrom, double[] copyTo)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        public static unsafe void CopyArraySourceLen(double[] copyFrom, double[] copyTo)
         {
-            for (int i = 0; i < copyFrom.Length; i++)
+            fixed (double* source = copyFrom, dest = copyTo)
             {
-                copyTo[i] = copyFrom[i];
+                long length = copyFrom.LongLength * sizeof(double);
+                Buffer.MemoryCopy(source, dest, length, length);
             }
+            // for (int i = 0; i < copyFrom.Length; i++)
+            // {
+            //     copyTo[i] = copyFrom[i];
+            // }
         }
         /// <summary>
         /// Copy an array using the destination length
@@ -91,7 +102,7 @@ namespace GRAMM_2001
         /// <param name="copyFrom">Source</param>
         /// <param name="copyTo">Destination</param>
         /// <param name="length">Number of elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
         public static void CopyArrayDestLen(double[] copyFrom, double[] copyTo)
         {
             int i = 0;
@@ -107,8 +118,8 @@ namespace GRAMM_2001
         /// <param name="copyFrom">Source</param>
         /// <param name="copyTo">Destination</param>
         /// <param name="length">Number of elements</param>
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public static void CopyArrayLockDest(double[] copyFrom, double[] copyTo)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
+        public static unsafe void CopyArrayLockDest(double[] copyFrom, double[] copyTo)
         {
             lock (copyTo.SyncRoot)
             {
@@ -122,11 +133,16 @@ namespace GRAMM_2001
                 //             Avx.Store(dest + i, Avx.LoadVector256(source + i));
                 //         }
                 //     }
-                // }            
-                for (int i = 0; i < copyTo.Length; i++)
+                // }    
+                fixed (double* source = copyFrom, dest = copyTo)
                 {
-                    copyTo[i] = copyFrom[i];
-                }
+                    long length = copyTo.LongLength * sizeof(double);
+                    Buffer.MemoryCopy(source, dest, length, length);
+                }        
+                // for (int i = 0; i < copyTo.Length; i++)
+                // {
+                //     copyTo[i] = copyFrom[i];
+                // }
             }
         }
     }

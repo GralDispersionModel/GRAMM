@@ -232,7 +232,7 @@ namespace GRAMM_2001
         /// <param name="InnerLoopNmax">Maximum for the inner loop</param>
         /// <param name="outerLoopDir">true=--, false=++</param>
         /// <param name="innerLoopDir">true=--, false=++</param>
-        /// <param name="isOuterLoopI">true=outer loop = i, false=outer loop = j</param>
+        /// <param name="isOuterLoopI">true: outer loop = i, false: outer loop = j</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
         [SkipLocalsInit]
         private static void UIMPKernel(System.Tuple<int, int> range, int InnerLoopNmax, int NK_P, bool outerLoopDir, bool innerLoopDir, bool isOuterLoopI)

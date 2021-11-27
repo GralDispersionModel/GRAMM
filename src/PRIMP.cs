@@ -126,7 +126,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -169,7 +169,7 @@ namespace GRAMM_2001
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
 
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -320,7 +320,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -360,7 +360,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -512,7 +512,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -552,7 +552,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -700,7 +700,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -740,7 +740,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -887,7 +887,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -927,7 +927,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -1075,7 +1075,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -1114,7 +1114,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -1262,7 +1262,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -1300,7 +1300,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
@@ -1448,7 +1448,7 @@ namespace GRAMM_2001
                                 int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
 
                                 //Coefficients for the lower half-cell
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DIM = SUZ_L[k] * AREAZ_L[k] - AE_L[kn] * DPXi_L[k - 1] -
                                         AN_L[kn] * DPYj_L[k - 1] - AW_L[kn] * DPX_L[k] -
@@ -1488,7 +1488,7 @@ namespace GRAMM_2001
                             for (int kn1 = 1; kn1 <= 2 * (NK_P - 1); ++kn1)
                             {
                                 int k1 = 1 + kn1 >> 1;  // (int) (kn1 * 0.5F + 0.5F)
-                                if ((m - 1) == 1)
+                                if (m == 2)
                                 {
                                     DPZ_L[k1] = PIM[kn1] * DP_L[k1 - 1] + QIM[kn1];
                                     m--;
