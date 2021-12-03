@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "GRAMM": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\GitHub\\GRAMM\\src\\bin\\Debug\\net6.0",
+      "hotReloadEnabled": false
+    }
+  }
+}

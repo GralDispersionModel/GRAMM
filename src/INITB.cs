@@ -358,8 +358,8 @@ namespace GRAMM_2001
 
                     for (int k = NK; k >= 1; k--)
                     {
-                        Program.U1NRHO[i][j][k] = (float)(U_L[k] * Program.RHOImm[i][j][k]);
-                        Program.U2NRHO[i][j][k] = (float)(U_L[k] * Program.RHOImm[i][j][k]);
+                        Program.U1NRHO[i][j][k] = (float)(U_L[k] * Program.RHO[i][j][k]);
+                        Program.U2NRHO[i][j][k] = (float)(U_L[k] * Program.RHO[i][j][k]);
                         Program.U1[i][j][k] = U_L[k];
                         Program.U2[i][j][k] = U_L[k];
                         Program.U1N[i][j][k] = U_L[k];
@@ -461,8 +461,8 @@ namespace GRAMM_2001
 
                     for (int k = NK; k >= 1; k--)
                     {
-                        Program.V1NRHO[i][j][k] = (float)(V_L[k] * Program.RHOImm[i][j][k]);
-                        Program.V2NRHO[i][j][k] = (float)(V_L[k] * Program.RHOImm[i][j][k]);
+                        Program.V1NRHO[i][j][k] = (float)(V_L[k] * Program.RHO[i][j][k]);
+                        Program.V2NRHO[i][j][k] = (float)(V_L[k] * Program.RHO[i][j][k]);
                         Program.V1[i][j][k] = V_L[k];
                         Program.V2[i][j][k] = V_L[k];
                         Program.V1N[i][j][k] = V_L[k];
@@ -851,7 +851,7 @@ namespace GRAMM_2001
                     for (int k = 1; k < NK; k++)
                     {
                         IZELL++;
-                        VOLSUM += Program.VOL[i][j][k] * 0.000000001;
+                        VOLSUM += Program.VOLImm[i][j][k] * 0.000000001;
                     }
                 }
             }

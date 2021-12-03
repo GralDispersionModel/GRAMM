@@ -9,7 +9,7 @@
 /// You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ///</remarks>
 #endregion
-
+using System;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
@@ -40,12 +40,12 @@ namespace GRAMM_2001
                     double[] AS_L = Program.AS[i][j];
                     double[] AT_L = Program.AT[i][j];
                     double[] AW_L = Program.AW[i][j];
-                    float[] AREA_L = Program.AREAImm[i][j];
-                    float[] AREAX_L = Program.AREAXImm[i][j];
-                    float[] AREAY_L = Program.AREAYImm[i][j];
-                    float[] AREAZX_L = Program.AREAZXImm[i][j];
-                    float[] AREAZY_L = Program.AREAZYImm[i][j];
-                    float[] RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
 
                     int m = 2;
 
@@ -62,7 +62,7 @@ namespace GRAMM_2001
                             RHO_AIM = RHO * AIM_Rez;
                             //double AIM_RezM1 = Program.AIM_Rez[i][j][kn-1];
                             AIM_RezM1 = 1 / AP0_L[k - 1];
-                            RHOM1 = Program.RHOImm[i][j][k - 1];
+                            RHOM1 = Program.RHO[i][j][k - 1];
                             RHOM1_AIMM1 = RHOM1 * AIM_RezM1;
                             AREAX_LL = AREAX_L[k];
                             AREAY_LL = AREAY_L[k];

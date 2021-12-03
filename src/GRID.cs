@@ -391,22 +391,6 @@ namespace GRAMM_2001
                 }
             }
 
-            Console.Write("I");
-            Program.AHImm = ImmutableArray.Create(Program.AH);
-            Program.ZSPImm = ImmutableArray.Create(Program.ZSP);
-            Program.VOLImm = ImmutableArray.Create(Program.VOL);
-            Program.DDXImm = ImmutableArray.Create(Program.DDX);
-            Program.DDYImm = ImmutableArray.Create(Program.DDY);
-            Program.AREAImm = ImmutableArray.Create(Program.AREA);
-            Program.AREAXImm = ImmutableArray.Create(Program.AREAX);
-            Program.AREAYImm = ImmutableArray.Create(Program.AREAY);
-            Program.AREAZXImm = ImmutableArray.Create(Program.AREAZX);
-            Program.AREAZYImm = ImmutableArray.Create(Program.AREAZY);
-            Program.AREAZImm = ImmutableArray.Create(Program.AREAZ);
-            Program.AREAXYZImm = ImmutableArray.Create(Program.AREAXYZ);
-
-            Console.WriteLine("I");
-
             //check whether array dimensions given in the input file GRAMM.geb meets the one of the input file ggeom.asc
             if (NX != Program.NX)
             {
@@ -447,7 +431,7 @@ namespace GRAMM_2001
                 {
                     for (int k = 1; k <= Program.NZ; k++)
                     {
-                        Program.AREA[i][j][k] = Program.DDX[i] * Program.DDYImm[j];
+                        Program.AREA[i][j][k] = Program.DDX[i] * Program.DDY[j];
                     }
                 }
             });
@@ -485,6 +469,43 @@ namespace GRAMM_2001
                     }
                 }
             });
+
+            for (int i = 1; i < NX + 1; i++)
+            {
+                Program.AHImm[i] = ImmutableArray.Create(Program.AH[i]);
+            }
+
+            //create immutable arrays
+            for (int i = 1; i < NX + 1; i++)
+            {
+                for (int j = 1; j < NY + 1; j++)
+                {
+                    Program.ZSPImm[i][j]     = ImmutableArray.Create(Program.ZSP[i][j]);
+                    Program.VOLImm[i][j]     = ImmutableArray.Create(Program.VOL[i][j]);
+                    Program.AREAImm[i][j]    = ImmutableArray.Create(Program.AREA[i][j]);
+                    Program.AREAZXImm[i][j]  = ImmutableArray.Create(Program.AREAZX[i][j]);
+                    Program.AREAZYImm[i][j]  = ImmutableArray.Create(Program.AREAZY[i][j]);
+                    Program.AREAZImm[i][j]   = ImmutableArray.Create(Program.AREAZ[i][j]);
+                    Program.AREAXYZImm[i][j] = ImmutableArray.Create(Program.AREAXYZ[i][j]);
+                }
+            }
+            for (int i = 1; i < NX + 2; i++)
+            {
+                for (int j = 1; j < NY + 1; j++)
+                {
+                    Program.AREAXImm[i][j]   = ImmutableArray.Create(Program.AREAX[i][j]);
+                }
+            }
+            for (int i = 1; i < NX + 1; i++)
+            {
+                for (int j = 1; j < NY + 2; j++)
+                {
+                    Program.AREAYImm[i][j]   = ImmutableArray.Create(Program.AREAY[i][j]);
+                }
+            }
+            DDXImm = ImmutableArray.Create(Program.DDX);
+            DDYImm = ImmutableArray.Create(Program.DDY);
+            
             Console.WriteLine("Minimum and maximum surface elevations: " + Convert.ToString(Math.Round(Program.AHMIN, 0)) + "m  " + Convert.ToString(Math.Round(Program.AHMAX, 0)) + "m ");
 
             //computation of geometry data for the radiation model
@@ -520,12 +541,12 @@ namespace GRAMM_2001
                         {
                             if (k > 1)
                             {
-                                if ((Program.ZSP[i][j][kk] >= Program.ZZ[k - 1]) && (Program.ZSP[i][j][kk] < Program.ZZ[k]))
+                                if ((Program.ZSPImm[i][j][kk] >= Program.ZZ[k - 1]) && (Program.ZSPImm[i][j][kk] < Program.ZZ[k]))
                                 {
                                     Program.NBZKP[i][j][kk] = k;
-                                    Program.PNBZKP[i][j][kk] = (Program.ZSP[i][j][kk] - Program.ZZ[k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]);
+                                    Program.PNBZKP[i][j][kk] = (Program.ZSPImm[i][j][kk] - Program.ZZ[k - 1]) / (Program.ZZ[k] - Program.ZZ[k - 1]);
                                 }
-                                else if (Program.ZSP[i][j][kk] >= Program.ZZ[Program.NZ])
+                                else if (Program.ZSPImm[i][j][kk] >= Program.ZZ[Program.NZ])
                                 {
                                     Program.NBZKP[i][j][kk] = Program.NZ;
                                     Program.PNBZKP[i][j][kk] = 1;
@@ -533,7 +554,7 @@ namespace GRAMM_2001
                             }
                             else
                             {
-                                if (Program.ZSP[i][j][kk] < Program.ZZ[k])
+                                if (Program.ZSPImm[i][j][kk] < Program.ZZ[k])
                                 {
                                     Program.NBZKP[i][j][kk] = k;
                                     Program.PNBZKP[i][j][kk] = 1;

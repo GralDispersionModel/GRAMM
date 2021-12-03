@@ -35,7 +35,7 @@ namespace GRAMM_2001
 
                 for (int j = 1; j <= NJ_P; j++)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                     float[] U1NRHO_L = Program.U1NRHO[i][j];
                     float[] U2NRHO_L = Program.U2NRHO[i][j];
                     float[] V1NRHO_L = Program.V1NRHO[i][j];
@@ -96,13 +96,13 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> V2NRHO_L = Program.V2NRHO[i][j];
                     ReadOnlySpan<float> W1NRHO_L = Program.W1NRHO[i][j];
                     ReadOnlySpan<float> W2NRHO_L = Program.W2NRHO[i][j];               
-                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
-                    ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j];
-                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j];
-                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j];
-                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j];
-                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j];
-                    ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
                     float[] SUX_L = Program.SUX[i][j];
                     float[] SUY_L = Program.SUY[i][j];
                     float[] SUZ_L = Program.SUZ[i][j];
@@ -185,15 +185,15 @@ namespace GRAMM_2001
             //            }
 
             //solve the non-hydrostatic pressure equation iteratively using the TDMA or Thomas-algorithm
-            Program.INUMS = 0;
-            while (Program.INUMS < 9)
+            // Program.INUMS = 0;
+            // while (Program.INUMS < 9)
+            // {
+            //     Program.INUMS++;
+            if (Program.ICPN == true)
             {
-                Program.INUMS++;
-                if (Program.ICPN == true)
-                {
-                    Primp_calculate(NI, NJ, NK);
-                }
+                Program.INUMS = Primp_calculate(NI, NJ, NK);
             }
+            // }
 
             //compute pressure gradients to correct wind speeds
             Parallel.For(2, NI, Program.pOptions, i =>
@@ -201,11 +201,14 @@ namespace GRAMM_2001
                 int NK_P = NK; int NJ_P = NJ;
                 for (int j = 2; j <= NJ_P - 1; j++)
                 {
-                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
-                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j];
-                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j];
-                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j];
-                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAXiP_L = Program.AREAXImm[i + 1][j].AsSpan();
+                    ReadOnlySpan<float> AREAYjP_L = Program.AREAYImm[i][j + 1].AsSpan();
+
                     ReadOnlySpan<float> AP0_L = Program.AP0[i][j];
 
                     double[] DP_L = Program.DP[i][j];
@@ -224,6 +227,9 @@ namespace GRAMM_2001
                     double[] DDP2DZ_L = Program.DDP2DZ[i][j];
                     ReadOnlySpan<double> DPX_L = Program.DPX[i][j];
                     ReadOnlySpan<double> DPY_L = Program.DPY[i][j];
+                    ReadOnlySpan<double> DPXiP_L = Program.DPX[i + 1][j];
+                    ReadOnlySpan<double> DPYjP_L = Program.DPY[i][j + 1];
+
                     double[] UN_L  = Program.UN[i][j];
                     double[] VN_L  = Program.VN[i][j];
                     double[] WN_L  = Program.WN[i][j];
@@ -246,11 +252,11 @@ namespace GRAMM_2001
 
                             DDP1DX_L[k] = (AREAX_L[k] * DPX_L[k] - f1 + AREAZX_L[k] * DPZ_LL);
 
-                            DDP2DX_L[k] = (-Program.AREAXImm[i + 1][j][k] * Program.DPX[i + 1][j][k] + f1 - AREAZX_L[k + 1] * DPZp_LL);
+                            DDP2DX_L[k] = (-AREAXiP_L[k] * DPXiP_L[k] + f1 - AREAZX_L[k + 1] * DPZp_LL);
 
                             DDP1DY_L[k] = (AREAY_L[k] * DPY_L[k] - f2 + AREAZY_L[k] * DPZ_LL);
 
-                            DDP2DY_L[k] = (-Program.AREAYImm[i][j + 1][k] * Program.DPY[i][j + 1][k] + f2 - AREAZY_L[k + 1] * DPZp_LL);
+                            DDP2DY_L[k] = (-AREAYjP_L[k] * DPYjP_L[k] + f2 - AREAZY_L[k + 1] * DPZp_LL);
 
                             DDP1DZ_L[k] = AREA_L[k] * (DPZ_LL - DP_LL);
 
@@ -295,7 +301,7 @@ namespace GRAMM_2001
                 int NK_P = NK; int NJ_P = NJ;
                 for (int j = 1; j <= NJ_P; j++)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                     float[] U1NRHO_L = Program.U1NRHO[i][j];
                     float[] U2NRHO_L = Program.U2NRHO[i][j];
                     float[] V1NRHO_L = Program.V1NRHO[i][j];
@@ -341,13 +347,13 @@ namespace GRAMM_2001
                         float[] SUZ_L = Program.SUZ[i][j];
                         float[] SUXYZ_L = Program.SUXYZ[i][j];
 
-                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
-                        ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j];
-                        ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j];
-                        ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j];
-                        ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j];
-                        ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j];
-                        ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
 
                         ReadOnlySpan<float> U1NRHO_L = Program.U1NRHO[i][j];
                         ReadOnlySpan<float> U2NRHO_L = Program.U2NRHO[i][j];

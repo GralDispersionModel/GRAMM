@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
@@ -99,7 +100,7 @@ namespace GRAMM_2001
                   {
                       for (int j = 1; j <= NJ; j++)
                       {
-                          float[] ZSP_L = Program.ZSPImm[i][j];
+                          ImmutableArray<float> ZSP_L = Program.ZSPImm[i][j];
                           double[] UG_L = Program.UG[i][j];
                           double[] VG_L = Program.VG[i][j];
                           double AH = Program.AHImm[i][j];

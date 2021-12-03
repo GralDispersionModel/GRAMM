@@ -86,8 +86,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -146,8 +146,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -206,8 +206,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -266,8 +266,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -326,8 +326,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -386,8 +386,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)
@@ -448,8 +448,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -508,8 +508,8 @@ namespace GRAMM_2001
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
                 double DIM;
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)

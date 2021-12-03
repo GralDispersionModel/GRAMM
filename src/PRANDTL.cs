@@ -40,7 +40,7 @@ namespace GRAMM_2001
                         ref double GlobRad = ref Program.GLOBRAD[i][j]; 
 
                         int k = 1;
-                        double ANUE = Program.VISEL / Program.RHOImm[i][j][k];
+                        double ANUE = Program.VISEL / Program.RHO[i][j][k];
                         double Z1 = Program.ZSPImm[i][j][k] - Program.AHImm[i][j];
                         double ZETA = Math.Max(Z1 - Program.Z0[i][j], 0.1) / OL;
 
@@ -250,7 +250,7 @@ namespace GRAMM_2001
                           double DVDZ = Pow2(Program.V[i][j][1] * DZZZ);
                           double DGDZ = DUDZ + DVDZ;
                           double[] RITSCH_L = Program.RITSCH[i][j];
-                          float[] ZSP_L = Program.ZSPImm[i][j];
+                          ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                           double[] T_L = Program.T[i][j];
                           double[] QU_L = Program.QU[i][j];
                           double[] U_L = Program.U[i][j];
@@ -320,7 +320,7 @@ namespace GRAMM_2001
                 {
                     int k = 1;
                     double DDX_DDY = Program.DDXImm[i] * Program.DDYImm[j];
-                    float RHO_L = (float)(Program.RHOImm[i][j][k] * Program.UST[i][j]);
+                    float RHO_L = (float)(Program.RHO[i][j][k] * Program.UST[i][j]);
                     float XWQ_L = Program.XWQ[i][j];
                     double QU_L = Program.QU[i][j][k];
                     // float PBZ_L = Program.PBZ[i][j][k];

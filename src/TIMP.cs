@@ -34,9 +34,9 @@ namespace GRAMM_2001
                     ReadOnlySpan<double> NBZKP_L = Program.NBZKP[i][j];
                     ReadOnlySpan<double> PNBZKP_L = Program.PNBZKP[i][j];
                     double[] RADIATION_L = Program.RADIATION[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
-                    ReadOnlySpan<float> VOL_J = Program.VOLImm[i][j];
-
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> VOL_J = Program.VOLImm[i][j].AsSpan();
+                    
                     for (int k = 1; k <= NK - 1; ++k)
                     {
                         int KKAP = (int)(Math.Floor(NBZKP_L[k]));
@@ -73,6 +73,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNiM_L;
                 double[] TNiP_L;
@@ -91,18 +93,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
                         //Avoid race conditions at the border cells of the sequential calculated stripes
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNiM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNiP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
                             Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
@@ -142,16 +144,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNiM_L);
-                            Program.GrammArrayPool.Return(TNiP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
             });
 
 
@@ -166,6 +168,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNiM_L;
                 double[] TNiP_L;
@@ -184,18 +188,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNiM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNiP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
                             Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
@@ -236,16 +240,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNiM_L);
-                            Program.GrammArrayPool.Return(TNiP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
             });
 
 
@@ -260,6 +264,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNiM_L;
                 double[] TNiP_L;
@@ -278,18 +284,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNiM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNiP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
                             Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
@@ -330,16 +336,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNiM_L);
-                            Program.GrammArrayPool.Return(TNiP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
             });
 
             range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
@@ -354,6 +360,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNiM_L;
                 double[] TNiP_L;
@@ -372,18 +380,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNiM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNiP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
                             Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
@@ -424,16 +432,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNiM_L);
-                            Program.GrammArrayPool.Return(TNiP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
             });
 
             range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
@@ -448,6 +456,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNjM_L;
                 double[] TNjP_L;
@@ -466,18 +476,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNiM_L = Program.TN[i - 1][j]; ReadOnlySpan<double> TNiP_L = Program.TN[i + 1][j];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNjM_L = TNjM_LR;
+                            TNjP_L = TNjP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNjM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNjP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
                             Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
@@ -518,16 +528,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNjM_L);
-                            Program.GrammArrayPool.Return(TNjP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNjM_LR);
+                Program.GrammArrayPool.Return(TNjP_LR);
             });
 
             range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 - 4);
@@ -541,6 +551,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNjM_L;
                 double[] TNjP_L;
@@ -559,18 +571,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNiM_L = Program.TN[i - 1][j]; ReadOnlySpan<double> TNiP_L = Program.TN[i + 1][j];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNjM_L = TNjM_LR;
+                            TNjP_L = TNjP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNjM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNjP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
                             Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
@@ -611,16 +623,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNjM_L);
-                            Program.GrammArrayPool.Return(TNjP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNjM_LR);
+                Program.GrammArrayPool.Return(TNjP_LR);
             });
 
             range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2 + 4);
@@ -634,6 +646,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNjM_L;
                 double[] TNjP_L;
@@ -652,18 +666,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNiM_L = Program.TN[i - 1][j]; ReadOnlySpan<double> TNiP_L = Program.TN[i + 1][j];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNjM_L = TNjM_LR;
+                            TNjP_L = TNjP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNjM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNjP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
                             Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
@@ -704,16 +718,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNjM_L);
-                            Program.GrammArrayPool.Return(TNjP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNjM_LR);
+                Program.GrammArrayPool.Return(TNjP_LR);
             });
 
             range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
@@ -728,6 +742,8 @@ namespace GRAMM_2001
                 Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNjP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
                 double[] TN_L;
                 double[] TNjM_L;
                 double[] TNjP_L;
@@ -746,18 +762,18 @@ namespace GRAMM_2001
                         ReadOnlySpan<double> B_PS_L = Program.B_PS[i][j];
                         ReadOnlySpan<double> C_PS_L = Program.C_PS[i][j];
                         ReadOnlySpan<float> FAC_L = Program.FAC[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         ReadOnlySpan<double> T_L = Program.T[i][j];
                         ReadOnlySpan<double> RADIATION_L = RADIATION[i][j];
                         double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
                         ReadOnlySpan<double> TNiM_L = Program.TN[i - 1][j]; ReadOnlySpan<double> TNiP_L = Program.TN[i + 1][j];
 
-                        if (border < 2)
+                        if (border < 1)
                         {
                             TN_L = TN_LR;
+                            TNjM_L = TNjM_LR;
+                            TNjP_L = TNjP_LR;
                             Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            TNjM_L = Program.GrammArrayPool.Rent(Program.NZ1);
-                            TNjP_L = Program.GrammArrayPool.Rent(Program.NZ1);
                             Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
                             Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
@@ -798,16 +814,16 @@ namespace GRAMM_2001
                         {
                             TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
                         }
-                        if (border < 2)
+                        if (border < 1)
                         {
                             Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                            Program.GrammArrayPool.Return(TNjM_L);
-                            Program.GrammArrayPool.Return(TNjP_L);
                         }
 
                     }
                 }
                 Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNjM_LR);
+                Program.GrammArrayPool.Return(TNjP_LR);
             });
 
         }

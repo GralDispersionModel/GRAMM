@@ -13,6 +13,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
@@ -141,6 +142,18 @@ namespace GRAMM_2001
             AREAZY = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ2]));
             AHE = CreateArray<float[][]>(NX2, () => CreateArray<float[]>(NY2, () => new float[NZ2]));
             ZSP = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
+            
+            AHImm   = new ImmutableArray<float>[NX1];
+            ZSPImm  = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            VOLImm  = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAXImm = CreateArray<ImmutableArray<float>[]>(NX2, () => new ImmutableArray<float>[NY1]);
+            AREAYImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY2]);
+            AREAZXImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAZYImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAZImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAXYZImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            
             DDX = new float[NX1];
             DDY = new float[NY1];
             ZAX = new float[NX1];

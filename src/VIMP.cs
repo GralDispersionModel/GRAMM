@@ -36,10 +36,10 @@ namespace GRAMM_2001
                         double[] DIMV_L = Program.DIMV[i][j];
                         float[] F1V_L = Program.F1V[i][j];
                         float[] F2V_L = Program.F2V[i][j];
-                        float[] RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         double[] U1N_L = Program.U1N[i][j];
                         double[] UG_L = Program.UG[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] TPDY_L = Program.TPDY[i][j];
                         double[] TPDY_M_L = Program.TPDY[i][j - 1];
 
@@ -71,8 +71,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
                     for (int i = range.Item1; i < range.Item2; i++)
                     {
@@ -83,13 +83,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -176,8 +176,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int ih = range.Item1; ih < range.Item2; ih++)
@@ -190,13 +190,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -283,8 +283,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int jh = range.Item1; jh < range.Item2; jh++)
@@ -297,13 +297,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -389,8 +389,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int j = range.Item1; j < range.Item2; j++)
@@ -402,13 +402,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -494,8 +494,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int ih = range.Item1; ih < range.Item2; ih++)
@@ -508,13 +508,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -600,8 +600,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
                     for (int i = range.Item1; i < range.Item2; i++)
                     {
@@ -612,13 +612,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -704,8 +704,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int jh = range.Item1; jh < range.Item2; jh++)
@@ -718,13 +718,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 
@@ -810,8 +810,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
                     for (int j = range.Item1; j < range.Item2; j++)
                     {
@@ -822,13 +822,13 @@ namespace GRAMM_2001
                             float[] AIM_L = Program.AIM[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AS1_L = Program.AS1[i][j];
-                            float[] AREA_L = Program.AREAImm[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1V_L = Program.F1V[i][j];
                             float[] F2V_L = Program.F2V[i][j];
-                            float[] RHO_L = Program.RHOImm[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                             double[] V1N_L = Program.V1N[i][j]; double[] V1Ni_L = Program.V1N[i + 1][j]; double[] V1NJ_P_L = Program.V1N[i][j + 1];
                             double[] V2N_L = Program.V2N[i][j]; double[] V2Ni_L = Program.V2N[i - 1][j]; double[] V2NJ_P_L = Program.V2N[i][j - 1];
 

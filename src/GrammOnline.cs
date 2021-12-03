@@ -270,7 +270,7 @@ namespace GRAMM_2001
                         return Math.Round(val, 3);
 
                     case 15: // ausgabe des latenten Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                        return Math.Round(Program.XWQ[o][jj] * Program.RHOImm[o][jj][1] * Program.UST[o][jj] * Program.ALW * (Program.QU[o][jj][1] - Program.QUG[o][jj]) / 1000, 3);
+                        return Math.Round(Program.XWQ[o][jj] * Program.RHO[o][jj][1] * Program.UST[o][jj] * Program.ALW * (Program.QU[o][jj][1] - Program.QUG[o][jj]) / 1000, 3);
 
                     case 16: //  ausgabe der Schubspannungsgeschwindigkeit fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         return Math.Round(Program.UST[o][jj], 3);

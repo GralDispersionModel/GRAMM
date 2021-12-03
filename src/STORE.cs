@@ -122,7 +122,7 @@ namespace GRAMM_2001
                         float[] VG1_L = Program.VG1[i][j];
                         float[] UG2_L = Program.UG2[i][j];
                         float[] VG2_L = Program.VG2[i][j];
-                        float[] ZSP_L = Program.ZSPImm[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
 
                         for (int k = 1; k <= NK; k++)
                         {
@@ -226,7 +226,7 @@ namespace GRAMM_2001
                     Program.Longradrec[ianz] += (Program.RL[Program.inrec[ianz]][Program.jnrec[ianz]] - Program.EPSG[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.SIGMA * Pow4(Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2])) * Program.DT / 3600;
                     Program.Sensheatfluxrec[ianz] += Program.WQU[Program.inrec[ianz]][Program.jnrec[ianz]] / Program.DDXImm[1] / Program.DDYImm[1] * Program.DT / 3600;
                     double ALW1 = Program.ALW - 2300 * (Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.15);
-                    Program.Latheatfluxrec[ianz] += Program.XWQ[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.RHOImm[Program.inrec[ianz]][Program.jnrec[ianz]][1] * Program.UST[Program.inrec[ianz]][Program.jnrec[ianz]] * ALW1 * (Program.QU[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.QUG[Program.inrec[ianz]][Program.jnrec[ianz]]) * 0.001 * Program.DT / 3600;
+                    Program.Latheatfluxrec[ianz] += Program.XWQ[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.RHO[Program.inrec[ianz]][Program.jnrec[ianz]][1] * Program.UST[Program.inrec[ianz]][Program.jnrec[ianz]] * ALW1 * (Program.QU[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.QUG[Program.inrec[ianz]][Program.jnrec[ianz]]) * 0.001 * Program.DT / 3600;
                 }
             }
 
@@ -304,7 +304,7 @@ namespace GRAMM_2001
                     {
                         for (int j = 2; j <= NJ - 1; j++)
                         {
-                            float[] ZSP_L = Program.ZSPImm[i][j];
+                            ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                             double[] U_L = Program.U[i][j];
                             double[] V_L = Program.V[i][j];
                             double[] VISV_L = Program.VISV[i][j];
@@ -455,8 +455,8 @@ namespace GRAMM_2001
                     {
                         if (j == 1)
                         {
-                            float RHO3 = Program.RHOImm[i][1][k];
-                            float RHO4 = Program.RHOImm[i][NJ][k];
+                            float RHO3 = Program.RHO[i][1][k];
+                            float RHO4 = Program.RHO[i][NJ][k];
 
                             Program.U2NRHO[i][1][k] = (float)(Program.U[i][1][k] * RHO3);
                             Program.U1NRHO[i][NJ][k] = (float)(Program.U[i][NJ][k] * RHO4);
@@ -470,8 +470,8 @@ namespace GRAMM_2001
 
                         if (i == 1)
                         {
-                            float RHO1 = Program.RHOImm[1][j][k];
-                            float RHO2 = Program.RHOImm[NI][j][k];
+                            float RHO1 = Program.RHO[1][j][k];
+                            float RHO2 = Program.RHO[NI][j][k];
 
                             Program.U2NRHO[1][j][k] = (float)(Program.U[1][j][k] * RHO1);
                             Program.U1NRHO[NI][j][k] = (float)(Program.U[NI][j][k] * RHO2);

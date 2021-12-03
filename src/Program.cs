@@ -475,7 +475,7 @@ Console.WriteLine("| .Net Core Version |");
                             TLIMIT += TLIMIT2;
                             DTI += TLIMIT2;
                             clear_arrays();
-                            GEOM();
+                            //GEOM(); //Not needed - the grid is immutable
                             goto NEXTWEATHERSITUATION;
                         }
 

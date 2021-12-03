@@ -126,8 +126,7 @@ namespace GRAMM_2001
                         }
                     }
                 });
-                RHOImm = ImmutableArray.Create(Program.RHO);
-
+                
                 //Alpha: parameter used for nudging variables towards large-scale values at lateral boundaries
                 for (int k = 1; k <= NK; k++)
                 {

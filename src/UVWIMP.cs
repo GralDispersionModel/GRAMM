@@ -53,14 +53,14 @@ namespace GRAMM_2001
                         float[] F2V_L = Program.F2V[i][j];
                         float[] F1W_L = Program.F1W[i][j];
                         float[] F2W_L = Program.F2W[i][j];
-                        float[] RHO_L = Program.RHOImm[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                         float[] RHOBZ_L = Program.RHOBZ[i][j];
                         double[] QUN_L = Program.QUN[i][j];
                         double[] QBZ_L = Program.QBZ[i][j];
 
                         double[] V1N_LR = Program.V1N[i][j];
                         double[] U1N_LR = Program.U1N[i][j];
-                        float[] VOL_L = Program.VOLImm[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] UG_L = Program.UG[i][j];
                         double[] VG_L = Program.VG[i][j];
                         double[] W1N_LR = Program.W1N[i][j];
@@ -291,9 +291,9 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> AE2_L = Program.AE2[i][j];
                     ReadOnlySpan<float> AN2_L = Program.AN2[i][j];
                     ReadOnlySpan<float> AIM_L = Program.AIM[i][j];
-                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j];
-                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j];
-                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j];
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
                     ReadOnlySpan<float> AS1_L = Program.AS1[i][j];
                     ReadOnlySpan<float> AW1_L = Program.AW1[i][j];
                     ReadOnlySpan<float> BIM_L = Program.BIM[i][j];
@@ -304,7 +304,7 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> F2V_L = Program.F2V[i][j];
                     ReadOnlySpan<float> F1W_L = Program.F1W[i][j];
                     ReadOnlySpan<float> F2W_L = Program.F2W[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHOImm[i][j];
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
                     double[] U1Ni_L = Program.U1N[i + 1][j];
                     double[] U1NJ_P_L = Program.U1N[i][j + 1];
                     double[] U2Ni_L = Program.U2N[i - 1][j];
@@ -326,7 +326,7 @@ namespace GRAMM_2001
                     double[] W2N_LR;
 
                     //Avoid race conditions at the border cells of the sequential calculated stripes
-                    if (border < 2)
+                    if (border < 1)
                     {
                         U1N_LR = U1N_LRR;
                         V1N_LR = V1N_LRR;
@@ -370,7 +370,7 @@ namespace GRAMM_2001
                             as1 = AS1_L[k];
 
                             // UVW - Component
-                            if (border < 2)
+                            if (border < 1)
                             {
                                 lock (U2Ni_L.SyncRoot)
                                 {
@@ -488,7 +488,7 @@ namespace GRAMM_2001
                         W1N_LR[k] += (relaxv * (PIMW[kn] * W2N_LR[k] + QIMW[kn] - W1N_LR[k]));
                     }
                     //Avoid race conditions at the border cells of the sequential calculated stripes
-                    if (border < 2)
+                    if (border < 1)
                     {
                         Program.CopyArrayLockDest(U1N_LR, Program.U1N[i][j]);
                         Program.CopyArrayLockDest(V1N_LR, Program.V1N[i][j]);

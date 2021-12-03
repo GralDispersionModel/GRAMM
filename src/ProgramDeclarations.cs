@@ -86,7 +86,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Height of the surface immutable
         ///</summary>
-        public static ImmutableArray<float[]> AHImm;
+        public static ImmutableArray<float>[] AHImm;
         ///<summary>
         /// Height of the bassins and valleys
         ///</summary>
@@ -106,7 +106,7 @@ namespace GRAMM_2001
         ///<summary>
         /// Volume of grid cells immutable
         ///</summary>
-        public static ImmutableArray<float[][]> VOLImm;
+        public static ImmutableArray<float>[][] VOLImm;
         ///<summary>
         ///Area of the grid cell in x-direction
         ///</summary>
@@ -114,7 +114,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Area of the grid cell in x-direction immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAXImm;
+        public static ImmutableArray<float>[][] AREAXImm;
         ///<summary>
         ///Area of the grid cell in y-direction
         ///</summary>
@@ -122,7 +122,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Area of the grid cell in y-direction immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAYImm;
+        public static ImmutableArray<float>[][] AREAYImm;
         ///<summary>
         ///Bottom area of the grid cell in z-direction
         ///</summary>
@@ -130,7 +130,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Bottom area of the grid cell in z-direction immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAZImm;
+        public static ImmutableArray<float>[][] AREAZImm;
         ///<summary>
         ///Projection of the ground area of the grid cell 
         ///</summary>
@@ -138,7 +138,8 @@ namespace GRAMM_2001
         ///<summary>
         ///Projection of the ground area of the grid cell immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAImm;
+        public static ImmutableArray<float>[][] AREAImm;
+        //public static ImmutableArray<float>[][] AREAImm;
         ///<summary>
         ///Area between the two halfs of the grid cell
         ///</summary>
@@ -146,7 +147,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Area between the two halfs of the grid cell immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAXYZImm;
+        public static ImmutableArray<float>[][] AREAXYZImm;
         ///<summary>
         /// Projection of the ground area of the grid cell in x-direction
         ///</summary>
@@ -154,7 +155,7 @@ namespace GRAMM_2001
         ///<summary>
         /// Projection of the ground area of the grid cell in x-direction immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAZXImm;
+        public static ImmutableArray<float>[][] AREAZXImm;
         ///<summary>
         /// Projection of the ground area of the grid cell in y-direction
         ///</summary>
@@ -162,7 +163,7 @@ namespace GRAMM_2001
         ///<summary>
         /// Projection of the ground area of the grid cell in y-direction immutable
         ///</summary>
-        public static ImmutableArray<float[][]> AREAZYImm;
+        public static ImmutableArray<float>[][] AREAZYImm;
         ///<summary>
         /// Heights of the corner points of each grid cell
         ///</summary>
@@ -174,7 +175,7 @@ namespace GRAMM_2001
         ///<summary>
         /// Height of the centre point of each grid cell immutable
         ///</summary>
-        public static ImmutableArray<float[][]> ZSPImm;
+        public static ImmutableArray<float>[][] ZSPImm;
         ///<summary>
         ///Horizontal grid size in x-direction
         ///</summary>
@@ -334,7 +335,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Density of the air immutable
         ///</summary>
-        public static ImmutableArray<float[][]> RHOImm;
+        public static ImmutableArray<float>[][] RHOImm;
         ///<summary>
         ///Average wind speed in x-direction over the two half-cells at time t+1
         ///</summary>
@@ -1434,7 +1435,7 @@ namespace GRAMM_2001
         ///<summary>
         ///number of pressure-iterations
         ///</summary>
-        public static Int16 INUMS;
+        public static int INUMS;
         ///<summary>
         ///total mass divergence
         ///</summary>
@@ -1728,7 +1729,7 @@ namespace GRAMM_2001
         ///<summary>
         ///Width of one parallel calculated stripe
         ///</summary>
-        public const int StripeWidth = 30;
+        public const int StripeWidth = 28;
         ///<summary>
         ///Counter for changing the width of the stripes for each iteration
         ///</summary>

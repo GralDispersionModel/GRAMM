@@ -109,10 +109,10 @@ namespace GRAMM_2001
                             */
                             Program.QUG[i][j] = Program.FW[i][j] * QGSAT * 1000.0 + (1 - Program.FW[i][j]) * Program.QU[i][j][1];
                             double ALW1 = Program.ALW - 2300 * (Program.TB[i][j][2] - 273.15);
-                            double WQU_L = Program.XWQ[i][j] * Program.RHOImm[i][j][1] * Program.UST[i][j] * ALW1 * (Program.QU[i][j][1] - Program.QUG[i][j]) * 0.001;
+                            double WQU_L = Program.XWQ[i][j] * Program.RHO[i][j][1] * Program.UST[i][j] * ALW1 * (Program.QU[i][j][1] - Program.QUG[i][j]) * 0.001;
 
                             //amount of water evaporated from the soil
-                            Program.QU[i][j][1] += -WQU_L / ALW1 * 1000.0 * Program.DT * Program.AREAImm[i][j][1] / Program.VOLImm[i][j][1] / Program.RHOImm[i][j][1];
+                            Program.QU[i][j][1] += -WQU_L / ALW1 * 1000.0 * Program.DT * Program.AREAImm[i][j][1] / Program.VOLImm[i][j][1] / Program.RHO[i][j][1];
 
                             WQU_L = Math.Min(WQU_L, 20);
                             WQU_L = Math.Max(WQU_L, -400);

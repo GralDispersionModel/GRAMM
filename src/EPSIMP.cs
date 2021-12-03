@@ -28,8 +28,8 @@ namespace GRAMM_2001
                                                            // Parallel.For(2, NI, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -71,13 +71,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -113,8 +113,8 @@ namespace GRAMM_2001
                                                            // Parallel.For(2, NI, Program.pOptions, i1 =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -157,13 +157,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -198,8 +198,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NI, Program.pOptions, i1 =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -242,13 +242,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -283,8 +283,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NI, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -326,13 +326,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -368,8 +368,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NJ, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -411,13 +411,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -453,8 +453,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NJ, Program.pOptions, j1 =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)
@@ -497,13 +497,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -538,8 +538,8 @@ namespace GRAMM_2001
                                                            // Parallel.For(2, NJ, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -581,13 +581,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
@@ -622,8 +622,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NJ, Program.pOptions, j1 =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)
@@ -667,13 +667,13 @@ namespace GRAMM_2001
                                 (0.5F * (DUDX * DUDX + DVDY * DVDY + DWDZ * DWDZ) +
                                  (DUDY + DVDX) * (DUDY + DVDX) +
                                  (DUDZ + DWDX) * (DUDZ + DWDX) +
-                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHOImm[i][j][k];
-                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHOImm[i][j][k];
+                                 (DVDZ + DWDY) * (DVDZ + DWDY)) * Program.RHO[i][j][k];
+                            double PBUOY = -Program.VISV[i][j][k] * DTDZ * Program.GERD / (Program.T[i][j][k] + Program.TBZ1) / Program.PRTE * Program.RHO[i][j][k];
 
                             double DIM = Program.AWEST_PS[i][j][k] * Program.DISSN[i - 1][j][k] + Program.ASOUTH_PS[i][j][k] * Program.DISSN[i][j - 1][k] +
                                 Program.AEAST_PS[i][j][k] * Program.DISSN[i + 1][j][k] + Program.ANORTH_PS[i][j][k] * Program.DISSN[i][j + 1][k] +
                                 Program.AP0_PS[i][j][k] * Program.DISS[i][j][k] +
-                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHOImm[i][j][k])) * Program.VOL[i][j][k];
+                                (Program.DISS[i][j][k] / Math.Max(Math.Abs(Program.TE[i][j][k]), 0.01) * (1.44 * PSTRESS + 0.4 * PBUOY - 1.92 * Program.DISS[i][j][k] * Program.RHO[i][j][k])) * Program.VOLImm[i][j][k];
 
                             //Recurrence formula
                             if (k > 1)
