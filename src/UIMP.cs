@@ -36,7 +36,7 @@ namespace GRAMM_2001
                         double[] DIMU_L = Program.DIMU[i][j];
                         float[] F1U_L = Program.F1U[i][j];
                         float[] F2U_L = Program.F2U[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] V1N_L = Program.V1N[i][j];
                         ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] VG_L = Program.VG[i][j];
@@ -91,7 +91,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -192,7 +192,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -296,7 +296,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -399,7 +399,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -503,7 +503,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -605,7 +605,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -709,7 +709,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -812,7 +812,7 @@ namespace GRAMM_2001
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);

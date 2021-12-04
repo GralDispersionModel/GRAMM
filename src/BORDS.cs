@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 namespace GRAMM_2001
 {
@@ -26,6 +27,7 @@ namespace GRAMM_2001
         /// <param name="NI"></param>
         /// <param name="NJ"></param>
         /// <param name="NK"></param>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void Bords_calculate(int NI, int NJ, int NK)
         {
             //damping factor

@@ -46,7 +46,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -152,7 +152,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -258,7 +258,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -362,7 +362,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -467,7 +467,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -573,7 +573,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -677,7 +677,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
@@ -782,7 +782,7 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];

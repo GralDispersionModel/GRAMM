@@ -40,7 +40,7 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
                     ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
                     ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                     ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                     ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                     ReadOnlySpan<float> AREAXiP = Program.AREAXImm[i + 1][j].AsSpan();

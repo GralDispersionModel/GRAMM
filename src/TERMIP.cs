@@ -45,7 +45,7 @@ namespace GRAMM_2001
                     ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
                     ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
                     ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
 
                     int m = 2;
 

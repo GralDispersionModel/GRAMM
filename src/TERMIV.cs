@@ -60,7 +60,7 @@ namespace GRAMM_2001
                     double[] DIMU_L = Program.DIMU[i][j];
                     double[] DIMV_L = Program.DIMV[i][j];
                     double[] DIMW_L = Program.DIMW[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                     ReadOnlySpan<double> U_L = Program.U[i][j];
                     ReadOnlySpan<double> U1_L = Program.U1[i][j];
                     ReadOnlySpan<double> U2_L = Program.U2[i][j];

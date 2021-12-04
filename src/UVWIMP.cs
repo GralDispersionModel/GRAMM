@@ -53,7 +53,7 @@ namespace GRAMM_2001
                         float[] F2V_L = Program.F2V[i][j];
                         float[] F1W_L = Program.F1W[i][j];
                         float[] F2W_L = Program.F2W[i][j];
-                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         float[] RHOBZ_L = Program.RHOBZ[i][j];
                         double[] QUN_L = Program.QUN[i][j];
                         double[] QBZ_L = Program.QBZ[i][j];
@@ -75,40 +75,38 @@ namespace GRAMM_2001
                         for (int kn = 1; kn <= 2 * (NK_P - 1); ++kn)
                         {
                             int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                            f1 = RHO_L[k] * (Program.FN * (V1N_LR[k] - VG_L[k]) - Program.FH * W1N_LR[k]) * 0.5F * VOL_L[k];
+                            float rho = RHO_L[k];
+                            float vol = VOL_L[k];
+                            float ap0 = AP0_L[k];
+
+                            f1 = rho * (Program.FN * (V1N_LR[k] - VG_L[k]) - Program.FH * W1N_LR[k]) * 0.5F * vol;
                             f1 += DIMU_L[kn];
+                            f2 = 0;
                             if (ICPSI)
                             {
-                                f1 += TPDX_M_L[k];
+                                f1 += TPDX_M_L[k]; 
                                 f2 = TPDX_L[k];
                             }
-                            F1U_L[kn] = (float)(AP0_L[k] * U1_L[k] + f1); // Temp array
-                            F2U_L[kn] = (float)(AP0_L[k] * U2_L[k] + f1 + f2); // Temp array
-                        }
-
-                        for (int kn = 1; kn <= 2 * (NK_P - 1); ++kn)
-                        {
-                            int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-                            f1 = -RHO_L[k] * Program.FN * (U1N_LR[k] - UG_L[k]) * 0.5F * VOL_L[k];
+                            F1U_L[kn] = (float)(ap0 * U1_L[k] + f1); // Temp array
+                            F2U_L[kn] = (float)(ap0 * U2_L[k] + f1 + f2); // Temp array
+                        
+                            f1 = -rho * Program.FN * (U1N_LR[k] - UG_L[k]) * 0.5F * vol;
                             f1 += DIMV_L[kn];
+                            f2 = 0;
                             if (ICPSI)
                             {
                                 f1 += TPDY_M_L[k];
                                 f2 = TPDY_L[k];
                             }
-                            F1V_L[kn] = (float)(AP0_L[k] * V1_L[k] + f1); // Temp array
-                            F2V_L[kn] = (float)(AP0_L[k] * V2_L[k] + f1 + f2); // Temp array
-                        }
-
-                        for (int kn = 1; kn <= 2 * (NK_P - 1); ++kn)
-                        {
-                            int k = 1 + kn >> 1;  // (int) (kn * 0.5F + 0.5F)
-
-                            f1 = RHO_L[k] * Program.FH * U1N_LR[k] * 0.5F * VOL_L[k];
+                            F1V_L[kn] = (float)(ap0 * V1_L[k] + f1); // Temp array
+                            F2V_L[kn] = (float)(ap0 * V2_L[k] + f1 + f2); // Temp array
+                        
+                            f1 = rho * Program.FH * U1N_LR[k] * 0.5F * vol;
                             f2 = 0;
+                            //Bouyancy
                             if (Program.ICPSI == false)
                             {
-                                f2 = 0.5F * VOL_L[k] * ((TN_L[k] + Program.TBZ1) * (1 + 0.00061 * QUN_L[k]) - (TBZ_L[k] * (1 + 0.00061 * QBZ_L[k]))) /
+                                f2 = 0.5F * vol * ((TN_L[k] + Program.TBZ1) * (1 + 0.00061 * QUN_L[k]) - (TBZ_L[k] * (1 + 0.00061 * QBZ_L[k]))) /
                                 (TBZ_L[k] * (1 + 0.00061 * QBZ_L[k])) * RHOBZ_L[k] * Program.GERD;
                             }
                             //no bouyancy, where terrain is smoothed at the border
@@ -120,14 +118,14 @@ namespace GRAMM_2001
                             */
                             f1 += f2;
                             f1 += DIMW_L[kn];
-                            F1W_L[kn] = (float)(AP0_L[k] * W1_L[k] + f1);
-                            F2W_L[kn] = (float)(AP0_L[k] * W2_L[k] + f1);
+                            F1W_L[kn] = (float)(ap0 * W1_L[k] + f1);
+                            F2W_L[kn] = (float)(ap0 * W2_L[k] + f1);
                         }
                     }
                 });
 
 
-                int range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                int range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
@@ -139,7 +137,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NJ_P, NK_P, false, false, true);
                 });
 
-                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
@@ -151,7 +149,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NJ_P, NK_P, true, true, true);
                 });
 
-                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
@@ -163,7 +161,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NI_P, NK_P, true, true, false);
                 });
 
-                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
@@ -175,7 +173,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NI_P, NK_P, false, false, false);
                 });
 
-                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
@@ -187,7 +185,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NJ_P, NK_P, true, false, true);
                 });
 
-                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
@@ -199,7 +197,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NJ_P, NK_P, false, true, true);
                 });
 
-                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
@@ -211,7 +209,7 @@ namespace GRAMM_2001
                     UIMPKernel(range, NI_P, NK_P, true, false, false);
                 });
 
-                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
                 range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
                 StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
@@ -258,7 +256,36 @@ namespace GRAMM_2001
             double[] V2N_LRR = Program.GrammArrayPool.Rent(Program.V2N[1][1].Length);
             double[] W1N_LRR = Program.GrammArrayPool.Rent(Program.W1N[1][1].Length);
             double[] W2N_LRR = Program.GrammArrayPool.Rent(Program.W2N[1][1].Length);
-
+            ReadOnlySpan<float> AE2_L ; 
+            ReadOnlySpan<float> AN2_L ; 
+            ReadOnlySpan<float> AIM_L ; 
+            ReadOnlySpan<float> AREA_L;
+            ReadOnlySpan<float> AREAZX_L;
+            ReadOnlySpan<float> AREAZY_L;
+            ReadOnlySpan<float> AS1_L;
+            ReadOnlySpan<float> AW1_L;
+            ReadOnlySpan<float> BIM_L;
+            ReadOnlySpan<float> CIM_L;
+            ReadOnlySpan<float> F1U_L;
+            ReadOnlySpan<float> F2U_L;
+            ReadOnlySpan<float> F1V_L;
+            ReadOnlySpan<float> F2V_L;
+            ReadOnlySpan<float> F1W_L;
+            ReadOnlySpan<float> F2W_L;
+            ReadOnlySpan<float> RHO_L;
+            double[] U1Ni_L;
+            double[] U1NJ_P_L;
+            double[] U2Ni_L;
+            double[] U2NJ_P_L;
+            double[] V1Ni_L;
+            double[] V1NJ_P_L;
+            double[] V2Ni_L;
+            double[] V2NJ_P_L;
+            double[] W1Ni_L;
+            double[] W1NJ_P_L;
+            double[] W2Ni_L;
+            double[] W2NJ_P_L;
+            
             for (int outerLoop = range.Item1; outerLoop < range.Item2; ++outerLoop)
             {
                 int outerL = outerLoop;
@@ -267,6 +294,7 @@ namespace GRAMM_2001
                 {
                     outerL = range.Item2 - (outerLoop - range.Item1) - 1;
                 }
+                
                 for (int innerLoop = 2; innerLoop < InnerLoopNmax; ++innerLoop)
                 {
                     int innerL = innerLoop;
@@ -286,37 +314,38 @@ namespace GRAMM_2001
                         i = innerL;
                         j = outerL;
                     }
-                   
+
                     float relaxv = (float)(Program.RELAXV * Program.Relax_Border_factor[i][j]);
-                    ReadOnlySpan<float> AE2_L = Program.AE2[i][j];
-                    ReadOnlySpan<float> AN2_L = Program.AN2[i][j];
-                    ReadOnlySpan<float> AIM_L = Program.AIM[i][j];
-                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AS1_L = Program.AS1[i][j];
-                    ReadOnlySpan<float> AW1_L = Program.AW1[i][j];
-                    ReadOnlySpan<float> BIM_L = Program.BIM[i][j];
-                    ReadOnlySpan<float> CIM_L = Program.CIM[i][j];
-                    ReadOnlySpan<float> F1U_L = Program.F1U[i][j];
-                    ReadOnlySpan<float> F2U_L = Program.F2U[i][j];
-                    ReadOnlySpan<float> F1V_L = Program.F1V[i][j];
-                    ReadOnlySpan<float> F2V_L = Program.F2V[i][j];
-                    ReadOnlySpan<float> F1W_L = Program.F1W[i][j];
-                    ReadOnlySpan<float> F2W_L = Program.F2W[i][j];
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
-                    double[] U1Ni_L = Program.U1N[i + 1][j];
-                    double[] U1NJ_P_L = Program.U1N[i][j + 1];
-                    double[] U2Ni_L = Program.U2N[i - 1][j];
-                    double[] U2NJ_P_L = Program.U2N[i][j - 1];
-                    double[] V1Ni_L = Program.V1N[i + 1][j];
-                    double[] V1NJ_P_L = Program.V1N[i][j + 1];
-                    double[] V2Ni_L = Program.V2N[i - 1][j];
-                    double[] V2NJ_P_L = Program.V2N[i][j - 1];
-                    double[] W1Ni_L = Program.W1N[i + 1][j];
-                    double[] W1NJ_P_L = Program.W1N[i][j + 1];
-                    double[] W2Ni_L = Program.W2N[i - 1][j];
-                    double[] W2NJ_P_L = Program.W2N[i][j - 1];
+                    AE2_L = Program.AE2[i][j];
+                    AN2_L = Program.AN2[i][j];
+                    AIM_L = Program.AIM[i][j];
+                    AREA_L = Program.AREAImm[i][j].AsSpan();
+                    AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                    AS1_L = Program.AS1[i][j];
+                    AW1_L = Program.AW1[i][j];
+                    BIM_L = Program.BIM[i][j];
+                    CIM_L = Program.CIM[i][j];
+                    F1U_L = Program.F1U[i][j];
+                    F2U_L = Program.F2U[i][j];
+                    F1V_L = Program.F1V[i][j];
+                    F2V_L = Program.F2V[i][j];
+                    F1W_L = Program.F1W[i][j];
+                    F2W_L = Program.F2W[i][j];
+                    RHO_L = Program.RHO[i][j];
+
+                    U1Ni_L   = Program.U1N[i + 1][j];
+                    U1NJ_P_L = Program.U1N[i][j + 1];
+                    U2Ni_L   = Program.U2N[i - 1][j];
+                    U2NJ_P_L = Program.U2N[i][j - 1];
+                    V1Ni_L   = Program.V1N[i + 1][j];
+                    V1NJ_P_L = Program.V1N[i][j + 1];
+                    V2Ni_L   = Program.V2N[i - 1][j];
+                    V2NJ_P_L = Program.V2N[i][j - 1];
+                    W1Ni_L   = Program.W1N[i + 1][j];
+                    W1NJ_P_L = Program.W1N[i][j + 1];
+                    W2Ni_L   = Program.W2N[i - 1][j];
+                    W2NJ_P_L = Program.W2N[i][j - 1];
 
                     double[] U1N_LR;
                     double[] V1N_LR;
@@ -405,7 +434,7 @@ namespace GRAMM_2001
                             //Recurrence formula
                             if (k == 1)
                             {
-                                help = 1 / aim;
+                                help = 1 / aim; 
                                 DIMU -= U1N_LR[k] * USTxUSTV;
                                 PIMU[kn] = bim * help;
                                 QIMU[kn] = DIMU * help;

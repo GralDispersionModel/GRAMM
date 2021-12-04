@@ -35,7 +35,7 @@ namespace GRAMM_2001
 
                 for (int j = 1; j <= NJ_P; j++)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                     float[] U1NRHO_L = Program.U1NRHO[i][j];
                     float[] U2NRHO_L = Program.U2NRHO[i][j];
                     float[] V1NRHO_L = Program.V1NRHO[i][j];
@@ -301,7 +301,7 @@ namespace GRAMM_2001
                 int NK_P = NK; int NJ_P = NJ;
                 for (int j = 1; j <= NJ_P; j++)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j].AsSpan();
+                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                     float[] U1NRHO_L = Program.U1NRHO[i][j];
                     float[] U2NRHO_L = Program.U2NRHO[i][j];
                     float[] V1NRHO_L = Program.V1NRHO[i][j];

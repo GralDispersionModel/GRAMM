@@ -1205,10 +1205,6 @@ namespace GRAMM_2001
         ///</summary>
         public static double DTMAX;
         ///<summary>
-        ///Maximum number of processors/threads used in each parallelized procedure
-        ///</summary>
-        public static Int32 IPROC;
-        ///<summary>
         ///Year of the simulation (only for transient simulations)
         ///</summary>
         public static Int32 IJAHR;

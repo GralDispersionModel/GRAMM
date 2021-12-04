@@ -173,7 +173,6 @@ Console.WriteLine("| .Net Core Version |");
             }
 
             // Read number of max. used processors
-            IPROC = 1;
             Max_Proc_File_Read();
 
             //Convert relative humidity in %

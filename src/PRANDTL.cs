@@ -264,7 +264,7 @@ namespace GRAMM_2001
                               RITSCH_L[0] = Math.Min(0.2, RITSCH_L[0]);
                           }
 
-                          for (int k = 1; k <= NK_P - 1; k++)
+                          for (int k = 1; k < RITSCH_L.Length; ++k)
                           {
                               DZZZ = 1 / (ZSP_L[k + 1] - ZSP_L[k]);
                               DTDZ = (T_L[k + 1] * (1 + 0.00061 * QU_L[k + 1]) -
