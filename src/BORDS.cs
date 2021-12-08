@@ -16,6 +16,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 
 namespace GRAMM_2001
 {
@@ -131,267 +132,285 @@ namespace GRAMM_2001
             }
 
             //compute boundary values at the western border
-            Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            //Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            Parallel.ForEach(Partitioner.Create(1, NJ + 1, NJ / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int j = range.Item1; j < range.Item2; ++j)
                 {
-                    Program.U1N[1][j][k] = Program.U1N[2][j][k];
-                    Program.V1N[1][j][k] = Program.V1N[2][j][k];
-                    Program.UN[1][j][k] = Program.U1N[2][j][k];
-                    Program.VN[1][j][k] = Program.V1N[2][j][k];
-
-                    Program.WN[1][j][k] = 0;
-                    Program.TBN[1][j][2] = Program.TBN[2][j][2];
-                    Program.QUN[1][j][k] = Program.QUN[2][j][k];
-
-                    if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                    for (int k = 1; k <= NK; k++)
                     {
+                        Program.U1N[1][j][k] = Program.U1N[2][j][k];
+                        Program.V1N[1][j][k] = Program.V1N[2][j][k];
                         Program.UN[1][j][k] = Program.U1N[2][j][k];
-                        Program.TN[1][j][k] = Program.TN[2][j][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
-                    {
-                        for (int i = 1; i <= 6; i++)
-                        {
-                            int i1 = Math.Min(i, NI);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)i1);
-                            Program.UN[i1][j][k] = Program.U1N[i1][j][k] - AALPHA * (Program.U1N[i1][j][k] - Program.USWN[j][k]);
-                            Program.VN[i1][j][k] = Program.V1N[i1][j][k] - AALPHA * (Program.V1N[i1][j][k] - Program.VSWN[j][k]);
-                        }
-                        Program.WN[1][j][k] = 0;
-                        Program.TN[1][j][k] = Program.TN[2][j][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
-                    {
-
-                        for (int i = 1; i <= 1; i++)
-                        {
-                            int i1 = Math.Min(i, NI);
-                            Linear_interpolation(1, NZ, k, 0.5, 2.0, ref ATTENU);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)i1);
-                            Program.UN[i1][j][k] = Program.UN[i1 + 1][j][k] - AALPHA * (Program.UN[i1 + 1][j][k] - Program.USWN[j][k]);
-                            Program.VN[i1][j][k] = Program.VN[i1 + 1][j][k] - AALPHA * (Program.VN[i1 + 1][j][k] - Program.VSWN[j][k]);
-                            Program.TN[i1][j][k] = Program.TN[i1 + 1][j][k] - AALPHA * (Program.TN[i1 + 1][j][k] - Program.TSWN[j][k]);
-                        }
+                        Program.VN[1][j][k] = Program.V1N[2][j][k];
 
                         Program.WN[1][j][k] = 0;
-                        //Program.VN[1][j][k] = Program.VSWN[j][k];
-                        //Program.TN[1][j][k] = Program.TSWN[j][k];
-                        Program.QUN[1][j][k] = Program.QUSWN[j][k];
-                    }
+                        Program.TBN[1][j][2] = Program.TBN[2][j][2];
+                        Program.QUN[1][j][k] = Program.QUN[2][j][k];
 
-                    Program.U1N[1][j][k] = Program.UN[1][j][k];
-                    Program.U2N[1][j][k] = Program.UN[1][j][k];
-                    Program.V1N[1][j][k] = Program.VN[1][j][k];
-                    Program.V2N[1][j][k] = Program.VN[1][j][k];
-                    Program.W1N[1][j][k] = Program.WN[1][j][k];
-                    Program.W2N[1][j][k] = Program.WN[1][j][k];
+                        if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                        {
+                            Program.UN[1][j][k] = Program.U1N[2][j][k];
+                            Program.TN[1][j][k] = Program.TN[2][j][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
+                        {
+                            for (int i = 1; i <= 6; i++)
+                            {
+                                int i1 = Math.Min(i, NI);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)i1);
+                                Program.UN[i1][j][k] = Program.U1N[i1][j][k] - AALPHA * (Program.U1N[i1][j][k] - Program.USWN[j][k]);
+                                Program.VN[i1][j][k] = Program.V1N[i1][j][k] - AALPHA * (Program.V1N[i1][j][k] - Program.VSWN[j][k]);
+                            }
+                            Program.WN[1][j][k] = 0;
+                            Program.TN[1][j][k] = Program.TN[2][j][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
+                        {
+
+                            for (int i = 1; i <= 1; i++)
+                            {
+                                int i1 = Math.Min(i, NI);
+                                ATTENU = Linear_interpolation(1, NZ, k, 0.5, 2.0);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)i1);
+                                Program.UN[i1][j][k] = Program.UN[i1 + 1][j][k] - AALPHA * (Program.UN[i1 + 1][j][k] - Program.USWN[j][k]);
+                                Program.VN[i1][j][k] = Program.VN[i1 + 1][j][k] - AALPHA * (Program.VN[i1 + 1][j][k] - Program.VSWN[j][k]);
+                                Program.TN[i1][j][k] = Program.TN[i1 + 1][j][k] - AALPHA * (Program.TN[i1 + 1][j][k] - Program.TSWN[j][k]);
+                            }
+
+                            Program.WN[1][j][k] = 0;
+                            //Program.VN[1][j][k] = Program.VSWN[j][k];
+                            //Program.TN[1][j][k] = Program.TSWN[j][k];
+                            Program.QUN[1][j][k] = Program.QUSWN[j][k];
+                        }
+
+                        Program.U1N[1][j][k] = Program.UN[1][j][k];
+                        Program.U2N[1][j][k] = Program.UN[1][j][k];
+                        Program.V1N[1][j][k] = Program.VN[1][j][k];
+                        Program.V2N[1][j][k] = Program.VN[1][j][k];
+                        Program.W1N[1][j][k] = Program.WN[1][j][k];
+                        Program.W2N[1][j][k] = Program.WN[1][j][k];
+                    }
                 }
             });
 
             //compute boundary values at the eastern border
-            Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            //Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            Parallel.ForEach(Partitioner.Create(1, NJ + 1, NJ / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int j = range.Item1; j < range.Item2; ++j)
                 {
-
-                    Program.U2N[NI][j][k] = Program.U2N[NI - 1][j][k];
-                    Program.V2N[NI][j][k] = Program.V2N[NI - 1][j][k];
-                    Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
-                    Program.VN[NI][j][k] = Program.V2N[NI - 1][j][k];
-
-
-                    Program.WN[NI][j][k] = 0;
-                    Program.TBN[NI][j][2] = Program.TBN[NI - 1][j][2];
-                    Program.QUN[NI][j][k] = Program.QUN[NI - 1][j][k];
-
-                    if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                    for (int k = 1; k <= NK; k++)
                     {
+                        Program.U2N[NI][j][k] = Program.U2N[NI - 1][j][k];
+                        Program.V2N[NI][j][k] = Program.V2N[NI - 1][j][k];
                         Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
-                        Program.TN[NI][j][k] = Program.TN[NI - 1][j][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
-                    {
-                        for (int i = NI - 5; i <= NI; i++)
-                        {
-                            int i1 = Math.Max(i, 1);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NI - i1 + 1));
-                            Program.UN[i1][j][k] = Program.U2N[i1][j][k] - AALPHA * (Program.U2N[i1][j][k] - Program.USEN[j][k]);
-                            Program.VN[i1][j][k] = Program.V2N[i1][j][k] - AALPHA * (Program.V2N[i1][j][k] - Program.VSEN[j][k]);
-                        }
-                        Program.WN[NI][j][k] = 0;
-                        Program.TN[NI][j][k] = Program.TN[NI - 1][j][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
-                    {
-
-                        for (int i = NI; i <= NI; i++)
-                        {
-                            int i1 = Math.Max(i, 1);
-                            Linear_interpolation(1, NZ, k, 0.5, 2.0, ref ATTENU);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NI - i1 + 1));
-                            Program.UN[i1][j][k] = Program.UN[i1 - 1][j][k] - AALPHA * (Program.UN[i1 - 1][j][k] - Program.USEN[j][k]);
-                            Program.VN[i1][j][k] = Program.VN[i1 - 1][j][k] - AALPHA * (Program.VN[i1 - 1][j][k] - Program.VSEN[j][k]);
-                            Program.TN[i1][j][k] = Program.TN[i1 - 1][j][k] - AALPHA * (Program.TN[i1 - 1][j][k] - Program.TSEN[j][k]);
-                        }
+                        Program.VN[NI][j][k] = Program.V2N[NI - 1][j][k];
 
                         Program.WN[NI][j][k] = 0;
-                        //Program.VN[NI][j][k] = Program.VSEN[j][k];
-                        //Program.TN[NI][j][k] = Program.TSEN[j][k];
-                        Program.QUN[NI][j][k] = Program.QUSEN[j][k];
+                        Program.TBN[NI][j][2] = Program.TBN[NI - 1][j][2];
+                        Program.QUN[NI][j][k] = Program.QUN[NI - 1][j][k];
+
+                        if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                        {
+                            Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
+                            Program.TN[NI][j][k] = Program.TN[NI - 1][j][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
+                        {
+                            for (int i = NI - 5; i <= NI; i++)
+                            {
+                                int i1 = Math.Max(i, 1);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NI - i1 + 1));
+                                Program.UN[i1][j][k] = Program.U2N[i1][j][k] - AALPHA * (Program.U2N[i1][j][k] - Program.USEN[j][k]);
+                                Program.VN[i1][j][k] = Program.V2N[i1][j][k] - AALPHA * (Program.V2N[i1][j][k] - Program.VSEN[j][k]);
+                            }
+                            Program.WN[NI][j][k] = 0;
+                            Program.TN[NI][j][k] = Program.TN[NI - 1][j][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
+                        {
+
+                            for (int i = NI; i <= NI; i++)
+                            {
+                                int i1 = Math.Max(i, 1);
+                                ATTENU = Linear_interpolation(1, NZ, k, 0.5, 2.0);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NI - i1 + 1));
+                                Program.UN[i1][j][k] = Program.UN[i1 - 1][j][k] - AALPHA * (Program.UN[i1 - 1][j][k] - Program.USEN[j][k]);
+                                Program.VN[i1][j][k] = Program.VN[i1 - 1][j][k] - AALPHA * (Program.VN[i1 - 1][j][k] - Program.VSEN[j][k]);
+                                Program.TN[i1][j][k] = Program.TN[i1 - 1][j][k] - AALPHA * (Program.TN[i1 - 1][j][k] - Program.TSEN[j][k]);
+                            }
+
+                            Program.WN[NI][j][k] = 0;
+                            //Program.VN[NI][j][k] = Program.VSEN[j][k];
+                            //Program.TN[NI][j][k] = Program.TSEN[j][k];
+                            Program.QUN[NI][j][k] = Program.QUSEN[j][k];
+                        }
+
+                        Program.U1N[NI][j][k] = Program.UN[NI][j][k];
+                        Program.U2N[NI][j][k] = Program.UN[NI][j][k];
+                        Program.V1N[NI][j][k] = Program.VN[NI][j][k];
+                        Program.V2N[NI][j][k] = Program.VN[NI][j][k];
+                        Program.W1N[NI][j][k] = Program.WN[NI][j][k];
+                        Program.W2N[NI][j][k] = Program.WN[NI][j][k];
                     }
-
-                    Program.U1N[NI][j][k] = Program.UN[NI][j][k];
-                    Program.U2N[NI][j][k] = Program.UN[NI][j][k];
-                    Program.V1N[NI][j][k] = Program.VN[NI][j][k];
-                    Program.V2N[NI][j][k] = Program.VN[NI][j][k];
-                    Program.W1N[NI][j][k] = Program.WN[NI][j][k];
-                    Program.W2N[NI][j][k] = Program.WN[NI][j][k];
-
-
                 }
             });
 
             //compute boundary values at the southern border
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    Program.U1N[i][1][k] = Program.U1N[i][2][k];
-                    Program.V1N[i][1][k] = Program.V1N[i][2][k];
-                    Program.UN[i][1][k] = Program.U1N[i][2][k];
-                    Program.VN[i][1][k] = Program.V1N[i][2][k];
-                    Program.WN[i][1][k] = 0;
-                    Program.TBN[i][1][2] = Program.TBN[i][2][2];
-                    Program.QUN[i][1][k] = Program.QUN[i][2][k];
-
-                    if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                    for (int k = 1; k <= NK; k++)
                     {
+                        Program.U1N[i][1][k] = Program.U1N[i][2][k];
+                        Program.V1N[i][1][k] = Program.V1N[i][2][k];
+                        Program.UN[i][1][k] = Program.U1N[i][2][k];
                         Program.VN[i][1][k] = Program.V1N[i][2][k];
-                        Program.TN[i][1][k] = Program.TN[i][2][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
-                    {
-                        for (int j = 1; j <= 6; j++)
-                        {
-                            int j1 = Math.Min(j, NJ);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)j1);
-                            Program.VN[i][j1][k] = Program.V1N[i][j1][k] - AALPHA * (Program.V1N[i][j1][k] - Program.VSSN[i][k]);
-                            Program.UN[i][j1][k] = Program.U1N[i][j1][k] - AALPHA * (Program.U1N[i][j1][k] - Program.USSN[i][k]);
-                        }
                         Program.WN[i][1][k] = 0;
-                        Program.TN[i][1][k] = Program.TN[i][2][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
-                    {
+                        Program.TBN[i][1][2] = Program.TBN[i][2][2];
+                        Program.QUN[i][1][k] = Program.QUN[i][2][k];
 
-                        for (int j = 1; j <= 1; j++)
+                        if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
-                            int j1 = Math.Min(j, NJ);
-                            Linear_interpolation(1, NZ, k, 0.5, 2.0, ref ATTENU);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)j1);
-                            Program.VN[i][j1][k] = Program.VN[i][j1 + 1][k] - AALPHA * (Program.VN[i][j1 + 1][k] - Program.VSSN[i][k]);
-                            Program.UN[i][j1][k] = Program.UN[i][j1 + 1][k] - AALPHA * (Program.UN[i][j1 + 1][k] - Program.USSN[i][k]);
-                            Program.TN[i][j1][k] = Program.TN[i][j1 + 1][k] - AALPHA * (Program.TN[i][j1 + 1][k] - Program.TSSN[i][k]);
+                            Program.VN[i][1][k] = Program.V1N[i][2][k];
+                            Program.TN[i][1][k] = Program.TN[i][2][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
+                        {
+                            for (int j = 1; j <= 6; j++)
+                            {
+                                int j1 = Math.Min(j, NJ);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)j1);
+                                Program.VN[i][j1][k] = Program.V1N[i][j1][k] - AALPHA * (Program.V1N[i][j1][k] - Program.VSSN[i][k]);
+                                Program.UN[i][j1][k] = Program.U1N[i][j1][k] - AALPHA * (Program.U1N[i][j1][k] - Program.USSN[i][k]);
+                            }
+                            Program.WN[i][1][k] = 0;
+                            Program.TN[i][1][k] = Program.TN[i][2][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
+                        {
+
+                            for (int j = 1; j <= 1; j++)
+                            {
+                                int j1 = Math.Min(j, NJ);
+                                ATTENU = Linear_interpolation(1, NZ, k, 0.5, 2.0);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)j1);
+                                Program.VN[i][j1][k] = Program.VN[i][j1 + 1][k] - AALPHA * (Program.VN[i][j1 + 1][k] - Program.VSSN[i][k]);
+                                Program.UN[i][j1][k] = Program.UN[i][j1 + 1][k] - AALPHA * (Program.UN[i][j1 + 1][k] - Program.USSN[i][k]);
+                                Program.TN[i][j1][k] = Program.TN[i][j1 + 1][k] - AALPHA * (Program.TN[i][j1 + 1][k] - Program.TSSN[i][k]);
+                            }
+
+                            Program.WN[i][1][k] = 0;
+                            //Program.UN[i][1][k] = Program.USSN[i][k];
+                            //Program.TN[i][1][k] = Program.TSSN[i][k];
+                            Program.QUN[i][1][k] = Program.QUSSN[i][k];
                         }
 
-                        Program.WN[i][1][k] = 0;
-                        //Program.UN[i][1][k] = Program.USSN[i][k];
-                        //Program.TN[i][1][k] = Program.TSSN[i][k];
-                        Program.QUN[i][1][k] = Program.QUSSN[i][k];
+                        Program.U1N[i][1][k] = Program.UN[i][1][k];
+                        Program.U2N[i][1][k] = Program.UN[i][1][k];
+                        Program.V1N[i][1][k] = Program.VN[i][1][k];
+                        Program.V2N[i][1][k] = Program.VN[i][1][k];
+                        Program.W1N[i][1][k] = Program.WN[i][1][k];
+                        Program.W2N[i][1][k] = Program.WN[i][1][k];
                     }
-
-                    Program.U1N[i][1][k] = Program.UN[i][1][k];
-                    Program.U2N[i][1][k] = Program.UN[i][1][k];
-                    Program.V1N[i][1][k] = Program.VN[i][1][k];
-                    Program.V2N[i][1][k] = Program.VN[i][1][k];
-                    Program.W1N[i][1][k] = Program.WN[i][1][k];
-                    Program.W2N[i][1][k] = Program.WN[i][1][k];
-
                 }
             });
 
             //compute boundary values at the northern border
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    Program.U2N[i][NJ][k] = Program.U2N[i][NJ - 1][k];
-                    Program.V2N[i][NJ][k] = Program.V2N[i][NJ - 1][k];
-                    Program.UN[i][NJ][k] = Program.U2N[i][NJ - 1][k];
-                    Program.VN[i][NJ][k] = Program.V2N[i][NJ - 1][k];
-                    Program.WN[i][NJ][k] = 0;
-                    Program.TBN[i][NJ][2] = Program.TBN[i][NJ - 1][2];
-                    Program.QUN[i][NJ][k] = Program.QUN[i][NJ - 1][k];
-
-                    if (Program.IBOUND == 1 && Program.ISTAT <= 1)
+                    for (int k = 1; k <= NK; k++)
                     {
+                        Program.U2N[i][NJ][k] = Program.U2N[i][NJ - 1][k];
+                        Program.V2N[i][NJ][k] = Program.V2N[i][NJ - 1][k];
+                        Program.UN[i][NJ][k] = Program.U2N[i][NJ - 1][k];
                         Program.VN[i][NJ][k] = Program.V2N[i][NJ - 1][k];
-                        Program.TN[i][NJ][k] = Program.TN[i][NJ - 1][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
-                    {
-                        for (int j = NJ - 5; j <= NJ; j++)
-                        {
-                            int j1 = Math.Max(j, 1);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NJ - j1 + 1));
-                            Program.VN[i][j1][k] = Program.V2N[i][j1][k] - AALPHA * (Program.V2N[i][j1][k] - Program.VSNN[i][k]);
-                            Program.UN[i][j1][k] = Program.U2N[i][j1][k] - AALPHA * (Program.U2N[i][j1][k] - Program.USNN[i][k]);
-                        }
                         Program.WN[i][NJ][k] = 0;
-                        Program.TN[i][NJ][k] = Program.TN[i][NJ - 1][k];
-                    }
-                    else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
-                    {
+                        Program.TBN[i][NJ][2] = Program.TBN[i][NJ - 1][2];
+                        Program.QUN[i][NJ][k] = Program.QUN[i][NJ - 1][k];
 
-                        for (int j = NJ; j <= NJ; j++)
+                        if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
-                            int j1 = Math.Max(j, 1);
-                            Linear_interpolation(1, NZ, k, 0.5, 2.0, ref ATTENU);
-                            double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NJ - j1 + 1));
-                            Program.VN[i][j1][k] = Program.VN[i][j1 - 1][k] - AALPHA * (Program.VN[i][j1 - 1][k] - Program.VSNN[i][k]);
-                            Program.UN[i][j1][k] = Program.UN[i][j1 - 1][k] - AALPHA * (Program.UN[i][j1 - 1][k] - Program.USNN[i][k]);
-                            Program.TN[i][j1][k] = Program.TN[i][j1 - 1][k] - AALPHA * (Program.TN[i][j1 - 1][k] - Program.TSNN[i][k]);
+                            Program.VN[i][NJ][k] = Program.V2N[i][NJ - 1][k];
+                            Program.TN[i][NJ][k] = Program.TN[i][NJ - 1][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
+                        {
+                            for (int j = NJ - 5; j <= NJ; j++)
+                            {
+                                int j1 = Math.Max(j, 1);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NJ - j1 + 1));
+                                Program.VN[i][j1][k] = Program.V2N[i][j1][k] - AALPHA * (Program.V2N[i][j1][k] - Program.VSNN[i][k]);
+                                Program.UN[i][j1][k] = Program.U2N[i][j1][k] - AALPHA * (Program.U2N[i][j1][k] - Program.USNN[i][k]);
+                            }
+                            Program.WN[i][NJ][k] = 0;
+                            Program.TN[i][NJ][k] = Program.TN[i][NJ - 1][k];
+                        }
+                        else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
+                        {
+
+                            for (int j = NJ; j <= NJ; j++)
+                            {
+                                int j1 = Math.Max(j, 1);
+                                ATTENU = Linear_interpolation(1, NZ, k, 0.5, 2.0);
+                                double AALPHA = Math.Pow(2.73, -ATTENU * (float)(NJ - j1 + 1));
+                                Program.VN[i][j1][k] = Program.VN[i][j1 - 1][k] - AALPHA * (Program.VN[i][j1 - 1][k] - Program.VSNN[i][k]);
+                                Program.UN[i][j1][k] = Program.UN[i][j1 - 1][k] - AALPHA * (Program.UN[i][j1 - 1][k] - Program.USNN[i][k]);
+                                Program.TN[i][j1][k] = Program.TN[i][j1 - 1][k] - AALPHA * (Program.TN[i][j1 - 1][k] - Program.TSNN[i][k]);
+                            }
+
+                            Program.WN[i][NJ][k] = 0;
+                            //Program.UN[i][NJ][k] = Program.USNN[i][k];
+                            //Program.TN[i][NJ][k] = Program.TSNN[i][k];
+                            Program.QUN[i][NJ][k] = Program.QUSNN[i][k];
                         }
 
-                        Program.WN[i][NJ][k] = 0;
-                        //Program.UN[i][NJ][k] = Program.USNN[i][k];
-                        //Program.TN[i][NJ][k] = Program.TSNN[i][k];
-                        Program.QUN[i][NJ][k] = Program.QUSNN[i][k];
+                        Program.U1N[i][NJ][k] = Program.UN[i][NJ][k];
+                        Program.U2N[i][NJ][k] = Program.UN[i][NJ][k];
+                        Program.V1N[i][NJ][k] = Program.VN[i][NJ][k];
+                        Program.V2N[i][NJ][k] = Program.VN[i][NJ][k];
+                        Program.W1N[i][NJ][k] = Program.WN[i][NJ][k];
+                        Program.W2N[i][NJ][k] = Program.WN[i][NJ][k];
                     }
-
-                    Program.U1N[i][NJ][k] = Program.UN[i][NJ][k];
-                    Program.U2N[i][NJ][k] = Program.UN[i][NJ][k];
-                    Program.V1N[i][NJ][k] = Program.VN[i][NJ][k];
-                    Program.V2N[i][NJ][k] = Program.VN[i][NJ][k];
-                    Program.W1N[i][NJ][k] = Program.WN[i][NJ][k];
-                    Program.W2N[i][NJ][k] = Program.WN[i][NJ][k];
-
                 }
             });
 
-            Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            //Parallel.For(1, NJ + 1, Program.pOptions, j =>
+            Parallel.ForEach(Partitioner.Create(1, NJ + 1, NJ / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int j = range.Item1; j < range.Item2; ++j)
                 {
-                    Program.T[1][j][k] = Program.TN[1][j][k];
-                    Program.QU[1][j][k] = Program.QUN[1][j][k];
+                    for (int k = 1; k <= NK; k++)
+                    {
+                        Program.T[1][j][k] = Program.TN[1][j][k];
+                        Program.QU[1][j][k] = Program.QUN[1][j][k];
 
-                    Program.T[NI][j][k] = Program.TN[NI][j][k];
-                    Program.QU[NI][j][k] = Program.QUN[NI][j][k];
+                        Program.T[NI][j][k] = Program.TN[NI][j][k];
+                        Program.QU[NI][j][k] = Program.QUN[NI][j][k];
+                    }
                 }
             });
 
 
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int k = 1; k <= NK; k++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    Program.T[i][1][k] = Program.TN[i][1][k];
-                    Program.QU[i][1][k] = Program.QUN[i][1][k];
+                    for (int k = 1; k <= NK; k++)
+                    {
+                        Program.T[i][1][k] = Program.TN[i][1][k];
+                        Program.QU[i][1][k] = Program.QUN[i][1][k];
 
-                    Program.T[i][NJ][k] = Program.TN[i][NJ][k];
-                    Program.QU[i][NJ][k] = Program.QUN[i][NJ][k];
+                        Program.T[i][NJ][k] = Program.TN[i][NJ][k];
+                        Program.QU[i][NJ][k] = Program.QUN[i][NJ][k];
+                    }
                 }
             });
 
