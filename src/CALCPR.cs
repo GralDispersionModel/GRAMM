@@ -29,139 +29,146 @@ namespace GRAMM_2001
         public static void CALCPR_calculate(int NI, int NJ, int NK)
         {
             //compute mass-fluxes at the cell faces
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                int NK_P = NK; int NJ_P = NJ;
-
-                for (int j = 1; j <= NJ_P; j++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                    float[] U1NRHO_L = Program.U1NRHO[i][j];
-                    float[] U2NRHO_L = Program.U2NRHO[i][j];
-                    float[] V1NRHO_L = Program.V1NRHO[i][j];
-                    float[] V2NRHO_L = Program.V2NRHO[i][j];
-                    float[] W1NRHO_L = Program.W1NRHO[i][j];
-                    float[] W2NRHO_L = Program.W2NRHO[i][j];
-                    ReadOnlySpan<double> U1N_L = Program.U1N[i][j];
-                    ReadOnlySpan<double> V1N_L = Program.V1N[i][j];
-                    ReadOnlySpan<double> W1N_L = Program.W1N[i][j];
-                    ReadOnlySpan<double> U2N_L = Program.U2N[i][j];
-                    ReadOnlySpan<double> V2N_L = Program.V2N[i][j];
-                    ReadOnlySpan<double> W2N_L = Program.W2N[i][j];
-                    float RHO;
+                    int NK_P = NK; int NJ_P = NJ;
 
-                    U1NRHO_L[0] = 0;
-                    U2NRHO_L[0] = 0;
-                    V1NRHO_L[0] = 0;
-                    V2NRHO_L[0] = 0;
-                    W1NRHO_L[0] = 0;
-                    W2NRHO_L[0] = 0;
-
-                    Program.DPX[i][j][0] = 0;
-                    Program.DPY[i][j][0] = 0;
-                    Program.DPZ[i][j][0] = 0;
-                    Program.DP[i][j][0] = 0;
-
-                    for (int k = 1; k <= NK_P; k++)
+                    for (int j = 1; j <= NJ_P; j++)
                     {
-                        RHO = RHO_L[k];
-                        U1NRHO_L[k] = (float)(U1N_L[k] * RHO);
-                        U2NRHO_L[k] = (float)(U2N_L[k] * RHO);
-                        V1NRHO_L[k] = (float)(V1N_L[k] * RHO);
-                        V2NRHO_L[k] = (float)(V2N_L[k] * RHO);
-                        W1NRHO_L[k] = (float)(W1N_L[k] * RHO);
-                        W2NRHO_L[k] = (float)(W2N_L[k] * RHO);
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        float[] U1NRHO_L = Program.U1NRHO[i][j];
+                        float[] U2NRHO_L = Program.U2NRHO[i][j];
+                        float[] V1NRHO_L = Program.V1NRHO[i][j];
+                        float[] V2NRHO_L = Program.V2NRHO[i][j];
+                        float[] W1NRHO_L = Program.W1NRHO[i][j];
+                        float[] W2NRHO_L = Program.W2NRHO[i][j];
+                        ReadOnlySpan<double> U1N_L = Program.U1N[i][j];
+                        ReadOnlySpan<double> V1N_L = Program.V1N[i][j];
+                        ReadOnlySpan<double> W1N_L = Program.W1N[i][j];
+                        ReadOnlySpan<double> U2N_L = Program.U2N[i][j];
+                        ReadOnlySpan<double> V2N_L = Program.V2N[i][j];
+                        ReadOnlySpan<double> W2N_L = Program.W2N[i][j];
+                        float RHO;
 
-                        /*
-                        Program.DPX[i][j][k] += Program.TPX[i][j][k];
-                        Program.DPY[i][j][k] += Program.TPY[i][j][k];
-                        Program.DPZ[i][j][k] += Program.TPZ[i][j][k];
-                        Program.DP[i][j][k] += Program.TP[i][j][k];
-                        */
+                        U1NRHO_L[0] = 0;
+                        U2NRHO_L[0] = 0;
+                        V1NRHO_L[0] = 0;
+                        V2NRHO_L[0] = 0;
+                        W1NRHO_L[0] = 0;
+                        W2NRHO_L[0] = 0;
+
+                        Program.DPX[i][j][0] = 0;
+                        Program.DPY[i][j][0] = 0;
+                        Program.DPZ[i][j][0] = 0;
+                        Program.DP[i][j][0] = 0;
+
+                        for (int k = 1; k <= NK_P; k++)
+                        {
+                            RHO = RHO_L[k];
+                            U1NRHO_L[k] = (float)(U1N_L[k] * RHO);
+                            U2NRHO_L[k] = (float)(U2N_L[k] * RHO);
+                            V1NRHO_L[k] = (float)(V1N_L[k] * RHO);
+                            V2NRHO_L[k] = (float)(V2N_L[k] * RHO);
+                            W1NRHO_L[k] = (float)(W1N_L[k] * RHO);
+                            W2NRHO_L[k] = (float)(W2N_L[k] * RHO);
+
+                            /*
+                            Program.DPX[i][j][k] += Program.TPX[i][j][k];
+                            Program.DPY[i][j][k] += Program.TPY[i][j][k];
+                            Program.DPZ[i][j][k] += Program.TPZ[i][j][k];
+                            Program.DP[i][j][k] += Program.TP[i][j][k];
+                            */
+                        }
                     }
                 }
-
             });
 
             //compute mass-divergences   
-            Parallel.For(2, NI + 1, Program.pOptions, i =>      
+            //Parallel.For(2, NI + 1, Program.pOptions, i =>      
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                int NK_P = NK; int NJ_P = NJ;
-                //Console.WriteLine(" Partitoner: " + Convert.ToString(range.Item1) +"/" + Convert.ToString(range.Item2));                             	
-                for (int j = 2; j <= NJ_P; j++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    ReadOnlySpan<float> U1NRHO_L = Program.U1NRHO[i][j];
-                    ReadOnlySpan<float> U2NRHO_L = Program.U2NRHO[i][j];
-                    ReadOnlySpan<float> V1NRHO_L = Program.V1NRHO[i][j];
-                    ReadOnlySpan<float> V2NRHO_L = Program.V2NRHO[i][j];
-                    ReadOnlySpan<float> W1NRHO_L = Program.W1NRHO[i][j];
-                    ReadOnlySpan<float> W2NRHO_L = Program.W2NRHO[i][j];               
-                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
-                    ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
-                    float[] SUX_L = Program.SUX[i][j];
-                    float[] SUY_L = Program.SUY[i][j];
-                    float[] SUZ_L = Program.SUZ[i][j];
-                    float[] SUXYZ_L = Program.SUXYZ[i][j];
-
-                    for (int k = 1; k <= NK_P; k++)
+                    int NK_P = NK; int NJ_P = NJ;
+                    //Console.WriteLine(" Partitoner: " + Convert.ToString(range.Item1) +"/" + Convert.ToString(range.Item2));                             	
+                    for (int j = 2; j <= NJ_P; j++)
                     {
-                        //mass-divergence in east-west direction
-                        if ((j < NJ_P) && (k < NK_P))
-                        {
-                            SUX_L[k] = (Program.U2NRHO[i - 1][j][k] - U1NRHO_L[k]);
-                        }
+                        ReadOnlySpan<float> U1NRHO_L = Program.U1NRHO[i][j];
+                        ReadOnlySpan<float> U2NRHO_L = Program.U2NRHO[i][j];
+                        ReadOnlySpan<float> V1NRHO_L = Program.V1NRHO[i][j];
+                        ReadOnlySpan<float> V2NRHO_L = Program.V2NRHO[i][j];
+                        ReadOnlySpan<float> W1NRHO_L = Program.W1NRHO[i][j];
+                        ReadOnlySpan<float> W2NRHO_L = Program.W2NRHO[i][j];
+                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                        ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
+                        float[] SUX_L = Program.SUX[i][j];
+                        float[] SUY_L = Program.SUY[i][j];
+                        float[] SUZ_L = Program.SUZ[i][j];
+                        float[] SUXYZ_L = Program.SUXYZ[i][j];
 
-                        //mass-divergence in south-north direction
-                        if ((i < NI) && (k < NK_P))
+                        for (int k = 1; k <= NK_P; k++)
                         {
-                            SUY_L[k] = (Program.V2NRHO[i][j - 1][k] - V1NRHO_L[k]);
-                        }
+                            //mass-divergence in east-west direction
+                            if ((j < NJ_P) && (k < NK_P))
+                            {
+                                SUX_L[k] = (Program.U2NRHO[i - 1][j][k] - U1NRHO_L[k]);
+                            }
 
-                        //mass-divergence in the z-direction
-                        if ((i < NI) && (j < NJ_P))
-                        {
-                            SUZ_L[k] = ((W2NRHO_L[k - 1] - W1NRHO_L[k]) * AREA_L[k] +
-                                                                            (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
-                                                                            (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
-                                                                            AREAZ_L[k];
-                        }
+                            //mass-divergence in south-north direction
+                            if ((i < NI) && (k < NK_P))
+                            {
+                                SUY_L[k] = (Program.V2NRHO[i][j - 1][k] - V1NRHO_L[k]);
+                            }
 
-                        //mass-divergence between the two half-cells
-                        if ((i < NI) && (j < NJ_P) && (k < NK_P))
-                        {
-                            SUXYZ_L[k] = ((U1NRHO_L[k] - U2NRHO_L[k]) * AREAX_L[k] +
-                                                    (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
-                                                    (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
-                                                    (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
-                                                    (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
-                                                    AREAXYZ_L[k];
-                        }
+                            //mass-divergence in the z-direction
+                            if ((i < NI) && (j < NJ_P))
+                            {
+                                SUZ_L[k] = ((W2NRHO_L[k - 1] - W1NRHO_L[k]) * AREA_L[k] +
+                                                                                (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
+                                                                                (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
+                                                                                AREAZ_L[k];
+                            }
 
-                        //round-off errors cause the pressure equation to produce meaningless gradients
-                        //cutting off the last digits solves this problem largely (Oettl, Sept 2015)
-                        if (Math.Abs(SUX_L[k]) < 0.00001)
-                        {
-                            SUX_L[k] = 0;
-                        }
+                            //mass-divergence between the two half-cells
+                            if ((i < NI) && (j < NJ_P) && (k < NK_P))
+                            {
+                                SUXYZ_L[k] = ((U1NRHO_L[k] - U2NRHO_L[k]) * AREAX_L[k] +
+                                                        (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
+                                                        (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
+                                                        (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
+                                                        (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
+                                                        AREAXYZ_L[k];
+                            }
 
-                        if (Math.Abs(SUY_L[k]) < 0.00001)
-                        {
-                            SUY_L[k] = 0;
-                        }
+                            //round-off errors cause the pressure equation to produce meaningless gradients
+                            //cutting off the last digits solves this problem largely (Oettl, Sept 2015)
+                            if (Math.Abs(SUX_L[k]) < 0.00001)
+                            {
+                                SUX_L[k] = 0;
+                            }
 
-                        if (Math.Abs(SUZ_L[k]) < 0.00001)
-                        {
-                            SUZ_L[k] = 0;
-                        }
+                            if (Math.Abs(SUY_L[k]) < 0.00001)
+                            {
+                                SUY_L[k] = 0;
+                            }
 
-                        if (Math.Abs(SUXYZ_L[k]) < 0.00001)
-                        {
-                            SUXYZ_L[k] = 0;
+                            if (Math.Abs(SUZ_L[k]) < 0.00001)
+                            {
+                                SUZ_L[k] = 0;
+                            }
+
+                            if (Math.Abs(SUXYZ_L[k]) < 0.00001)
+                            {
+                                SUXYZ_L[k] = 0;
+                            }
                         }
                     }
                 }
@@ -296,42 +303,46 @@ namespace GRAMM_2001
                 }
             });
 
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                int NK_P = NK; int NJ_P = NJ;
-                for (int j = 1; j <= NJ_P; j++)
+                for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
-                    float[] U1NRHO_L = Program.U1NRHO[i][j];
-                    float[] U2NRHO_L = Program.U2NRHO[i][j];
-                    float[] V1NRHO_L = Program.V1NRHO[i][j];
-                    float[] V2NRHO_L = Program.V2NRHO[i][j];
-                    float[] W1NRHO_L = Program.W1NRHO[i][j];
-                    float[] W2NRHO_L = Program.W2NRHO[i][j];
-                    ReadOnlySpan<double> U1N_L = Program.U1N[i][j];
-                    ReadOnlySpan<double> V1N_L = Program.V1N[i][j];
-                    ReadOnlySpan<double> W1N_L = Program.W1N[i][j];
-                    ReadOnlySpan<double> U2N_L = Program.U2N[i][j];
-                    ReadOnlySpan<double> V2N_L = Program.V2N[i][j];
-                    ReadOnlySpan<double> W2N_L = Program.W2N[i][j];
-
-                    for (int k = 1; k <= NK_P; k++)
+                    int NK_P = NK; int NJ_P = NJ;
+                    for (int j = 1; j <= NJ_P; j++)
                     {
-                        float RHO_LL = RHO_L[k];
-                        U1NRHO_L[k] = (float)(U1N_L[k] * RHO_LL);
-                        U2NRHO_L[k] = (float)(U2N_L[k] * RHO_LL);
-                        V1NRHO_L[k] = (float)(V1N_L[k] * RHO_LL);
-                        V2NRHO_L[k] = (float)(V2N_L[k] * RHO_LL);
-                        W1NRHO_L[k] = (float)(W1N_L[k] * RHO_LL);
-                        W2NRHO_L[k] = (float)(W2N_L[k] * RHO_LL);
-                    }
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
+                        float[] U1NRHO_L = Program.U1NRHO[i][j];
+                        float[] U2NRHO_L = Program.U2NRHO[i][j];
+                        float[] V1NRHO_L = Program.V1NRHO[i][j];
+                        float[] V2NRHO_L = Program.V2NRHO[i][j];
+                        float[] W1NRHO_L = Program.W1NRHO[i][j];
+                        float[] W2NRHO_L = Program.W2NRHO[i][j];
+                        ReadOnlySpan<double> U1N_L = Program.U1N[i][j];
+                        ReadOnlySpan<double> V1N_L = Program.V1N[i][j];
+                        ReadOnlySpan<double> W1N_L = Program.W1N[i][j];
+                        ReadOnlySpan<double> U2N_L = Program.U2N[i][j];
+                        ReadOnlySpan<double> V2N_L = Program.V2N[i][j];
+                        ReadOnlySpan<double> W2N_L = Program.W2N[i][j];
 
-                    U1NRHO_L[0] = 0;
-                    U2NRHO_L[0] = 0;
-                    V2NRHO_L[0] = 0;
-                    V2NRHO_L[0] = 0;
-                    W1NRHO_L[0] = 0;
-                    W2NRHO_L[0] = 0;
+                        for (int k = 1; k <= NK_P; k++)
+                        {
+                            float RHO_LL = RHO_L[k];
+                            U1NRHO_L[k] = (float)(U1N_L[k] * RHO_LL);
+                            U2NRHO_L[k] = (float)(U2N_L[k] * RHO_LL);
+                            V1NRHO_L[k] = (float)(V1N_L[k] * RHO_LL);
+                            V2NRHO_L[k] = (float)(V2N_L[k] * RHO_LL);
+                            W1NRHO_L[k] = (float)(W1N_L[k] * RHO_LL);
+                            W2NRHO_L[k] = (float)(W2N_L[k] * RHO_LL);
+                        }
+
+                        U1NRHO_L[0] = 0;
+                        U2NRHO_L[0] = 0;
+                        V2NRHO_L[0] = 0;
+                        V2NRHO_L[0] = 0;
+                        W1NRHO_L[0] = 0;
+                        W2NRHO_L[0] = 0;
+                    }
                 }
             });
 
@@ -341,32 +352,31 @@ namespace GRAMM_2001
                 int NK_P = NK; int NJ_P = NJ;
                 //Console.WriteLine(" Partitoner: " + Convert.ToString(range.Item1) +"/" + Convert.ToString(range.Item2));
                 for (int j = 2; j <= NJ_P; j++)
+                {
+                    float[] SUX_L = Program.SUX[i][j];
+                    float[] SUY_L = Program.SUY[i][j];
+                    float[] SUZ_L = Program.SUZ[i][j];
+                    float[] SUXYZ_L = Program.SUXYZ[i][j];
+
+                    ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
+                    ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
+
+                    ReadOnlySpan<float> U1NRHO_L = Program.U1NRHO[i][j];
+                    ReadOnlySpan<float> U2NRHO_L = Program.U2NRHO[i][j];
+                    ReadOnlySpan<float> V1NRHO_L = Program.V1NRHO[i][j];
+                    ReadOnlySpan<float> V2NRHO_L = Program.V2NRHO[i][j];
+                    ReadOnlySpan<float> W1NRHO_L = Program.W1NRHO[i][j];
+                    ReadOnlySpan<float> W2NRHO_L = Program.W2NRHO[i][j];
+
+                    for (int k = 1; k <= NK_P - 1; k++)
                     {
-                        float[] SUX_L = Program.SUX[i][j];
-                        float[] SUY_L = Program.SUY[i][j];
-                        float[] SUZ_L = Program.SUZ[i][j];
-                        float[] SUXYZ_L = Program.SUXYZ[i][j];
-
-                        ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAZ_L = Program.AREAZImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAX_L = Program.AREAXImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAY_L = Program.AREAYImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAZY_L = Program.AREAZYImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAZX_L = Program.AREAZXImm[i][j].AsSpan();
-                        ReadOnlySpan<float> AREAXYZ_L = Program.AREAXYZImm[i][j].AsSpan();
-
-                        ReadOnlySpan<float> U1NRHO_L = Program.U1NRHO[i][j];
-                        ReadOnlySpan<float> U2NRHO_L = Program.U2NRHO[i][j];
-                        ReadOnlySpan<float> V1NRHO_L = Program.V1NRHO[i][j];
-                        ReadOnlySpan<float> V2NRHO_L = Program.V2NRHO[i][j];
-                        ReadOnlySpan<float> W1NRHO_L = Program.W1NRHO[i][j];
-                        ReadOnlySpan<float> W2NRHO_L = Program.W2NRHO[i][j];
-
-
-                        for (int k = 1; k <= NK_P - 1; k++)
-                        {
-                            //mass-divergence in east-west direction
-                            if ((j < NJ_P) && (k < NK_P))
+                        //mass-divergence in east-west direction
+                        if ((j < NJ_P) && (k < NK_P))
                         {
                             SUX_L[k] = (Program.U2NRHO[i - 1][j][k] - U1NRHO_L[k]);
                         }
@@ -397,7 +407,7 @@ namespace GRAMM_2001
                                                     AREAXYZ_L[k];
                         }
                     }
-                    }
+                }
             });
 
             //compute total mass-divergence
