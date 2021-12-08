@@ -113,7 +113,6 @@ namespace GRAMM_2001
                     Program.MASSOURCE_FIRST = Program.SUMG;
                 }
 
-
                 if (Program.ICT == true && Program.ICQU == true)
                 {
                     // Parallel.Invoke(Program.pOptions,

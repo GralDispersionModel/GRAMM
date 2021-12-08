@@ -207,13 +207,12 @@ namespace GRAMM_2001
                         v1 = Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz] - 1];
                     }
 
-                    Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], u1, Program.UN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
+                    wind = Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], u1, Program.UN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]]);
                     Program.Urec[ianz] += wind * Program.DT / 3600;
-                    Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], v1, Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]], ref wind);
+                    wind = Linear_interpolation(z1, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], Program.Zrec[ianz], v1, Program.VN[Program.inrec[ianz]][Program.jnrec[ianz]][Program.knrec[ianz]]);
                     Program.Vrec[ianz] += wind * Program.DT / 3600;
 
-                    double T2 = 0;
-                    Linear_interpolation(0.0, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], 2.0, Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.0, Program.TABS[Program.inrec[ianz]][Program.jnrec[ianz]][1] - 273.0, ref T2);
+                    double T2 = Linear_interpolation(0.0, Program.ZSPImm[Program.inrec[ianz]][Program.jnrec[ianz]][1] - Program.AHImm[Program.inrec[ianz]][Program.jnrec[ianz]], 2.0, Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2] - 273.0, Program.TABS[Program.inrec[ianz]][Program.jnrec[ianz]][1] - 273.0);
                     Program.Trec[ianz] += T2 * Program.DT / 3600;
                     Program.Globradrec[ianz] += Program.GLOBRAD[Program.inrec[ianz]][Program.jnrec[ianz]] * Program.DT / 3600;
                     Program.Soilheatfluxrec[ianz] += (Program.ALAMBDA[Program.inrec[ianz]][Program.jnrec[ianz]] * (Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][3] - Program.TB[Program.inrec[ianz]][Program.jnrec[ianz]][2]) / Program.DWB[3] -
@@ -488,8 +487,9 @@ namespace GRAMM_2001
         }
 
         //linear interpolation between two points
-        public static void Linear_interpolation(double x1, double x2, double x3, double val1, double val2, ref double val3)
+        public static double Linear_interpolation(double x1, double x2, double x3, double val1, double val2)
         {
+            Unsafe.SkipInit(out double val3);
             if (x2 - x1 != 0)
             {
                 val3 = val1 + (val2 - val1) / (x2 - x1) * (x3 - x1);
@@ -498,6 +498,7 @@ namespace GRAMM_2001
             {
                 val3 = val1;
             }
+            return val3;
         }
 
     }
