@@ -667,64 +667,283 @@ namespace GRAMM_2001
         /// </summary>
         private static void clear_arrays()
         {
+            Read_IIN_Dat();
+            IDIV = 0;
             IDIV_Up = 0;        //5.4.2017 Ku Reset Counter for MASSOURCE Queue
             IDIV_LockDown2 = 30;
             IDIV_LockDown = 0;
             IDIV_LockUp = 0;
             IDIV_PingPong = 0;
+            Program.STEIGUNG = 0;
             IDIV_LockRelax = 0; //5.4.2017 Ku Reset Counter for Relax decrease
             RELAXV = Relaxv_ori; //5.4.2017 Ku Reset relax
             RELAXT = Relaxt_ori; //5.4.2017 Ku Reset relax
+            Program.SUMG = 0;
+            Program.DIVSUM = 0;
+            Program.MASSOURCE_Old = 0;
+            Program.MASSOURCE_Act = 0;
+            Program.MASSOURCE_FIRST = 0;
+            Program.MASSOURCE_Queue.Clear();
             Divergence_Min = 10e9;
+            Program.TerminalOut = 0;
+            Program.POBEN = 0;
+            Program.TBZ1 = 0;
 
-            for (int i = 0; i < NX1; i++)
+            
+            ClearJaggedArray(MASSOURCE);
+            ClearJaggedArray(PBZZ);
+            ClearJaggedArray(RHOBZZ);
+            ClearJaggedArray(RSOLG);
+            ClearJaggedArray(GLOBRAD);
+            ClearJaggedArray(DT_SOL);
+            ClearJaggedArray(DT_TERR);
+            ClearJaggedArray(RL);
+            ClearJaggedArray(TG);
+            ClearJaggedArray(ALBEDO);
+            ClearJaggedArray(CLOUDS);
+            ClearJaggedArray(SNOW);
+            ClearJaggedArray(ZPROF);
+            ClearJaggedArray(PPROF);
+            ClearJaggedArray(TPROF);
+            ClearJaggedArray(VNORM);
+            ClearJaggedArray(QVAP);
+            ClearJaggedArray(QCLD);
+            ClearJaggedArray(QRAIN);
+            ClearJaggedArray(QICE);
+            ClearJaggedArray(QSNOW);
+            ClearJaggedArray(EPSG);
+            ClearJaggedArray(UST);
+            ClearJaggedArray(USTV);
+            ClearJaggedArray(TST);
+            ClearJaggedArray(XWQ);
+            ClearJaggedArray(WQU);
+            ClearJaggedArray(AWQ);
+            ClearJaggedArray(RHOB);
+            ClearJaggedArray(RHO);
+            ClearJaggedArray(Program.RHOBZ);
+            ClearJaggedArray(ALAMBDA);
+
+            ClearJaggedArray(TBN);
+            ClearJaggedArray(TBA);
+            ClearJaggedArray(TN);
+            ClearJaggedArray(TE);
+            ClearJaggedArray(TBZ);
+
+            ClearJaggedArray(U);
+            ClearJaggedArray(V);
+            ClearJaggedArray(W);
+            ClearJaggedArray(U1);
+            ClearJaggedArray(V1);
+            ClearJaggedArray(W1);
+            ClearJaggedArray(U2);
+            ClearJaggedArray(V2);
+            ClearJaggedArray(W2);
+            ClearJaggedArray(U1N);
+            ClearJaggedArray(V1N);
+            ClearJaggedArray(W1N);
+            ClearJaggedArray(U2N);
+            ClearJaggedArray(V2N);
+            ClearJaggedArray(W2N);
+            ClearJaggedArray(DIMU);
+            ClearJaggedArray(DIMV);
+            ClearJaggedArray(DIMW);
+            ClearJaggedArray(A_PS);
+            ClearJaggedArray(B_PS);
+            ClearJaggedArray(C_PS);
+            ClearJaggedArray(ASOUTH_PS);
+            ClearJaggedArray(AEAST_PS);
+            ClearJaggedArray(ANORTH_PS);
+            ClearJaggedArray(AWEST_PS);
+            ClearJaggedArray(AP0_PS);
+            ClearJaggedArray(AIM);
+            ClearJaggedArray(BIM);
+            ClearJaggedArray(CIM);
+            ClearJaggedArray(U1NRHO);
+            ClearJaggedArray(V1NRHO);
+            ClearJaggedArray(W1NRHO);
+            ClearJaggedArray(U2NRHO);
+            ClearJaggedArray(V2NRHO);
+            ClearJaggedArray(W2NRHO);
+            ClearJaggedArray(SUX);
+            ClearJaggedArray(SUY);
+            ClearJaggedArray(SUZ);
+            ClearJaggedArray(SUXYZ);
+            ClearJaggedArray(DPX);
+            ClearJaggedArray(DPY);
+            ClearJaggedArray(DPZ);
+            ClearJaggedArray(DP);
+            ClearJaggedArray(PN);
+            ClearJaggedArray(PBZ);
+            ClearJaggedArray(PNBZKP);
+            ClearJaggedArray(NBZKP);
+            ClearJaggedArray(FACTOR);
+            ClearJaggedArray(DISS);
+            ClearJaggedArray(DISSN);
+            ClearJaggedArray(DDP1DX);
+            ClearJaggedArray(DDP1DY);
+            ClearJaggedArray(DDP1DZ);
+            ClearJaggedArray(DDP2DX);
+            ClearJaggedArray(DDP2DY);
+            ClearJaggedArray(DDP2DZ);
+            ClearJaggedArray(T);
+            ClearJaggedArray(TB);
+            ClearJaggedArray(TEN);
+            ClearJaggedArray(TABS);
+            ClearJaggedArray(TP);
+            ClearJaggedArray(TPDY);
+            ClearJaggedArray(TPDX);
+            ClearJaggedArray(TPX);
+            ClearJaggedArray(TPY);
+            ClearJaggedArray(TPZ);
+            ClearJaggedArray(VISV);
+            ClearJaggedArray(VISH);
+            ClearJaggedArray(QU);
+            ClearJaggedArray(QUN);
+            ClearJaggedArray(FAC);
+            ClearJaggedArray(RITSCH);
+            ClearJaggedArray(USEN);
+            ClearJaggedArray(VSEN);
+            ClearJaggedArray(WSEN);
+            ClearJaggedArray(USW);
+            ClearJaggedArray(VSW);
+            ClearJaggedArray(WSW);
+            ClearJaggedArray(TSEN);
+            ClearJaggedArray(WSWN);
+            ClearJaggedArray(VSWN);
+            ClearJaggedArray(USWN);
+            ClearJaggedArray(QUSW);
+            ClearJaggedArray(QUSWN);
+            ClearJaggedArray(QUSE);
+            ClearJaggedArray(TSWN);
+            ClearJaggedArray(USSN);
+            ClearJaggedArray(VSSN);
+            ClearJaggedArray(WSSN);
+            ClearJaggedArray(TSSN);
+            ClearJaggedArray(TSS);
+            ClearJaggedArray(USS);
+            ClearJaggedArray(VSS);
+            ClearJaggedArray(WSS);
+            ClearJaggedArray(QUSNN);
+            ClearJaggedArray(QUSSN);
+            ClearJaggedArray(QUSS);
+            ClearJaggedArray(USNN);
+            ClearJaggedArray(VSNN);
+            ClearJaggedArray(WSNN);
+            ClearJaggedArray(TSNN);
+            ClearJaggedArray(USN);
+            ClearJaggedArray(VSN);
+            ClearJaggedArray(WSN);
+            ClearJaggedArray(TSN);
+            ClearJaggedArray(AB);
+            ClearJaggedArray(AE);
+            ClearJaggedArray(AN);
+            ClearJaggedArray(AP);
+            ClearJaggedArray(AS);
+            ClearJaggedArray(AT);
+            ClearJaggedArray(AW);
+            ClearJaggedArray(F1U);
+            ClearJaggedArray(F2U);
+            ClearJaggedArray(F1V);
+            ClearJaggedArray(F2V);
+            ClearJaggedArray(F1W);
+            ClearJaggedArray(F2W);
+            ClearJaggedArray(QBZ);
+            ClearJaggedArray(UG);
+            ClearJaggedArray(VG);
+            ClearJaggedArray(AW1);
+            ClearJaggedArray(AS1);
+            ClearJaggedArray(AE2);
+            ClearJaggedArray(AN2);
+            ClearJaggedArray(Program.RADIATION);
+            ClearJaggedArray(OL);
+            ClearJaggedArray(stabilityclass);
+            ClearJaggedArray(Program.QUG);
+            ClearJaggedArray(AP0);
+            ClearJaggedArray(WAT_VAP);
+            ClearJaggedArray(WAT_VAPN);
+            ClearJaggedArray(FW);
+            ClearJaggedArray(ZI);
+            ClearJaggedArray(Z0);
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[][][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
             {
-                for (int j = 0; j < NY1; j++)
+                for (int j = 0; j < array[i].Length; j++)
                 {
-                    Array.Clear(U[i][j]);
-                    Array.Clear(V[i][j]);
-                    Array.Clear(W[i][j]);
-                    Array.Clear(U[i][j]);
-                    Array.Clear(V[i][j]);
-                    Array.Clear(W[i][j]);
-                    Array.Clear(RHO[i][j]);
-                    Array.Clear(U1[i][j]);
-                    Array.Clear(V1[i][j]);
-                    Array.Clear(W1[i][j]);
-                    Array.Clear(U1N[i][j]);
-                    Array.Clear(V1N[i][j]);
-                    Array.Clear(W1N[i][j]);
-                    Array.Clear(U2N[i][j]);
-                    Array.Clear(V2N[i][j]);
-                    Array.Clear(W2N[i][j]);
-                    Array.Clear(U1NRHO[i][j]);
-                    Array.Clear(V1NRHO[i][j]);
-                    Array.Clear(W1NRHO[i][j]);
-                    Array.Clear(U2NRHO[i][j]);
-                    Array.Clear(V2NRHO[i][j]);
-                    Array.Clear(W2NRHO[i][j]);
-                    Array.Clear(SUX[i][j]);
-                    Array.Clear(SUY[i][j]);
-                    Array.Clear(SUZ[i][j]);
-                    Array.Clear(DPX[i][j]);
-                    Array.Clear(DPY[i][j]);
-                    Array.Clear(DPZ[i][j]);
-                    Array.Clear(DDP1DX[i][j]);
-                    Array.Clear(DDP1DY[i][j]);
-                    Array.Clear(DDP1DZ[i][j]);
-                    Array.Clear(DDP2DX[i][j]);
-                    Array.Clear(DDP2DY[i][j]);
-                    Array.Clear(DDP2DZ[i][j]);
-                    Array.Clear(T[i][j]);
-                    Array.Clear(TN[i][j]);
-                    Array.Clear(TBZ[i][j]);
-                    Array.Clear(TE[i][j]);
-                    Array.Clear(TEN[i][j]);
-                    Array.Clear(DISS[i][j]);
-                    Array.Clear(DISSN[i][j]);
-                    Array.Clear(FACTOR[i][j]);
+                    Array.Clear(array[i][j], 0, array[i][j].Length);
                 }
             }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[][][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                for (int j = 0; j < array[i].Length; j++)
+                {
+                    Array.Clear(array[i][j], 0, array[i][j].Length);
+                }
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(short[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(int[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[] array)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[] array)
+        {
+            Array.Clear(array, 0, array.Length);
         }
 
         /// <summary>
