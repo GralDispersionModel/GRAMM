@@ -89,9 +89,6 @@ Console.WriteLine("| .Net Core Version |");
             // 11.04.17 Ku use arguments
             Console_Arguments(args);
 
-            //User defined decimal seperator
-            decsep = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
-
             //read number of grid cells stored in the file "GRAMM.geb"
             Read_Gramm_Geb();
 

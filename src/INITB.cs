@@ -33,9 +33,6 @@ namespace GRAMM_2001
             double TURBIN = 0.01;
             double TEINIT = 0;
 
-            //turbulent Prandtl-number
-            Program.PRTE = 0.9;
-
             //initial turbulent kinetic energy
             if ((UINIT == 0) && (VINIT == 0))
             {

@@ -13,8 +13,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Buffers;
 using System.Collections.Immutable;
+using System.Globalization;
 
 namespace GRAMM_2001
 {
@@ -30,7 +30,7 @@ namespace GRAMM_2001
         ///<summary>
         ///global decimal separator of the system
         ///</summary>
-        public static string decsep;
+        public static readonly string decsep = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
         ///<summary>
         ///number of cells in x-direction
         ///</summary>
@@ -332,10 +332,6 @@ namespace GRAMM_2001
         ///Density of the air
         ///</summary>
         public static float[][][] RHO = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
-        ///<summary>
-        ///Density of the air immutable
-        ///</summary>
-        public static ImmutableArray<float>[][] RHOImm;
         ///<summary>
         ///Average wind speed in x-direction over the two half-cells at time t+1
         ///</summary>
@@ -1343,19 +1339,19 @@ namespace GRAMM_2001
         ///<summary>
         ///Gravitational acceleration
         ///</summary>
-        public static double GERD;
+        public const double GERD = 9.81;
         ///<summary>
         /// General gas constant
         ///</summary>
-        public static double GASCON;
+        public const double GASCON = 287;
         ///<summary>
         /// Heat capacity of air for constant pressure
         ///</summary>
-        public static double CPLUFT;
+        public const double CPLUFT = 1000;
         ///<summary>
         ///Evaporation heat of water
         ///</summary>
-        public static double ALW;
+        public const double ALW = 2500000;
         ///<summary>
         ///Switch for radiation model: 1=thin clouds 2=thick clouds
         ///</summary>
@@ -1395,19 +1391,19 @@ namespace GRAMM_2001
         ///<summary>
         /// van Karman constant
         ///</summary>
-        public static double CK;
+        public const double CK = 0.35;
         ///<summary>
         ///minimum turbulent viscosity
         ///</summary>
-        public static double VISEL;
+        public const double VISEL = 0.05;
         ///<summary>
         ///heat capacity of soil
         ///</summary>
-        public static double CPBOD;
+        public const double CPBOD = 900;
         ///<summary>
         ///Stefan Bolzmann constant
         ///</summary>
-        public static double SIGMA;
+        public const double SIGMA = 5.6697e-8;
         ///<summary>
         ///temperature value used to improve numerical accuracy of the solution algorithm for temperature
         ///</summary>
@@ -1451,8 +1447,7 @@ namespace GRAMM_2001
         ///<summary>
         ///turbulent Prandtl-number
         ///</summary>
-        public static double PRTE;
-
+        public const double PRTE = 0.9;
         ///<summary>
         ///Flag switching the computation of the u-component on/off
         ///</summary>
@@ -1600,7 +1595,7 @@ namespace GRAMM_2001
         ///<summary>
         ///5.4.2017 ÖT MASSOURCE previous time step
         ///</summary>
-        public static double MASSOURCE_minusone;
+        //public static double MASSOURCE_minusone;
         ///<summary>
         ///11.4.2017 Ku first weather situation from console
         ///</summary>

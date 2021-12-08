@@ -69,12 +69,6 @@ namespace GRAMM_2001
                 }
             }
 
-            //Gravitational acceleration, general gas constant, heat capacity of air by constant pressure, evaporation heat of water
-            Program.GERD = 9.81;
-            Program.GASCON = 287;
-            Program.CPLUFT = 1000;
-            Program.ALW = 2500000;
-
             //Initialization procedure
             //Program.ISOL = 1; //Switch for radiation model: 1=thin clouds 2=thick clouds
             if (Program.ISTAT < 2)
@@ -132,18 +126,6 @@ namespace GRAMM_2001
                 {
                     Program.ALPHA[k] = 0.05;
                 }
-
-                //van Karman constant
-                Program.CK = 0.35;
-
-                //minimum turbulent viscosity
-                Program.VISEL = 0.05;
-
-                //heat capacity soil
-                Program.CPBOD = 900;
-
-                //Stefan-Bolzmann constant
-                Program.SIGMA = 5.6697e-8;
             }
         }
 
