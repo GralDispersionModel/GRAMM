@@ -151,9 +151,11 @@ namespace GRAMM_2001
                 //computation of turbulent kinetic energy and dissipation rate
                 if (Program.ICTE == true)
                 {
-                    Parallel.Invoke(Program.pOptions,
-                    () => Tkeimp_calculate(NI, NJ, NK),
-                    () => Epsimp_calculate(NI, NJ, NK));
+                    //Parallel.Invoke(Program.pOptions,
+                    //() => Tkeimp_calculate(NI, NJ, NK),
+                    //() => Epsimp_calculate(NI, NJ, NK));
+                    Tkeimp_calculate(NI, NJ, NK);
+                    Epsimp_calculate(NI, NJ, NK);
                 }
 
                 //time-step adjustion
