@@ -85,7 +85,7 @@ namespace GRAMM_2001
                             if (k > 2)
                             {
                                 DTBDZ = (Program.ALAMBDA[i][j] * (Program.TB[i][j][k + 1] - Program.TB[i][j][k]) / Program.DWB[k + 1] -
-                                       Program.ALAMBDA[i][j] * (Program.TB[i][j][k] - Program.TB[i][j][k - 1]) / Program.DWB[k]) / Program.DZB[k];
+                                         Program.ALAMBDA[i][j] * (Program.TB[i][j][k] - Program.TB[i][j][k - 1]) / Program.DWB[k]) / Program.DZB[k];
                                 TERMTB = DTBDZ * Program.DT;
                             }
                             else if (k == 2)

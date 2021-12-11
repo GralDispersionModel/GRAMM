@@ -132,20 +132,20 @@ namespace GRAMM_2001
                             if ((i < NI) && (j < NJ_P))
                             {
                                 SUZ_L[k] = ((W2NRHO_L[k - 1] - W1NRHO_L[k]) * AREA_L[k] +
-                                                                                (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
-                                                                                (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
-                                                                                AREAZ_L[k];
+                                            (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
+                                            (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
+                                            AREAZ_L[k];
                             }
 
                             //mass-divergence between the two half-cells
                             if ((i < NI) && (j < NJ_P) && (k < NK_P))
                             {
                                 SUXYZ_L[k] = ((U1NRHO_L[k] - U2NRHO_L[k]) * AREAX_L[k] +
-                                                        (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
-                                                        (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
-                                                        (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
-                                                        (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
-                                                        AREAXYZ_L[k];
+                                              (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
+                                              (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
+                                              (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
+                                              (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
+                                              AREAXYZ_L[k];
                             }
 
                             //round-off errors cause the pressure equation to produce meaningless gradients
@@ -256,22 +256,16 @@ namespace GRAMM_2001
                             f2 = (AREAY_L[k] + AREAZY_L[k]) * DP_LL;
 
                             //Pressure gradients
-
                             DDP1DX_L[k] = (AREAX_L[k] * DPX_L[k] - f1 + AREAZX_L[k] * DPZ_LL);
-
                             DDP2DX_L[k] = (-AREAXiP_L[k] * DPXiP_L[k] + f1 - AREAZX_L[k + 1] * DPZp_LL);
-
                             DDP1DY_L[k] = (AREAY_L[k] * DPY_L[k] - f2 + AREAZY_L[k] * DPZ_LL);
-
                             DDP2DY_L[k] = (-AREAYjP_L[k] * DPYjP_L[k] + f2 - AREAZY_L[k + 1] * DPZp_LL);
-
                             DDP1DZ_L[k] = AREA_L[k] * (DPZ_LL - DP_LL);
-
                             DDP2DZ_L[k] = AREA_L[k + 1] * (DP_LL - DPZp_LL);
                         }
 
                         //Velocity corrections
-                        if ((m - 1) == 1)
+                        if (m == 2)
                         {
                             m--;
                             float temp = 1 / AP0_L[k];
@@ -391,20 +385,20 @@ namespace GRAMM_2001
                         if ((i < NI) && (j < NJ_P))
                         {
                             SUZ_L[k] = ((W2NRHO_L[k - 1] - W1NRHO_L[k]) * AREA_L[k] +
-                                                                            (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
-                                                                            (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
-                                                                            AREAZ_L[k];
+                                        (U2NRHO_L[k - 1] - U1NRHO_L[k]) * AREAZX_L[k] +
+                                        (V2NRHO_L[k - 1] - V1NRHO_L[k]) * AREAZY_L[k]) /
+                                        AREAZ_L[k];
                         }
 
                         //mass-divergence between the two half-cells
                         if ((i < NI) && (j < NJ_P) && (k < NK_P))
                         {
                             SUXYZ_L[k] = ((U1NRHO_L[k] - U2NRHO_L[k]) * AREAX_L[k] +
-                                                    (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
-                                                    (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
-                                                    (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
-                                                    (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
-                                                    AREAXYZ_L[k];
+                                          (V1NRHO_L[k] - V2NRHO_L[k]) * AREAY_L[k] +
+                                          (W1NRHO_L[k] - W2NRHO_L[k]) * AREA_L[k] +
+                                          (U1NRHO_L[k] - U2NRHO_L[k]) * AREAZX_L[k] +
+                                          (V1NRHO_L[k] - V2NRHO_L[k]) * AREAZY_L[k]) /
+                                          AREAXYZ_L[k];
                         }
                     }
                 }
