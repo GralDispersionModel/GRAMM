@@ -32,9 +32,8 @@ namespace GRAMM_2001
         public static void Bords_calculate(int NI, int NJ, int NK)
         {
             //damping factor
-            double ATTENU = 2;
-            double ATTENU2 = 0.1; //stronger damping factor
-            double ATTENU1 = 5.0; //weaker damping factor
+            //double ATTENU2 = 0.1; //stronger damping factor
+            //double ATTENU1 = 5.0; //weaker damping factor
             double WINDDIR1 = 0;
             double WINDDIR2 = 0;
             double WINDGE1 = 0;
@@ -135,6 +134,7 @@ namespace GRAMM_2001
             //Parallel.For(1, NJ + 1, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(1, NJ + 1, NJ / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
+                double ATTENU = 2;
                 for (int j = range.Item1; j < range.Item2; ++j)
                 {
                     for (int k = 1; k <= NK; k++)
@@ -167,7 +167,6 @@ namespace GRAMM_2001
                         }
                         else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                         {
-
                             for (int i = 1; i <= 1; i++)
                             {
                                 int i1 = Math.Min(i, NI);
@@ -198,6 +197,7 @@ namespace GRAMM_2001
             //Parallel.For(1, NJ + 1, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(1, NJ + 1, NJ / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
+                double ATTENU = 2;
                 for (int j = range.Item1; j < range.Item2; ++j)
                 {
                     for (int k = 1; k <= NK; k++)
@@ -261,6 +261,7 @@ namespace GRAMM_2001
             //Parallel.For(1, NI + 1, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
+                double ATTENU = 2;
                 for (int i = range.Item1; i < range.Item2; ++i)
                 {
                     for (int k = 1; k <= NK; k++)
@@ -323,6 +324,7 @@ namespace GRAMM_2001
             //Parallel.For(1, NI + 1, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
+                double ATTENU = 2;
                 for (int i = range.Item1; i < range.Item2; ++i)
                 {
                     for (int k = 1; k <= NK; k++)
