@@ -31,17 +31,13 @@ namespace GRAMM_2001
         {
             // define the prsssure solver iteration number
             int iteration = 0;
+            
             for (; iteration < 9; iteration++)
             {
                 if (iteration == 1)
                 {
-                    int range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-
                     //Parallel.For(2, NI, Program.pOptions, i =>
-                    Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK + 2];
@@ -264,13 +260,8 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 2)
                 {
-                    int range_parallel = (NI - 2)/ Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-
                     //Parallel.For(2, NI, Program.pOptions, i1 =>
-                    Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK + 2];
@@ -494,13 +485,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 3)
                 {
-
-                    int range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                                                                   //Parallel.For(2, NJ, Program.pOptions, j1 =>
-                    Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -714,13 +699,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 4)
                 {
-                    int range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-
-                    //Parallel.For(2, NJ, Program.pOptions, j =>
-                    Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -930,12 +909,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 5)
                 {
-                    int range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                                                                   //  Parallel.For(2, NI, Program.pOptions, i1 =>
-                    Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1155,12 +1129,8 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 6)
                 {
-                    int range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                                                                   //Parallel.For(2, NI, Program.pOptions, i =>
-                    Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                    //Parallel.For(2, NI, Program.pOptions, i =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1381,12 +1351,8 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 7)
                 {
-                    int range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                                                                   //Parallel.For(2, NJ, Program.pOptions, j1 =>
-                    Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                    //Parallel.For(2, NJ, Program.pOptions, j1 =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1597,12 +1563,8 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 8)
                 {
-                    int range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                    range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                    StripeCounter++;
-                    range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                                                                   //Parallel.For(2, NJ, Program.pOptions, j =>
-                    Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                    //Parallel.For(2, NJ, Program.pOptions, j =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];

@@ -67,13 +67,9 @@ namespace GRAMM_2001
                 }
             });
 
-            range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
             //computation of the new temperature
             //Parallel.For(2, NI, Program.pOptions, i =>
-            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -161,7 +157,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {
@@ -175,13 +173,8 @@ namespace GRAMM_2001
                 Program.GrammArrayPool.Return(TNiP_LR);
             });
 
-
-            range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
             //Parallel.For(2, NI, Program.pOptions, i1 =>
-            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -270,7 +263,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {
@@ -284,229 +279,8 @@ namespace GRAMM_2001
                 Program.GrammArrayPool.Return(TNiP_LR);
             });
 
-
-            range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-            //Parallel.For(2, NI, Program.pOptions, i1 =>
-            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-            {
-                double DIM;
-                Span<double> PIM = stackalloc double[NK];
-                Span<double> QIM = stackalloc double[NK];
-                double help;
-                double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TN_L;
-                double[] TNiM_L;
-                double[] TNiP_L;
-                ReadOnlySpan<double> A_PS_L;
-                ReadOnlySpan<float> AWEST_PS_L;
-                ReadOnlySpan<float> ASOUTH_PS_L;
-                ReadOnlySpan<float> AEAST_PS_L;
-                ReadOnlySpan<float> ANORTH_PS_L;
-                ReadOnlySpan<float> AP0_PS_L;
-                ReadOnlySpan<double> B_PS_L;
-                ReadOnlySpan<double> C_PS_L;
-                ReadOnlySpan<float> FAC_L;
-                ReadOnlySpan<float> RHO_L;
-                ReadOnlySpan<double> T_L;
-                ReadOnlySpan<double> RADIATION_L;
-
-                for (int i = range.Item2 - 1; i >= range.Item1; --i)
-                {
-                    int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                    for (int j = 2; j <= NJ - 1; ++j)
-                    {
-                        A_PS_L = Program.A_PS[i][j];
-                        AEAST_PS_L = Program.AEAST_PS[i][j];
-                        ANORTH_PS_L = Program.ANORTH_PS[i][j];
-                        ASOUTH_PS_L = Program.ASOUTH_PS[i][j];
-                        AWEST_PS_L = Program.AWEST_PS[i][j];
-                        AP0_PS_L = Program.AP0_PS[i][j];
-                        B_PS_L = Program.B_PS[i][j];
-                        C_PS_L = Program.C_PS[i][j];
-                        FAC_L = Program.FAC[i][j];
-                        RHO_L = Program.RHO[i][j];
-                        T_L = Program.T[i][j];
-                        RADIATION_L = RADIATION[i][j];
-                        double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
-                        ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
-
-                        if (border < 1)
-                        {
-                            TN_L = TN_LR;
-                            TNiM_L = TNiM_LR;
-                            TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
-                        }
-                        else
-                        {
-                            TN_L = Program.TN[i][j];
-                            TNiM_L = Program.TN[i - 1][j];
-                            TNiP_L = Program.TN[i + 1][j];
-                        }
-
-                        for (int k = 1; k < QIM.Length; ++k)
-                        {
-                            DIM = AWEST_PS_L[k] * TNiM_L[k] + ASOUTH_PS_L[k] * TNjM_L[k] +
-                                  AEAST_PS_L[k] * TNiP_L[k] + ANORTH_PS_L[k] * TNjP_L[k] +
-                                  AP0_PS_L[k] * T_L[k] + RADIATION_L[k];
-                            if ((k == 1) && (Program.ICTB == true))
-                            {
-                                DIM -= WQU_AWQ / Program.CPLUFT * FAC_L[k] * RHO_L[k];
-                            }
-
-                            //Recurrence formula
-                            if (k > 1)
-                            {
-                                help = 1 / (A_PS_L[k] - C_PS_L[k] * PIM[k - 1]);
-                                PIM[k] = B_PS_L[k] * help;
-                                QIM[k] = (DIM + C_PS_L[k] * QIM[k - 1]) * help;
-                            }
-                            else
-                            {
-                                help = 1 / A_PS_L[k];
-                                PIM[k] = B_PS_L[k] * help;
-                                QIM[k] = DIM * help;
-                            }
-                        }
-
-                        //Obtain new T-components
-                        for (int k = NK - 1; k >= 1; k--)
-                        {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
-                        }
-                        if (border < 1)
-                        {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                        }
-
-                    }
-                }
-                Program.GrammArrayPool.Return(TN_LR);
-                Program.GrammArrayPool.Return(TNiM_LR);
-                Program.GrammArrayPool.Return(TNiP_LR);
-            });
-
-            range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                                                           //Parallel.For(2, NI, Program.pOptions, i =>
-            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
-            {
-                double DIM;
-                Span<double> PIM = stackalloc double[NK];
-                Span<double> QIM = stackalloc double[NK];
-                double help;
-                double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
-                double[] TN_L;
-                double[] TNiM_L;
-                double[] TNiP_L;
-                ReadOnlySpan<double> A_PS_L;
-                ReadOnlySpan<float> AWEST_PS_L;
-                ReadOnlySpan<float> ASOUTH_PS_L;
-                ReadOnlySpan<float> AEAST_PS_L;
-                ReadOnlySpan<float> ANORTH_PS_L;
-                ReadOnlySpan<float> AP0_PS_L;
-                ReadOnlySpan<double> B_PS_L;
-                ReadOnlySpan<double> C_PS_L;
-                ReadOnlySpan<float> FAC_L;
-                ReadOnlySpan<float> RHO_L;
-                ReadOnlySpan<double> T_L;
-                ReadOnlySpan<double> RADIATION_L;
-
-                for (int i = range.Item1; i < range.Item2; ++i)
-                {
-                    int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
-                    for (int j = NJ - 1; j >= 2; --j)
-                    {
-                        A_PS_L = Program.A_PS[i][j];
-                        AEAST_PS_L = Program.AEAST_PS[i][j];
-                        ANORTH_PS_L = Program.ANORTH_PS[i][j];
-                        ASOUTH_PS_L = Program.ASOUTH_PS[i][j];
-                        AWEST_PS_L = Program.AWEST_PS[i][j];
-                        AP0_PS_L = Program.AP0_PS[i][j];
-                        B_PS_L = Program.B_PS[i][j];
-                        C_PS_L = Program.C_PS[i][j];
-                        FAC_L = Program.FAC[i][j];
-                        RHO_L = Program.RHO[i][j];
-                        T_L = Program.T[i][j];
-                        RADIATION_L = RADIATION[i][j];
-                        double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
-                        ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
-
-                        if (border < 1)
-                        {
-                            TN_L = TN_LR;
-                            TNiM_L = TNiM_LR;
-                            TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
-                        }
-                        else
-                        {
-                            TN_L = Program.TN[i][j];
-                            TNiM_L = Program.TN[i - 1][j];
-                            TNiP_L = Program.TN[i + 1][j];
-                        }
-
-                        for (int k = 1; k < QIM.Length; ++k)
-                        {
-                            DIM = AWEST_PS_L[k] * TNiM_L[k] + ASOUTH_PS_L[k] * TNjM_L[k] +
-                                  AEAST_PS_L[k] * TNiP_L[k] + ANORTH_PS_L[k] * TNjP_L[k] +
-                                  AP0_PS_L[k] * T_L[k] + RADIATION_L[k];
-                            if ((k == 1) && (Program.ICTB == true))
-                            {
-                                DIM -= WQU_AWQ / Program.CPLUFT * FAC_L[k] * RHO_L[k];
-                            }
-
-                            //Recurrence formula
-                            if (k > 1)
-                            {
-                                help = 1 / (A_PS_L[k] - C_PS_L[k] * PIM[k - 1]);
-                                PIM[k] = B_PS_L[k] * help;
-                                QIM[k] = (DIM + C_PS_L[k] * QIM[k - 1]) * help;
-                            }
-                            else
-                            {
-                                help = 1 / A_PS_L[k];
-                                PIM[k] = B_PS_L[k] * help;
-                                QIM[k] = DIM * help;
-                            }
-                        }
-
-                        //Obtain new T-components
-                        for (int k = NK - 1; k >= 1; k--)
-                        {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
-                        }
-                        if (border < 1)
-                        {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
-                        }
-
-                    }
-                }
-                Program.GrammArrayPool.Return(TN_LR);
-                Program.GrammArrayPool.Return(TNiM_LR);
-                Program.GrammArrayPool.Return(TNiP_LR);
-            });
-
-            range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
             //Parallel.For(2, NJ, Program.pOptions, j =>
-            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -595,7 +369,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {
@@ -609,12 +385,8 @@ namespace GRAMM_2001
                 Program.GrammArrayPool.Return(TNjP_LR);
             });
 
-            range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
             //Parallel.For(2, NJ, Program.pOptions, j1 =>
-            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -703,7 +475,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {
@@ -717,12 +491,220 @@ namespace GRAMM_2001
                 Program.GrammArrayPool.Return(TNjP_LR);
             });
 
-            range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
+            //Parallel.For(2, NI, Program.pOptions, i1 =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            {
+                double DIM;
+                Span<double> PIM = stackalloc double[NK];
+                Span<double> QIM = stackalloc double[NK];
+                double help;
+                double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TN_L;
+                double[] TNiM_L;
+                double[] TNiP_L;
+                ReadOnlySpan<double> A_PS_L;
+                ReadOnlySpan<float> AWEST_PS_L;
+                ReadOnlySpan<float> ASOUTH_PS_L;
+                ReadOnlySpan<float> AEAST_PS_L;
+                ReadOnlySpan<float> ANORTH_PS_L;
+                ReadOnlySpan<float> AP0_PS_L;
+                ReadOnlySpan<double> B_PS_L;
+                ReadOnlySpan<double> C_PS_L;
+                ReadOnlySpan<float> FAC_L;
+                ReadOnlySpan<float> RHO_L;
+                ReadOnlySpan<double> T_L;
+                ReadOnlySpan<double> RADIATION_L;
+
+                for (int i = range.Item2 - 1; i >= range.Item1; --i)
+                {
+                    int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
+                    for (int j = 2; j <= NJ - 1; ++j)
+                    {
+                        A_PS_L = Program.A_PS[i][j];
+                        AEAST_PS_L = Program.AEAST_PS[i][j];
+                        ANORTH_PS_L = Program.ANORTH_PS[i][j];
+                        ASOUTH_PS_L = Program.ASOUTH_PS[i][j];
+                        AWEST_PS_L = Program.AWEST_PS[i][j];
+                        AP0_PS_L = Program.AP0_PS[i][j];
+                        B_PS_L = Program.B_PS[i][j];
+                        C_PS_L = Program.C_PS[i][j];
+                        FAC_L = Program.FAC[i][j];
+                        RHO_L = Program.RHO[i][j];
+                        T_L = Program.T[i][j];
+                        RADIATION_L = RADIATION[i][j];
+                        double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
+                        ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
+
+                        if (border < 1)
+                        {
+                            TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
+                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                        }
+                        else
+                        {
+                            TN_L = Program.TN[i][j];
+                            TNiM_L = Program.TN[i - 1][j];
+                            TNiP_L = Program.TN[i + 1][j];
+                        }
+
+                        for (int k = 1; k < QIM.Length; ++k)
+                        {
+                            DIM = AWEST_PS_L[k] * TNiM_L[k] + ASOUTH_PS_L[k] * TNjM_L[k] +
+                                  AEAST_PS_L[k] * TNiP_L[k] + ANORTH_PS_L[k] * TNjP_L[k] +
+                                  AP0_PS_L[k] * T_L[k] + RADIATION_L[k];
+                            if ((k == 1) && (Program.ICTB == true))
+                            {
+                                DIM -= WQU_AWQ / Program.CPLUFT * FAC_L[k] * RHO_L[k];
+                            }
+
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (A_PS_L[k] - C_PS_L[k] * PIM[k - 1]);
+                                PIM[k] = B_PS_L[k] * help;
+                                QIM[k] = (DIM + C_PS_L[k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / A_PS_L[k];
+                                PIM[k] = B_PS_L[k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
+
+                        //Obtain new T-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
+                        }
+                        if (border < 1)
+                        {
+                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                        }
+
+                    }
+                }
+                Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
+            });
+
+            //Parallel.For(2, NI, Program.pOptions, i =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            {
+                double DIM;
+                Span<double> PIM = stackalloc double[NK];
+                Span<double> QIM = stackalloc double[NK];
+                double help;
+                double[] TN_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiM_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TNiP_LR = Program.GrammArrayPool.Rent(Program.NZ1);
+                double[] TN_L;
+                double[] TNiM_L;
+                double[] TNiP_L;
+                ReadOnlySpan<double> A_PS_L;
+                ReadOnlySpan<float> AWEST_PS_L;
+                ReadOnlySpan<float> ASOUTH_PS_L;
+                ReadOnlySpan<float> AEAST_PS_L;
+                ReadOnlySpan<float> ANORTH_PS_L;
+                ReadOnlySpan<float> AP0_PS_L;
+                ReadOnlySpan<double> B_PS_L;
+                ReadOnlySpan<double> C_PS_L;
+                ReadOnlySpan<float> FAC_L;
+                ReadOnlySpan<float> RHO_L;
+                ReadOnlySpan<double> T_L;
+                ReadOnlySpan<double> RADIATION_L;
+
+                for (int i = range.Item1; i < range.Item2; ++i)
+                {
+                    int border = Math.Min(i - range.Item1, range.Item2 - 1 - i);
+                    for (int j = NJ - 1; j >= 2; --j)
+                    {
+                        A_PS_L = Program.A_PS[i][j];
+                        AEAST_PS_L = Program.AEAST_PS[i][j];
+                        ANORTH_PS_L = Program.ANORTH_PS[i][j];
+                        ASOUTH_PS_L = Program.ASOUTH_PS[i][j];
+                        AWEST_PS_L = Program.AWEST_PS[i][j];
+                        AP0_PS_L = Program.AP0_PS[i][j];
+                        B_PS_L = Program.B_PS[i][j];
+                        C_PS_L = Program.C_PS[i][j];
+                        FAC_L = Program.FAC[i][j];
+                        RHO_L = Program.RHO[i][j];
+                        T_L = Program.T[i][j];
+                        RADIATION_L = RADIATION[i][j];
+                        double WQU_AWQ = Program.WQU[i][j] - Program.AWQ[i][j];
+                        ReadOnlySpan<double> TNjM_L = Program.TN[i][j - 1]; ReadOnlySpan<double> TNjP_L = Program.TN[i][j + 1];
+
+                        if (border < 1)
+                        {
+                            TN_L = TN_LR;
+                            TNiM_L = TNiM_LR;
+                            TNiP_L = TNiP_LR;
+                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                        }
+                        else
+                        {
+                            TN_L = Program.TN[i][j];
+                            TNiM_L = Program.TN[i - 1][j];
+                            TNiP_L = Program.TN[i + 1][j];
+                        }
+
+                        for (int k = 1; k < QIM.Length; ++k)
+                        {
+                            DIM = AWEST_PS_L[k] * TNiM_L[k] + ASOUTH_PS_L[k] * TNjM_L[k] +
+                                  AEAST_PS_L[k] * TNiP_L[k] + ANORTH_PS_L[k] * TNjP_L[k] +
+                                  AP0_PS_L[k] * T_L[k] + RADIATION_L[k];
+                            if ((k == 1) && (Program.ICTB == true))
+                            {
+                                DIM -= WQU_AWQ / Program.CPLUFT * FAC_L[k] * RHO_L[k];
+                            }
+
+                            //Recurrence formula
+                            if (k > 1)
+                            {
+                                help = 1 / (A_PS_L[k] - C_PS_L[k] * PIM[k - 1]);
+                                PIM[k] = B_PS_L[k] * help;
+                                QIM[k] = (DIM + C_PS_L[k] * QIM[k - 1]) * help;
+                            }
+                            else
+                            {
+                                help = 1 / A_PS_L[k];
+                                PIM[k] = B_PS_L[k] * help;
+                                QIM[k] = DIM * help;
+                            }
+                        }
+
+                        //Obtain new T-components
+                        for (int k = NK - 1; k >= 1; k--)
+                        {
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
+                        }
+                        if (border < 1)
+                        {
+                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                        }
+
+                    }
+                }
+                Program.GrammArrayPool.Return(TN_LR);
+                Program.GrammArrayPool.Return(TNiM_LR);
+                Program.GrammArrayPool.Return(TNiP_LR);
+            });
+
             //Parallel.For(2, NJ, Program.pOptions, j =>
-            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -811,7 +793,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {
@@ -825,12 +809,8 @@ namespace GRAMM_2001
                 Program.GrammArrayPool.Return(TNjP_LR);
             });
 
-            range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-            StripeCounter++;
-            range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
             //Parallel.For(2, NJ, Program.pOptions, j1 =>
-            Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -919,7 +899,9 @@ namespace GRAMM_2001
                         //Obtain new T-components
                         for (int k = NK - 1; k >= 1; k--)
                         {
-                            TN_L[k] += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - TN_L[k]));
+                            help = TN_L[k];
+                            help += (Program.RELAXT * (PIM[k] * TN_L[k + 1] + QIM[k] - help));
+                            TN_L[k] = help;
                         }
                         if (border < 1)
                         {

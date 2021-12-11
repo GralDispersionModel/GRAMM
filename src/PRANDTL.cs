@@ -27,7 +27,7 @@ namespace GRAMM_2001
         /// <param name="NK"></param>
         public static void Prandtl_calculate(int NI, int NJ, int NK)
         {
-            Parallel.ForEach(Partitioner.Create(2, NI, (int)(NI / Program.pOptions.MaxDegreeOfParallelism)), range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
             {
                 int NJ_P = NJ;
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -37,11 +37,15 @@ namespace GRAMM_2001
                         //if (Program.GLOBRAD[i][j] > 150) Program.OL[i][j] = -20; //ACHTUNG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         ref double UST = ref Program.UST[i][j];
                         ref float OL = ref Program.OL[i][j];
-                        ref double GlobRad = ref Program.GLOBRAD[i][j]; 
+                        ref double GlobRad = ref Program.GLOBRAD[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
+                        ReadOnlySpan<double> U_L = Program.U[i][j];
+                        ReadOnlySpan<double> V_L = Program.V[i][j];
+                        ReadOnlySpan<double> QU_L = Program.QU[i][j];
 
                         int k = 1;
                         double ANUE = Program.VISEL / Program.RHO[i][j][k];
-                        double Z1 = Program.ZSPImm[i][j][k] - Program.AHImm[i][j];
+                        double Z1 = ZSP_L[k] - Program.AHImm[i][j];
                         double ZETA = Math.Max(Z1 - Program.Z0[i][j], 0.1) / OL;
 
                         double PHIM = 0;
@@ -60,19 +64,19 @@ namespace GRAMM_2001
                         }
 
                         //computation of friction velocity and temperature scale
-                        double VP = Math.Sqrt(Pow2(Program.U[i][j][k]) + Pow2(Program.V[i][j][k]) + Pow2(Program.W[i][j][k]));
+                        double VP = Math.Sqrt(Pow2(U_L[k]) + Pow2(V_L[k]) + Pow2(Program.W[i][j][k]));
 
                         UST = Program.CK * VP / (Math.Log(Z1 / Program.Z0[i][j]) - PSIM);
                         UST = Math.Min(UST, 2.0);
                         UST = Math.Max(UST, 0.15);
 
                         Program.USTV[i][j] = UST / Math.Max(VP, 0.1);
-                        Program.TST[i][j] = Program.CK / (Math.Log(Z1 / Program.Z0[i][j]) - PSIM * ZETA) * ((Program.T[i][j][k] + Program.TBZ1) * (1 + 0.00061 * Program.QU[i][j][k])
+                        Program.TST[i][j] = Program.CK / (Math.Log(Z1 / Program.Z0[i][j]) - PSIM * ZETA) * ((Program.T[i][j][k] + Program.TBZ1) * (1 + 0.00061 * QU_L[k])
                                                    - Program.TB[i][j][2] * Program.FAC[i][j][k] * (1 + 0.00061 * Program.QUG[i][j]));
                         Program.XWQ[i][j] = (float)(Program.CK / (Math.Log(Z1 / Program.Z0[i][j]) - PSIH));
 
                         //Obukhov length
-                        OL = (float)((Program.T[i][j][k] + Program.TBZ1) * (1 + 0.00061 * Program.QU[i][j][k]) * Pow2(Program.UST[i][j]) / (Program.CK * Program.GERD * Program.TST[i][j]));
+                        OL = (float)((Program.T[i][j][k] + Program.TBZ1) * (1 + 0.00061 * QU_L[k]) * Pow2(Program.UST[i][j]) / (Program.CK * Program.GERD * Program.TST[i][j]));
                         if (OL <= 0)
                         {
                             OL = Math.Min(-5, OL);
@@ -105,7 +109,7 @@ namespace GRAMM_2001
                         //compute wind speed at 10m above ground level
                         for (int k1 = 1; k1 <= NK; k1++)
                         {
-                            if (Program.ZSPImm[i][j][k1] - Program.AHImm[i][j] >= 10)
+                            if (ZSP_L[k1] - Program.AHImm[i][j] >= 10)
                             {
                                 ischnitt = k1;
                                 break;
@@ -114,28 +118,28 @@ namespace GRAMM_2001
                         //compute temperature gradient over a vertical distance of >=90m
                         for (int k1 = 1; k1 <= NK; k1++)
                         {
-                            if (Program.ZSPImm[i][j][k1] - Program.AHImm[i][j] >= 90)
+                            if (ZSP_L[k1] - Program.AHImm[i][j] >= 90)
                             {
                                 ischnitt_plus1 = Math.Max(k1, 2);
                                 break;
                             }
                         }
 
-                        Uoben = Program.U[i][j][ischnitt];
-                        Voben = Program.V[i][j][ischnitt];
+                        Uoben = U_L[ischnitt];
+                        Voben = V_L[ischnitt];
                         if (ischnitt > 1)
                         {
-                            Uunten = Program.U[i][j][ischnitt - 1];
-                            Vunten = Program.V[i][j][ischnitt - 1];
-                            Umittel = Uunten + (Uoben - Uunten) / (Program.ZSPImm[i][j][ischnitt] - Program.ZSPImm[i][j][ischnitt - 1]) *
-                            (10 - Program.ZSPImm[i][j][ischnitt - 1] + Program.AHImm[i][j]);
-                            Vmittel = Vunten + (Voben - Vunten) / (Program.ZSPImm[i][j][ischnitt] - Program.ZSPImm[i][j][ischnitt - 1]) *
-                            (10 - Program.ZSPImm[i][j][ischnitt - 1] + Program.AHImm[i][j]);
+                            Uunten = U_L[ischnitt - 1];
+                            Vunten = V_L[ischnitt - 1];
+                            Umittel = Uunten + (Uoben - Uunten) / (ZSP_L[ischnitt] - ZSP_L[ischnitt - 1]) *
+                            (10 - ZSP_L[ischnitt - 1] + Program.AHImm[i][j]);
+                            Vmittel = Vunten + (Voben - Vunten) / (ZSP_L[ischnitt] - ZSP_L[ischnitt - 1]) *
+                            (10 - ZSP_L[ischnitt - 1] + Program.AHImm[i][j]);
                         }
                         else
                         {
-                            Umittel = Uoben / (Program.ZSPImm[i][j][ischnitt] - Program.AHImm[i][j]) * 10;
-                            Vmittel = Voben / (Program.ZSPImm[i][j][ischnitt] - Program.AHImm[i][j]) * 10;
+                            Umittel = Uoben / (ZSP_L[ischnitt] - Program.AHImm[i][j]) * 10;
+                            Vmittel = Voben / (ZSP_L[ischnitt] - Program.AHImm[i][j]) * 10;
                         }
                         double wg = Math.Sqrt(Umittel * Umittel + Vmittel * Vmittel);
 
@@ -235,57 +239,57 @@ namespace GRAMM_2001
             });
 
             //Richardson number
-            Parallel.ForEach(Partitioner.Create(2, NI, (int)(NI / Program.pOptions.MaxDegreeOfParallelism)), range =>
-              {
-                  int NJ_P = NJ; int NK_P = NK;
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            {
+                int NJ_P = NJ; int NK_P = NK;
 
-                  for (int i = range.Item1; i < range.Item2; i++)
-                  {
-                      for (int j = 2; j <= NJ_P - 1; j++)
-                      {
-                          double DZZZ = 1 / (Program.ZSPImm[i][j][1] - Program.AHImm[i][j]);
-                          double DTDZ = ((Program.T[i][j][1] + Program.TBZ1) * (1 + 0.00061 * Program.QU[i][j][1]) -
-                                         Program.TB[i][j][2] * Program.FAC[i][j][1] * (1 + 0.00061 * Program.QUG[i][j])) * DZZZ;
-                          double DUDZ = Pow2(Program.U[i][j][1] * DZZZ);
-                          double DVDZ = Pow2(Program.V[i][j][1] * DZZZ);
-                          double DGDZ = DUDZ + DVDZ;
-                          double[] RITSCH_L = Program.RITSCH[i][j];
-                          ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
-                          double[] T_L = Program.T[i][j];
-                          double[] QU_L = Program.QU[i][j];
-                          double[] U_L = Program.U[i][j];
-                          double[] V_L = Program.V[i][j];
+                for (int i = range.Item1; i < range.Item2; i++)
+                {
+                    for (int j = 2; j <= NJ_P - 1; j++)
+                    {
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
+                        ReadOnlySpan<double> U_L = Program.U[i][j];
+                        ReadOnlySpan<double> V_L = Program.V[i][j];
+                        ReadOnlySpan<double> QU_L = Program.QU[i][j];
+                        ReadOnlySpan<double> T_L = Program.T[i][j];
 
-                          RITSCH_L[0] = Program.GERD / (T_L[1] + Program.TBZ1) / (1 + 0.00061 * QU_L[1]);
-                          RITSCH_L[0] *= DTDZ;
-                          RITSCH_L[0] /= (DGDZ + 0.0000000001);
-                          if (RITSCH_L[0] > 0)
-                          {
-                              RITSCH_L[0] = Math.Min(0.2, RITSCH_L[0]);
-                          }
+                        double DZZZ = 1 / (ZSP_L[1] - Program.AHImm[i][j]);
+                        double DTDZ = ((Program.T[i][j][1] + Program.TBZ1) * (1 + 0.00061 * QU_L[1]) -
+                                       Program.TB[i][j][2] * Program.FAC[i][j][1] * (1 + 0.00061 * Program.QUG[i][j])) * DZZZ;
+                        double DUDZ = Pow2(U_L[1] * DZZZ);
+                        double DVDZ = Pow2(V_L[1] * DZZZ);
+                        double DGDZ = DUDZ + DVDZ;
+                        double[] RITSCH_L = Program.RITSCH[i][j];
 
-                          for (int k = 1; k < RITSCH_L.Length; ++k)
-                          {
-                              DZZZ = 1 / (ZSP_L[k + 1] - ZSP_L[k]);
-                              DTDZ = (T_L[k + 1] * (1 + 0.00061 * QU_L[k + 1]) -
-                                     T_L[k] * (1 + 0.00061 * QU_L[k])) * DZZZ;
-                              DUDZ = Pow2((U_L[k + 1] - U_L[k]) * DZZZ);
-                              DVDZ = Pow2((V_L[k + 1] - V_L[k]) * DZZZ);
-                              DGDZ = DUDZ + DVDZ;
-                              RITSCH_L[k] = Program.GERD / (T_L[k] + Program.TBZ1);
-                              RITSCH_L[k] *= DTDZ;
-                              RITSCH_L[k] /= (DGDZ + 0.0000000001);
+                        RITSCH_L[0] = Program.GERD / (T_L[1] + Program.TBZ1) / (1 + 0.00061 * QU_L[1]);
+                        RITSCH_L[0] *= DTDZ;
+                        RITSCH_L[0] /= (DGDZ + 0.0000000001);
+                        if (RITSCH_L[0] > 0)
+                        {
+                            RITSCH_L[0] = Math.Min(0.2, RITSCH_L[0]);
+                        }
 
-                              /*
-                               if (i == Program.inrec[63] && j == Program.jnrec[63])
-                               {
-                                   Console.WriteLine(DTDZ.ToString("0.000") + " , " + k.ToString() + " , " + RITSCH_L[k].ToString("0.000") + " , " + DGDZ.ToString("0.000"));
-                               }
-                               */
-                          }
-                      }
-                  }
-              });
+                        for (int k = 1; k < RITSCH_L.Length; ++k)
+                        {
+                            DZZZ = 1 / (ZSP_L[k + 1] - ZSP_L[k]);
+                            DTDZ = (T_L[k + 1] * (1 + 0.00061 * QU_L[k + 1]) -
+                                   T_L[k] * (1 + 0.00061 * QU_L[k])) * DZZZ;
+                            DUDZ = Pow2((U_L[k + 1] - U_L[k]) * DZZZ);
+                            DVDZ = Pow2((V_L[k + 1] - V_L[k]) * DZZZ);
+                            DGDZ = DUDZ + DVDZ;
+                            RITSCH_L[k] = Program.GERD / (T_L[k] + Program.TBZ1);
+                            RITSCH_L[k] *= DTDZ;
+                            RITSCH_L[k] /= (DGDZ + 0.0000000001);
+                            /*
+                             if (i == Program.inrec[63] && j == Program.jnrec[63])
+                             {
+                                 Console.WriteLine(DTDZ.ToString("0.000") + " , " + k.ToString() + " , " + RITSCH_L[k].ToString("0.000") + " , " + DGDZ.ToString("0.000"));
+                             }
+                             */
+                        }
+                    }
+                }
+            });
 
             /*PRANDTLSCHICHTTHEORIE (SOMIESKI, DETERING, FLASSAK) 
 * 
@@ -322,7 +326,7 @@ namespace GRAMM_2001
                     double DDX_DDY = Program.DDXImm[i] * Program.DDYImm[j];
                     float RHO_L = (float)(Program.RHO[i][j][k] * Program.UST[i][j]);
                     float XWQ_L = Program.XWQ[i][j];
-                    double QU_L = Program.QU[i][j][k];
+                    // double QU_L = Program.QU[i][j][k];
                     // float PBZ_L = Program.PBZ[i][j][k];
                     // double TGI = Program.TB[i][j][2] + 0.5F; //assures that the following loop will be entered
                     // double f1 = DYB * Program.CPBOD * Program.RHOB[i][j] / Program.DT;
@@ -369,20 +373,20 @@ namespace GRAMM_2001
         }
 
         static Func<double, int, double> MyPow = (double num, int exp) =>
-       {
-           double result = 1.0;
-           while (exp > 0)
-           {
-               if (exp % 2 == 1)
-               {
-                   result *= num;
-               }
+        {
+            double result = 1.0;
+            while (exp > 0)
+            {
+                if (exp % 2 == 1)
+                {
+                    result *= num;
+                }
 
-               exp >>= 1;
-               num *= num;
-           };
-           return result;
-       };
+                exp >>= 1;
+                num *= num;
+            };
+            return result;
+        };
 
         //[MethodImpl(MethodImplOptions.NoInlining)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

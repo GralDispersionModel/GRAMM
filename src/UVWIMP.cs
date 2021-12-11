@@ -125,97 +125,51 @@ namespace GRAMM_2001
                 });
 
 
-                int range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, i =>
-                Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, false, false, true);
                 });
-
-                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, ih =>
-                Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, true, true, true);
                 });
-
-                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
-                Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, true, true, false);
                 });
-
-                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, j =>
-                Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, false, false, false);
                 });
-
-                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, ih =>
-                Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, true, false, true);
                 });
-
-                range_parallel = (NI - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, i =>
-                Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, false, true, true);
                 });
-
-                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
-                Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, true, false, false);
                 });
-
-                range_parallel = (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
-                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
-                StripeCounter++;
-                range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
-                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NJ, Program.pOptions, j =>
-                Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, false, false, false);
