@@ -170,7 +170,7 @@ Console.WriteLine("| .Net Core Version |");
             }
 
             // Read number of max. used processors
-            Max_Proc_File_Read();
+            Max_Proc_File_Read(true);
 
             //Convert relative humidity in %
             QUINIT *= 0.01;
@@ -363,7 +363,7 @@ Console.WriteLine("| .Net Core Version |");
         //Loop_______________________________________________________________________________________________
         NEXTWEATHERSITUATION:
 
-            clear_arrays();
+            ClearArrays();
 
             //INITIALIZE FIELDS
             Console.WriteLine();
@@ -431,7 +431,7 @@ Console.WriteLine("| .Net Core Version |");
 
                 if (ITIME % 20 == 0)
                 {
-                    Max_Proc_File_Read(); // read MaxProc at 20th time step
+                    Max_Proc_File_Read(false); // read MaxProc at 20th time step
                 }
 
                 //total simulation expressed in seconds
@@ -470,7 +470,7 @@ Console.WriteLine("| .Net Core Version |");
                             IWETTER--; //try same situation
                             TLIMIT += TLIMIT2;
                             DTI += TLIMIT2;
-                            clear_arrays();
+                            ClearArrays();
                             //GEOM(); //Not needed - the grid is immutable
                             goto NEXTWEATHERSITUATION;
                         }
@@ -685,7 +685,7 @@ Console.WriteLine("| .Net Core Version |");
             int _off = 0;
             if (args.Length > 0)
             {
-                if (args[0].Contains("?") == true || args[0].ToUpper().Contains("HELP") == true) // Info & stop
+                if (args[0].Contains('?') == true || args[0].ToUpper().Contains("HELP") == true) // Info & stop
                 {
                     Console.WriteLine("GRAMM console arguments: 'Working Directory' 'First Situation' 'Final Situation' 'Max. Time Step' 'RelaxV' 'RelaxT'");
                     Console.WriteLine("or");
@@ -693,8 +693,7 @@ Console.WriteLine("| .Net Core Version |");
                     Environment.Exit(0);
                 }
 
-                int temp;
-                if (Int32.TryParse(args[0], out temp) == false) // not a valid number
+                if (Int32.TryParse(args[0], out int temp) == false) // not a valid number
                 {
                     if (Directory.Exists(args[0]) == true) // arg[0] = Directory!
                     {
@@ -772,9 +771,13 @@ Console.WriteLine("| .Net Core Version |");
             return true;
         }
 
-
-        //computes wind direction
-        public static double winkel(double u, double v)
+        /// <summary>
+        /// Computes wind direction
+        /// </summary>
+        /// <param name="u">u component</param>
+        /// <param name="v">v component</param>
+        /// <returns></returns>
+        public static double CalcWindDir(double u, double v)
         {
             double winkel = 0;
 
@@ -805,7 +808,14 @@ Console.WriteLine("| .Net Core Version |");
             return winkel;
         }
 
-        private static int set_month_type(double windspeed, float AKLA, double Brgrad) // set start month for radiation search
+        /// <summary>
+        /// Set month type depending on the hemisphere
+        /// </summary>
+        /// <param name="windspeed"></param>
+        /// <param name="AKLA"></param>
+        /// <param name="Brgrad"></param>
+        /// <returns></returns>
+        private static int SetMonthType(double windspeed, float AKLA, double Brgrad) // set start month for radiation search
         {
             int month_setting = 0; // Jan to Dec
             if (Brgrad > 0) // northern hemisphere
@@ -839,7 +849,7 @@ Console.WriteLine("| .Net Core Version |");
         /// </summary>
         public static string GetAppHashCode()
         {
-            string filename = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            string filename = Environment.ProcessPath;
             string hashstring = string.Empty;
 
             if (File.Exists(filename))
