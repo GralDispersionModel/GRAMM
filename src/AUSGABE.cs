@@ -170,7 +170,7 @@ namespace GRAMM_2001
                     {
                         time_real = Program.IOUTPUT + 2;
                     }
-                    Meteopgtall.meteopgtall_calculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
+                    Meteopgtall.MeteopgtAllCalculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
                     wndfilename = (Convert.ToString(FILENUMBER).PadLeft(5, '0') + ".wnd");
                 }
             }
@@ -271,7 +271,7 @@ namespace GRAMM_2001
                     {
                         time_real = Program.IOUTPUT + 2;
                     }
-                    Meteopgtall.meteopgtall_calculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
+                    Meteopgtall.MeteopgtAllCalculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
                     stabclassfilename = (Convert.ToString(FILENUMBER).PadLeft(5, '0') + ".scl");
                 }
             }
@@ -343,7 +343,7 @@ namespace GRAMM_2001
             } // catch
             catch { }
 
-            Program.Max_Proc_File_Read(); // read number of max. Processors
+            Program.Max_Proc_File_Read(false); // read number of max. Processors
 
             if (recexist == true && IWetter_Console_First == 0) // write receptor wind fields; not if multi-instances are used
             {
@@ -353,7 +353,7 @@ namespace GRAMM_2001
                     {
                         for (int ianz = 0; ianz < Urec.Count(); ianz++)
                         {
-                            double angle = winkel(Urec[ianz], Vrec[ianz]);
+                            double angle = CalcWindDir(Urec[ianz], Vrec[ianz]);
                             wr.Write(Math.Sqrt(Math.Pow(Urec[ianz], 2) + Math.Pow(Vrec[ianz], 2)).ToString("0.00").Replace(decsep, ".") +
                                      "," + angle.ToString("0").Replace(decsep, ".") + "," + Trec[ianz].ToString("0.0").Replace(decsep, ".") + "," + Globradrec[ianz].ToString("0").Replace(decsep, ".")
                                      + "," + Longradrec[ianz].ToString("0").Replace(decsep, ".") + "," + Soilheatfluxrec[ianz].ToString("0").Replace(decsep, ".")
