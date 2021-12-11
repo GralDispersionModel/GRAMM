@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Immutable;
+using System.Collections.Concurrent;
 
 namespace GRAMM_2001
 {
@@ -623,12 +624,12 @@ namespace GRAMM_2001
                         {
                             using (StreamWriter wr = new StreamWriter("GRAMM.dat", false))
                             {
-                                for (int ianz = 0; ianz < Xrec.Count(); ianz++)
+                                for (int ianz = 0; ianz < Xrec.Count; ianz++)
                                 {
                                     wr.Write(" Receptor" + (ianz + 1).ToString() + ", x:" + Xrec[ianz] + ", y:" + Yrec[ianz] + ", z:" + Zrec[ianz] + ", , , , ,");
                                 }
                                 wr.WriteLine();
-                                for (int ianz = 0; ianz < Xrec.Count(); ianz++)
+                                for (int ianz = 0; ianz < Xrec.Count; ianz++)
                                 {
                                     wr.Write(" V, Dir, Temp, Solrad, Terrrad, Soilflux, Sensflux, Latentflux, ");
                                 }
@@ -665,99 +666,34 @@ namespace GRAMM_2001
         /// <summary>
         /// Reset array values to 0
         /// </summary>
-        private static void clear_arrays()
+        private static void ClearArrays()
         {
-            Read_IIN_Dat();
-            IDIV = 0;
             IDIV_Up = 0;        //5.4.2017 Ku Reset Counter for MASSOURCE Queue
             IDIV_LockDown2 = 30;
             IDIV_LockDown = 0;
             IDIV_LockUp = 0;
             IDIV_PingPong = 0;
-            Program.STEIGUNG = 0;
             IDIV_LockRelax = 0; //5.4.2017 Ku Reset Counter for Relax decrease
             RELAXV = Relaxv_ori; //5.4.2017 Ku Reset relax
             RELAXT = Relaxt_ori; //5.4.2017 Ku Reset relax
-            Program.SUMG = 0;
-            Program.DIVSUM = 0;
-            Program.MASSOURCE_Old = 0;
-            Program.MASSOURCE_Act = 0;
-            Program.MASSOURCE_FIRST = 0;
-            Program.MASSOURCE_Queue.Clear();
             Divergence_Min = 10e9;
-            Program.TerminalOut = 0;
-            Program.POBEN = 0;
-            Program.TBZ1 = 0;
-
-            
-            ClearJaggedArray(MASSOURCE);
-            ClearJaggedArray(PBZZ);
-            ClearJaggedArray(RHOBZZ);
-            ClearJaggedArray(RSOLG);
-            ClearJaggedArray(GLOBRAD);
-            ClearJaggedArray(DT_SOL);
-            ClearJaggedArray(DT_TERR);
-            ClearJaggedArray(RL);
-            ClearJaggedArray(TG);
-            ClearJaggedArray(ALBEDO);
-            ClearJaggedArray(CLOUDS);
-            ClearJaggedArray(SNOW);
-            ClearJaggedArray(ZPROF);
-            ClearJaggedArray(PPROF);
-            ClearJaggedArray(TPROF);
-            ClearJaggedArray(VNORM);
-            ClearJaggedArray(QVAP);
-            ClearJaggedArray(QCLD);
-            ClearJaggedArray(QRAIN);
-            ClearJaggedArray(QICE);
-            ClearJaggedArray(QSNOW);
-            ClearJaggedArray(EPSG);
-            ClearJaggedArray(UST);
-            ClearJaggedArray(USTV);
-            ClearJaggedArray(TST);
-            ClearJaggedArray(XWQ);
-            ClearJaggedArray(WQU);
-            ClearJaggedArray(AWQ);
-            ClearJaggedArray(RHOB);
-            ClearJaggedArray(RHO);
-            ClearJaggedArray(Program.RHOBZ);
-            ClearJaggedArray(ALAMBDA);
-
-            ClearJaggedArray(TBN);
-            ClearJaggedArray(TBA);
-            ClearJaggedArray(TN);
-            ClearJaggedArray(TE);
-            ClearJaggedArray(TBZ);
 
             ClearJaggedArray(U);
             ClearJaggedArray(V);
             ClearJaggedArray(W);
+            ClearJaggedArray(U);
+            ClearJaggedArray(V);
+            ClearJaggedArray(W);
+            ClearJaggedArray(RHO);
             ClearJaggedArray(U1);
             ClearJaggedArray(V1);
             ClearJaggedArray(W1);
-            ClearJaggedArray(U2);
-            ClearJaggedArray(V2);
-            ClearJaggedArray(W2);
             ClearJaggedArray(U1N);
             ClearJaggedArray(V1N);
             ClearJaggedArray(W1N);
             ClearJaggedArray(U2N);
             ClearJaggedArray(V2N);
             ClearJaggedArray(W2N);
-            ClearJaggedArray(DIMU);
-            ClearJaggedArray(DIMV);
-            ClearJaggedArray(DIMW);
-            ClearJaggedArray(A_PS);
-            ClearJaggedArray(B_PS);
-            ClearJaggedArray(C_PS);
-            ClearJaggedArray(ASOUTH_PS);
-            ClearJaggedArray(AEAST_PS);
-            ClearJaggedArray(ANORTH_PS);
-            ClearJaggedArray(AWEST_PS);
-            ClearJaggedArray(AP0_PS);
-            ClearJaggedArray(AIM);
-            ClearJaggedArray(BIM);
-            ClearJaggedArray(CIM);
             ClearJaggedArray(U1NRHO);
             ClearJaggedArray(V1NRHO);
             ClearJaggedArray(W1NRHO);
@@ -767,18 +703,9 @@ namespace GRAMM_2001
             ClearJaggedArray(SUX);
             ClearJaggedArray(SUY);
             ClearJaggedArray(SUZ);
-            ClearJaggedArray(SUXYZ);
             ClearJaggedArray(DPX);
             ClearJaggedArray(DPY);
             ClearJaggedArray(DPZ);
-            ClearJaggedArray(DP);
-            ClearJaggedArray(PN);
-            ClearJaggedArray(PBZ);
-            ClearJaggedArray(PNBZKP);
-            ClearJaggedArray(NBZKP);
-            ClearJaggedArray(FACTOR);
-            ClearJaggedArray(DISS);
-            ClearJaggedArray(DISSN);
             ClearJaggedArray(DDP1DX);
             ClearJaggedArray(DDP1DY);
             ClearJaggedArray(DDP1DZ);
@@ -786,84 +713,13 @@ namespace GRAMM_2001
             ClearJaggedArray(DDP2DY);
             ClearJaggedArray(DDP2DZ);
             ClearJaggedArray(T);
-            ClearJaggedArray(TB);
+            ClearJaggedArray(TN);
+            ClearJaggedArray(TBZ);
+            ClearJaggedArray(TE);
             ClearJaggedArray(TEN);
-            ClearJaggedArray(TABS);
-            ClearJaggedArray(TP);
-            ClearJaggedArray(TPDY);
-            ClearJaggedArray(TPDX);
-            ClearJaggedArray(TPX);
-            ClearJaggedArray(TPY);
-            ClearJaggedArray(TPZ);
-            ClearJaggedArray(VISV);
-            ClearJaggedArray(VISH);
-            ClearJaggedArray(QU);
-            ClearJaggedArray(QUN);
-            ClearJaggedArray(FAC);
-            ClearJaggedArray(RITSCH);
-            ClearJaggedArray(USEN);
-            ClearJaggedArray(VSEN);
-            ClearJaggedArray(WSEN);
-            ClearJaggedArray(USW);
-            ClearJaggedArray(VSW);
-            ClearJaggedArray(WSW);
-            ClearJaggedArray(TSEN);
-            ClearJaggedArray(WSWN);
-            ClearJaggedArray(VSWN);
-            ClearJaggedArray(USWN);
-            ClearJaggedArray(QUSW);
-            ClearJaggedArray(QUSWN);
-            ClearJaggedArray(QUSE);
-            ClearJaggedArray(TSWN);
-            ClearJaggedArray(USSN);
-            ClearJaggedArray(VSSN);
-            ClearJaggedArray(WSSN);
-            ClearJaggedArray(TSSN);
-            ClearJaggedArray(TSS);
-            ClearJaggedArray(USS);
-            ClearJaggedArray(VSS);
-            ClearJaggedArray(WSS);
-            ClearJaggedArray(QUSNN);
-            ClearJaggedArray(QUSSN);
-            ClearJaggedArray(QUSS);
-            ClearJaggedArray(USNN);
-            ClearJaggedArray(VSNN);
-            ClearJaggedArray(WSNN);
-            ClearJaggedArray(TSNN);
-            ClearJaggedArray(USN);
-            ClearJaggedArray(VSN);
-            ClearJaggedArray(WSN);
-            ClearJaggedArray(TSN);
-            ClearJaggedArray(AB);
-            ClearJaggedArray(AE);
-            ClearJaggedArray(AN);
-            ClearJaggedArray(AP);
-            ClearJaggedArray(AS);
-            ClearJaggedArray(AT);
-            ClearJaggedArray(AW);
-            ClearJaggedArray(F1U);
-            ClearJaggedArray(F2U);
-            ClearJaggedArray(F1V);
-            ClearJaggedArray(F2V);
-            ClearJaggedArray(F1W);
-            ClearJaggedArray(F2W);
-            ClearJaggedArray(QBZ);
-            ClearJaggedArray(UG);
-            ClearJaggedArray(VG);
-            ClearJaggedArray(AW1);
-            ClearJaggedArray(AS1);
-            ClearJaggedArray(AE2);
-            ClearJaggedArray(AN2);
-            ClearJaggedArray(Program.RADIATION);
-            ClearJaggedArray(OL);
-            ClearJaggedArray(stabilityclass);
-            ClearJaggedArray(Program.QUG);
-            ClearJaggedArray(AP0);
-            ClearJaggedArray(WAT_VAP);
-            ClearJaggedArray(WAT_VAPN);
-            ClearJaggedArray(FW);
-            ClearJaggedArray(ZI);
-            ClearJaggedArray(Z0);
+            ClearJaggedArray(DISS);
+            ClearJaggedArray(DISSN);
+            ClearJaggedArray(FACTOR);                 
         }
         /// <summary>
         /// Clear jagged array
@@ -949,9 +805,10 @@ namespace GRAMM_2001
         /// <summary>
         /// Read the number of max. used processor cores
         /// </summary>
-        public static void Max_Proc_File_Read()
+        public static void Max_Proc_File_Read(bool setNewPartitioners)
         {
             //Set the maximum number of threads to be used in each parallelized region
+            int IPROC = -1;
             try
             {
                 using (FileStream fs = new FileStream("Max_Proc.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -959,15 +816,48 @@ namespace GRAMM_2001
                     using (StreamReader myreader = new StreamReader(fs))
                     {
                         string text = myreader.ReadLine();
-                        int IPROC = Convert.ToInt32(text);
+                        IPROC = Convert.ToInt32(text);
                         IPROC = Math.Min(IPROC, Math.Min(NX, NY) / 2); // limit IPROC to 1/2 of lowest cell number count
                         IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
-                        pOptions.MaxDegreeOfParallelism = IPROC;
                     }
                 }
             }
             catch
-            { }
+            { 
+                IPROC = -1;
+            }
+
+            // At the start or if the number of processors has been changed
+            if (pOptions.MaxDegreeOfParallelism != IPROC || setNewPartitioners)
+            {
+                if (IPROC > 0)
+                {
+                    pOptions.MaxDegreeOfParallelism = IPROC;
+                }
+                else
+                {
+                    pOptions.MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2);
+                    IPROC = Environment.ProcessorCount - 2;
+                }
+
+                //Define the partitioners for changing stripe widths for new MaxDegreeOfParallelism
+                PartitionerI.Clear();
+                PartitionerJ.Clear();
+                int[] delta = new int[] { -6, 2, -4, 0, 4, -2, 3, -3, 1, -5, 0, 4};
+                foreach (int val in delta)
+                {
+                    int range_parallel = (Program.NX - 2) / IPROC + val;
+                    range_parallel = Math.Max(Program.StripeWidth + val, range_parallel); // min. Program.StripeWidth cells per processor
+                    range_parallel = Math.Min(Program.NX, range_parallel); // if NX < range_parallel
+                    PartitionerI.Add(Partitioner.Create(2, NX, range_parallel));
+
+                    range_parallel = (NY - 2) / Program.pOptions.MaxDegreeOfParallelism + val;
+                    range_parallel = Math.Max(Program.StripeWidth + val, range_parallel); // min. Program.StripeWidth cells per processor
+                    range_parallel = Math.Min(NY, range_parallel); // if NY < range_parallel
+                    PartitionerJ.Add(Partitioner.Create(2, NY, range_parallel));
+                }
+                Console.WriteLine("User defined maximum degree of parallelism: " + pOptions.MaxDegreeOfParallelism);
+            }
         }
 
         /// <summary>
