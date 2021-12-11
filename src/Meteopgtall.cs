@@ -19,7 +19,7 @@ namespace GRAMM_2001
     class Meteopgtall
     {
         //computes the correct filenumber for intermediate GRAMM flow field files
-        public static void meteopgtall_calculate(int Ori_Weather_nr, int IWETTER, double DTI, double TIME, int OUTPUT, double TLIMIT2, ref int Filenumber)
+        public static void MeteopgtAllCalculate(int Ori_Weather_nr, int IWETTER, double DTI, double TIME, int OUTPUT, double TLIMIT2, ref int Filenumber)
         {
             //compute index of intermediate file
             int IHOUR = Convert.ToInt32(Math.Floor(TIME / OUTPUT));
@@ -66,7 +66,7 @@ namespace GRAMM_2001
         }
 
         //computes a new meteopgt.all with additional weather situations at the end of the original file, where intermediate GRAMM flow fields are stored
-        public static void meteopgtall_generate(int Ori_Weather_nr, double TLIMIT2, int OUTPUT)
+        public static void MeteopgtAllGenerate(int Ori_Weather_nr, double TLIMIT2, int OUTPUT)
         {
             List<string> texttoadd = new List<string>();
             bool extended_meteofile = false;

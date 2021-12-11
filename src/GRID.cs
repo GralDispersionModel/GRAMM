@@ -200,7 +200,7 @@ namespace GRAMM_2001
                         int count = 0;
 
                         Is_Binary = reader.ReadLine().Split(new char[] { ' ', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                        count = count + Is_Binary.Length;
+                        count += Is_Binary.Length;
 
                         //obtain array sizes in x,y,z direction
                         NX = Convert.ToInt32(Is_Binary[0]);

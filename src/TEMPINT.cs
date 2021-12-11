@@ -211,7 +211,7 @@ namespace GRAMM_2001
                     //in case of dynamic sun rise, intermediate flow field files are appended to meteopgt.all
                     if (Program.meteopgt_nr > 0)
                     {
-                        Meteopgtall.meteopgtall_generate(Program.meteopgt_nr, Program.TLIMIT2, Program.IOUTPUT);
+                        Meteopgtall.MeteopgtAllGenerate(Program.meteopgt_nr, Program.TLIMIT2, Program.IOUTPUT);
                     }
 
                     Program.IPGT = 1;

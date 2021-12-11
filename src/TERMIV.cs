@@ -185,7 +185,7 @@ namespace GRAMM_2001
 
                         //Assemble TDMA coefficients
                         //Half-cell below
-                        if ((m - 1) == 1)
+                        if (m == 2)
                         {
                             m--;
                             //note that the diffusion terms at the cell-faces are computed as harmoNI_Pc mean rather than arithmetic mean according to PataNK_Par 1980, chap. 4.2.3

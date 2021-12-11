@@ -74,7 +74,7 @@ namespace GRAMM_2001
                             ISTU = 6;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
                             float rsolg_max = 0;
 
@@ -153,7 +153,7 @@ namespace GRAMM_2001
                             ISTU = 6;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
 
                             //find the month and time of the year, where the radiation equals xx W/m? as required by SC 2
@@ -231,7 +231,7 @@ namespace GRAMM_2001
                             ISTU = 6;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
 
                             //find the month and time of the year, where the radiation equals xx W/m? as required by SC 3
@@ -329,7 +329,7 @@ namespace GRAMM_2001
                             ISTU = 12;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
                             float rsolg_max = 0;
 
@@ -405,7 +405,7 @@ namespace GRAMM_2001
                             ISTU = 12;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
 
                             //find the month and time of the year, where the radiation equals xx W/m? as required by SC 2
@@ -480,7 +480,7 @@ namespace GRAMM_2001
                             ISTU = 10;
                             IMIN = 0;
 
-                            int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                            int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                             bool exit = false;
 
                             //find the month and time of the year, where the radiation equals xx W/m? as required by SC 3
@@ -568,7 +568,7 @@ namespace GRAMM_2001
                         Program.ISOL = 2; // 04/07/2018 Kuntner: thick clouds + lower solar radiation
                         Solar_reduction_factor = 0.1F; // try with reduced solar radiation
 
-                        int month_setting = set_month_type(Windspeed_meteopgt, AKLA, BGRAD);
+                        int month_setting = SetMonthType(Windspeed_meteopgt, AKLA, BGRAD);
                         bool exit = false;
 
                         //find the month and time of the year, where the radiation equals 100 W/m? as required by SC 4

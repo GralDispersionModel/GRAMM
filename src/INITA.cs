@@ -570,7 +570,7 @@ namespace GRAMM_2001
             //Console.Write(Count_outer.ToString() + " ");
             if (Count_outer > 0)
             {
-                Mean_outer = Mean_outer / Count_outer;
+                Mean_outer /= Count_outer;
                 TPI = Mean_inner - Mean_outer;
                 //Console.Write((AH_max - AH_min).ToString() + " ");
                 //slope = (float) (Math.Atan(Math.Abs(AH_max - AH_min) / (R_out * 2)) * 180F / Math.PI); // slope is calculated with a diameter of 1.5 * Program.DDXImm[1]

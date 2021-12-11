@@ -74,9 +74,9 @@ namespace GRAMM_2001
 
                         //Assemble TDMA coefficients
                         //Half-cell below
-                        if ((m - 1) == 1)
+                        if (m == 2)
                         {
-                            m = m - 1;
+                            m--;
 
                             //coefficients of pressure equation
                             if (kn > 1)

@@ -178,7 +178,7 @@ namespace GRAMM_2001
                                         else
                                         {
                                             //wt.Write(Convert.ToString(value(Ausgabe,o,jj,LX,LY)).Replace(Program.decsep, ".") + " ");
-                                            wt.Write(value(Ausgabe, o, jj, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                            wt.Write(RoundValues(Ausgabe, o, jj, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
                                         }
                                     }
                                     wt.WriteLine();
@@ -190,7 +190,7 @@ namespace GRAMM_2001
                                 for (int k = 1; k <= Program.NZ; k++)
                                 {
                                     //wt.Write(Convert.ToString(value(Ausgabe,0,k,LX,LY)).Replace(Program.decsep, ".") + " " + Convert.ToString(value(Ausgabe,1,k,LX,LY)).Replace(Program.decsep, ".") + " ");
-                                    wt.WriteLine(Math.Round(Program.ZSPImm[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + value(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                    wt.WriteLine(Math.Round(Program.ZSPImm[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + RoundValues(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
                                 }
                             }
 
@@ -205,7 +205,7 @@ namespace GRAMM_2001
 
         } // GRAMMONLINE Ende
 
-        private static double value(int Ausgabe, int o, int jj, int LX, int LY)
+        private static double RoundValues(int Ausgabe, int o, int jj, int LX, int LY)
         { // Ermittle Ausgabewerte und Zahlen-Rundung
             try
             {

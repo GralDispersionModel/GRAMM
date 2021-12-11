@@ -188,7 +188,7 @@ namespace GRAMM_2001
             //Computation of values at receptor points
             if (Program.recexist == true)
             {
-                for (int ianz = 0; ianz < Program.Urec.Count(); ianz++)
+                for (int ianz = 0; ianz < Program.Urec.Count; ianz++)
                 {
                     double wind = 0;
                     double z1 = 0;
@@ -486,19 +486,25 @@ namespace GRAMM_2001
             });
         }
 
-        //linear interpolation between two points
+        /// <summary>
+        /// linear interpolation between two points
+        /// </summary>
+        /// <param name="x1"></param>
+        /// <param name="x2"></param>
+        /// <param name="x3"></param>
+        /// <param name="val1"></param>
+        /// <param name="val2"></param>
+        /// <returns></returns>
         public static double Linear_interpolation(double x1, double x2, double x3, double val1, double val2)
         {
-            Unsafe.SkipInit(out double val3);
             if (x2 - x1 != 0)
             {
-                val3 = val1 + (val2 - val1) / (x2 - x1) * (x3 - x1);
+                return val1 + (val2 - val1) / (x2 - x1) * (x3 - x1);
             }
             else
             {
-                val3 = val1;
+                return val1;
             }
-            return val3;
         }
 
     }

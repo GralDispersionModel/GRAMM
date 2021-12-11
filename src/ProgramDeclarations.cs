@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using System.Collections.Concurrent;
 using System.Globalization;
 
 namespace GRAMM_2001
@@ -1718,12 +1719,20 @@ namespace GRAMM_2001
         ///</summary>
         public static System.Buffers.ArrayPool<double> GrammArrayPool = System.Buffers.ArrayPool<double>.Shared;
         ///<summary>
-        ///Width of one parallel calculated stripe
+        ///Width of one parallel calculated stripe must be larger than 6
         ///</summary>
         public const int StripeWidth = 28;
         ///<summary>
         ///Counter for changing the width of the stripes for each iteration
         ///</summary>
         public static byte StripeCounter = 0; 
+        ///<summary>
+        ///Partitioner from 2 to (excl.) NX list for changing the width of the stripes for each iteration in x direction
+        ///</summary>
+        public static List<OrderablePartitioner<Tuple<int, int>>> PartitionerI = new List<OrderablePartitioner<Tuple<int, int>>>();
+        ///<summary>
+        ///Partitioner from 2 to (excl.) NY list for changing the width of the stripes for each iteration in y direction
+        ///</summary>
+        public static List<OrderablePartitioner<Tuple<int, int>>> PartitionerJ = new List<OrderablePartitioner<Tuple<int, int>>>();
     }
 }
