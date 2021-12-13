@@ -677,6 +677,7 @@ namespace GRAMM_2001
             RELAXV = Relaxv_ori; //5.4.2017 Ku Reset relax
             RELAXT = Relaxt_ori; //5.4.2017 Ku Reset relax
             Divergence_Min = 10e9;
+            Program.TerminalOut = 0;
 
             ClearJaggedArray(U);
             ClearJaggedArray(V);
@@ -844,6 +845,7 @@ namespace GRAMM_2001
                 PartitionerI.Clear();
                 PartitionerJ.Clear();
                 int[] delta = new int[] { -6, 2, -4, 0, 4, -2, 3, -3, 1, -5, 0, 4};
+                
                 foreach (int val in delta)
                 {
                     int range_parallel = (Program.NX - 2) / IPROC + val;
@@ -856,7 +858,15 @@ namespace GRAMM_2001
                     range_parallel = Math.Min(NY, range_parallel); // if NY < range_parallel
                     PartitionerJ.Add(Partitioner.Create(2, NY, range_parallel));
                 }
-                Console.WriteLine("User defined maximum degree of parallelism: " + pOptions.MaxDegreeOfParallelism);
+
+                int maxLen = Math.Max(Program.NX, Program.NY);
+                int minLen = Math.Min(Program.NX, Program.NY);
+
+                maxLen = Math.Min(pOptions.MaxDegreeOfParallelism, maxLen / (Program.StripeWidth + delta.Min()) + 1);
+                minLen = Math.Min(pOptions.MaxDegreeOfParallelism, minLen / (Program.StripeWidth + delta.Max()) + 1);
+                
+                Console.Write("User defined or available maximum degree of parallelism: {0:D}", pOptions.MaxDegreeOfParallelism);
+                Console.WriteLine(" used processors max/min: {0:D}/{0:D}", maxLen, minLen);
             }
         }
 
