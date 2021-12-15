@@ -678,6 +678,13 @@ namespace GRAMM_2001
             RELAXT = Relaxt_ori; //5.4.2017 Ku Reset relax
             Divergence_Min = 10e9;
             Program.TerminalOut = 0;
+            Array.Clear(Program.MASSOURCE, 0, Program.MASSOURCE.Length);
+            Program.MASSOURCE_Act = 0;
+            Program.MASSOURCE_Old = 0;
+            Program.MASSOURCE_Queue.Clear();
+            Program.STEIGUNG = 0;
+            Program.IDIV = 0;
+            Program.SUMG = 0;
 
             ClearJaggedArray(U);
             ClearJaggedArray(V);

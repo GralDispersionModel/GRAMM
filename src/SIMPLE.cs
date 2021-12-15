@@ -210,7 +210,6 @@ namespace GRAMM_2001
                 }
                 //5.4.2017 Ku
 
-
                 //2.9.2019 Öt
                 //dynamic time step and relaxation factor adjustments for GRAMM full transient simulations
                 if (Program.ISTAT != 0)

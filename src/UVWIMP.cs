@@ -318,12 +318,12 @@ namespace GRAMM_2001
                         V2N_LR = V2N_LRR;
                         W2N_LR = W2N_LRR;
                         //No lock here, because other threads are reading
-                        Program.CopyArraySourceLen(Program.U1N[i][j], U1N_LR);
-                        Program.CopyArraySourceLen(Program.V1N[i][j], V1N_LR);
-                        Program.CopyArraySourceLen(Program.W1N[i][j], W1N_LR);
-                        Program.CopyArraySourceLen(Program.U2N[i][j], U2N_LR);
-                        Program.CopyArraySourceLen(Program.V2N[i][j], V2N_LR);
-                        Program.CopyArraySourceLen(Program.W2N[i][j], W2N_LR);
+                        FastCopy.CopyArraySourceLen(Program.U1N[i][j], U1N_LR);
+                        FastCopy.CopyArraySourceLen(Program.V1N[i][j], V1N_LR);
+                        FastCopy.CopyArraySourceLen(Program.W1N[i][j], W1N_LR);
+                        FastCopy.CopyArraySourceLen(Program.U2N[i][j], U2N_LR);
+                        FastCopy.CopyArraySourceLen(Program.V2N[i][j], V2N_LR);
+                        FastCopy.CopyArraySourceLen(Program.W2N[i][j], W2N_LR);
                     }
                     else
                     {
@@ -473,12 +473,12 @@ namespace GRAMM_2001
                     //Avoid race conditions at the border cells of the sequential calculated stripes
                     if (border < 1)
                     {
-                        Program.CopyArrayLockDest(U1N_LR, Program.U1N[i][j]);
-                        Program.CopyArrayLockDest(V1N_LR, Program.V1N[i][j]);
-                        Program.CopyArrayLockDest(W1N_LR, Program.W1N[i][j]);
-                        Program.CopyArrayLockDest(U2N_LR, Program.U2N[i][j]);
-                        Program.CopyArrayLockDest(V2N_LR, Program.V2N[i][j]);
-                        Program.CopyArrayLockDest(W2N_LR, Program.W2N[i][j]);
+                        FastCopy.CopyArrayLockDest(U1N_LR, Program.U1N[i][j]);
+                        FastCopy.CopyArrayLockDest(V1N_LR, Program.V1N[i][j]);
+                        FastCopy.CopyArrayLockDest(W1N_LR, Program.W1N[i][j]);
+                        FastCopy.CopyArrayLockDest(U2N_LR, Program.U2N[i][j]);
+                        FastCopy.CopyArrayLockDest(V2N_LR, Program.V2N[i][j]);
+                        FastCopy.CopyArrayLockDest(W2N_LR, Program.W2N[i][j]);
                     }
                 }
             }

@@ -119,9 +119,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNiM_L = TNiM_LR;
                             TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
                         else
                         {
@@ -163,7 +163,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -224,9 +224,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNiM_L = TNiM_LR;
                             TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
                         else
                         {
@@ -269,7 +269,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -330,9 +330,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNjM_L = TNjM_LR;
                             TNjP_L = TNjP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
                         else
                         {
@@ -375,7 +375,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -436,9 +436,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNjM_L = TNjM_LR;
                             TNjP_L = TNjP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
                         else
                         {
@@ -481,7 +481,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -542,9 +542,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNiM_L = TNiM_LR;
                             TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
                         else
                         {
@@ -587,7 +587,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -648,9 +648,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNiM_L = TNiM_LR;
                             TNiP_L = TNiP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
-                            Program.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i - 1][j], TNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i + 1][j], TNiP_L);
                         }
                         else
                         {
@@ -693,7 +693,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -754,9 +754,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNjM_L = TNjM_LR;
                             TNjP_L = TNjP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
                         else
                         {
@@ -799,7 +799,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }
@@ -860,9 +860,9 @@ namespace GRAMM_2001
                             TN_L = TN_LR;
                             TNjM_L = TNjM_LR;
                             TNjP_L = TNjP_LR;
-                            Program.CopyArrayLockSource(Program.TN[i][j], TN_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
-                            Program.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j], TN_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j - 1], TNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.TN[i][j + 1], TNjP_L);
                         }
                         else
                         {
@@ -905,7 +905,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(TN_L, Program.TN[i][j]);
+                            FastCopy.CopyArrayLockDest(TN_L, Program.TN[i][j]);
                         }
 
                     }

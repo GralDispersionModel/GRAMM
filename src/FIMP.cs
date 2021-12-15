@@ -77,9 +77,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNiM_L = QUNiM_LR;
                             QUNiP_L = QUNiP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
                         }
                         else
                         {
@@ -128,7 +128,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -178,9 +178,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNiM_L = QUNiM_LR;
                             QUNiP_L = QUNiP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
                         }
                         else
                         {
@@ -235,7 +235,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -286,9 +286,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNjM_L = QUNjM_LR;
                             QUNjP_L = QUNjP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
                         }
                         else
                         {
@@ -341,7 +341,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -392,9 +392,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNjM_L = QUNjM_LR;
                             QUNjP_L = QUNjP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
                         }
                         else
                         {
@@ -448,7 +448,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -499,9 +499,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNiM_L = QUNiM_LR;
                             QUNiP_L = QUNiP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
                         }
                         else
                         {
@@ -555,7 +555,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -606,9 +606,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNiM_L = QUNiM_LR;
                             QUNiP_L = QUNiP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i - 1][j], QUNiM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i + 1][j], QUNiP_L);
                         }
                         else
                         {
@@ -662,7 +662,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -706,9 +706,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNjM_L = QUNjM_LR;
                             QUNjP_L = QUNjP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
                         }
                         else
                         {
@@ -761,7 +761,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }
@@ -805,9 +805,9 @@ namespace GRAMM_2001
                             QUN_L = QUN_LR;
                             QUNjM_L = QUNjM_LR;
                             QUNjP_L = QUNjP_LR;
-                            Program.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
-                            Program.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j], QUN_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j - 1], QUNjM_L);
+                            FastCopy.CopyArrayLockSource(Program.QUN[i][j + 1], QUNjP_L);
                         }
                         else
                         {
@@ -860,7 +860,7 @@ namespace GRAMM_2001
                         }
                         if (border < 1)
                         {
-                            Program.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
+                            FastCopy.CopyArrayLockDest(QUN_L, Program.QUN[i][j]);
                         }
                     }
                 }

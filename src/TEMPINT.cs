@@ -111,7 +111,7 @@ namespace GRAMM_2001
             if (Program.IWETTER == 1) // initialize data
             {
                 Program.GRAMMin_File_Read(Program.IWETTER);
-                Program.Z0[Program.inrec[0]][Program.jnrec[0]] = (float)(Program.Rauigkeit);
+                Program.Z0[0][0] = (float)(Program.Rauigkeit);
             }
             else // refresh (switching steady state output on/off 
             {
@@ -146,7 +146,7 @@ namespace GRAMM_2001
                 Environment.Exit(0); 		// Exit console
             }
 
-            //Write actually computed flow situation to file DispNrGramm.txt -> used in the GUI 
+            //Write actual computed flow situation to file DispNrGramm.txt -> used in the GUI 
             Program.Counter++;
             if ((Program.Counter > 0) && (IWetter_Console_First <= 1)) // Write status for one instance only
             {
@@ -159,18 +159,18 @@ namespace GRAMM_2001
 
             //Set all temperatures to zero
             Parallel.For(1, NI + 1, Program.pOptions, i =>
+            {
+                for (int j = 1; j <= NJ; j++)
                 {
-                    for (int j = 1; j <= NJ; j++)
+                    for (int k = 1; k <= NK; k++)
                     {
-                        for (int k = 1; k <= NK; k++)
-                        {
-                            Program.T[i][j][k] = 0;
-                            Program.TBZ[i][j][k] = 0;
-                            Program.U[i][j][k] = 0;
-                            Program.V[i][j][k] = 0;
-                        }
+                        Program.T[i][j][k] = 0;
+                        Program.TBZ[i][j][k] = 0;
+                        Program.U[i][j][k] = 0;
+                        Program.V[i][j][k] = 0;
                     }
-                });
+                }
+            });
 
             //Set all temporary fields used for establishing the initial wind field to zero
             Parallel.For(0, 51, Program.pOptions, i =>
@@ -238,7 +238,7 @@ namespace GRAMM_2001
 
                                 // Set DTMAX in dependece of the SC and the initial wind speed 
                                 DTMAX = max_time_step_original; //13.4.2017 Ku
-                                                                //in case of low wind speed initialization and convective conditions, GRAMM easily becomes unstable
+                                //in case of low wind speed initialization and convective conditions, GRAMM easily becomes unstable
                                 if ((Program.AKLA < 3) && (WINDGE < 1))
                                 {
                                     Program.DTMAX = Math.Max(1.5, Program.max_time_step_original * 0.25); //4.4.2017 Ku time step original as basis, Math.Max 1,5 s
@@ -347,15 +347,15 @@ namespace GRAMM_2001
                         }
                         if (Program.AKLA == 1)
                         {
-                            Program.Obini = Math.Min(1 / (-0.37 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.55)), -4);
+                            Program.Obini = Math.Min(1 / (-0.37 * Math.Pow(Program.Z0[0][0] * 100, -0.55)), -4);
                         }
                         else if (Program.AKLA == 2)
                         {
-                            Program.Obini = Math.Min(1 / (-0.12 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.50)), -4);
+                            Program.Obini = Math.Min(1 / (-0.12 * Math.Pow(Program.Z0[0][0] * 100, -0.50)), -4);
                         }
                         else if (Program.AKLA == 3)
                         {
-                            Program.Obini = Math.Min(1 / (-0.067 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.56)), -4);
+                            Program.Obini = Math.Min(1 / (-0.067 * Math.Pow(Program.Z0[0][0] * 100, -0.56)), -4);
                         }
                         else if (Program.AKLA == 4)
                         {
@@ -363,15 +363,15 @@ namespace GRAMM_2001
                         }
                         else if (Program.AKLA == 5)
                         {
-                            Program.Obini = Math.Max(1 / (0.02 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.30)), 4);
+                            Program.Obini = Math.Max(1 / (0.02 * Math.Pow(Program.Z0[0][0] * 100, -0.30)), 4);
                         }
                         else if (Program.AKLA == 6)
                         {
-                            Program.Obini = Math.Max(1 / (0.05 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.50)), 4);
+                            Program.Obini = Math.Max(1 / (0.05 * Math.Pow(Program.Z0[0][0] * 100, -0.50)), 4);
                         }
                         else if (Program.AKLA == 7)
                         {
-                            Program.Obini = Math.Max(1 / (0.2 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.55)), 4);
+                            Program.Obini = Math.Max(1 / (0.2 * Math.Pow(Program.Z0[0][0] * 100, -0.55)), 4);
                         }
                     }
                     else
@@ -385,7 +385,7 @@ namespace GRAMM_2001
                                 Program.TINIT = 300;
                                 Program.TBINIT1 = 300;
                                 Program.TBINIT = 300;
-                                Program.Obini = Math.Min(1 / (-0.37 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.55)), -4);
+                                Program.Obini = Math.Min(1 / (-0.37 * Math.Pow(Program.Z0[0][0] * 100, -0.55)), -4);
                             }
                             else if (Program.AKLA == 2)
                             {
@@ -394,7 +394,7 @@ namespace GRAMM_2001
                                 Program.TINIT = 295;
                                 Program.TBINIT1 = 295;
                                 Program.TBINIT = 295;
-                                Program.Obini = Math.Min(1 / (-0.12 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.50)), -4);
+                                Program.Obini = Math.Min(1 / (-0.12 * Math.Pow(Program.Z0[0][0] * 100, -0.50)), -4);
                             }
                             else if (Program.AKLA == 3)
                             {
@@ -403,7 +403,7 @@ namespace GRAMM_2001
                                 Program.TINIT = 280;
                                 Program.TBINIT1 = 280;
                                 Program.TBINIT = 280;
-                                Program.Obini = Math.Min(1 / (-0.067 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.56)), -4);
+                                Program.Obini = Math.Min(1 / (-0.067 * Math.Pow(Program.Z0[0][0] * 100, -0.56)), -4);
                             }
                             else if (Program.AKLA == 4)
                             {
@@ -421,7 +421,7 @@ namespace GRAMM_2001
                                 Program.TINIT = 280;
                                 Program.TBINIT1 = 280;
                                 Program.TBINIT = 280;
-                                Program.Obini = Math.Max(1 / (0.02 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.30)), 4);
+                                Program.Obini = Math.Max(1 / (0.02 * Math.Pow(Program.Z0[0][0] * 100, -0.30)), 4);
                             }
                             else if (Program.AKLA == 6)
                             {
@@ -430,7 +430,7 @@ namespace GRAMM_2001
                                 Program.TINIT = 275;
                                 Program.TBINIT1 = 275;
                                 Program.TBINIT = 275;
-                                Program.Obini = Math.Max(1 / (0.05 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.50)), 4);
+                                Program.Obini = Math.Max(1 / (0.05 * Math.Pow(Program.Z0[0][0] * 100, -0.50)), 4);
                             }
                             else if (Program.AKLA == 7)
                             {
@@ -439,12 +439,12 @@ namespace GRAMM_2001
                                 Program.TINIT = 270;
                                 Program.TBINIT1 = 270;
                                 Program.TBINIT = 270;
-                                Program.Obini = Math.Max(1 / (0.2 * Math.Pow(Program.Z0[Program.inrec[0]][Program.jnrec[0]] * 100, -0.55)), 4);
+                                Program.Obini = Math.Max(1 / (0.2 * Math.Pow(Program.Z0[0][0] * 100, -0.55)), 4);
                             }
                         }
                     }
                     Console.WriteLine("Initial Obukhov length: " + Convert.ToString(Math.Round(Program.Obini, 3)) + "m");
-                    Console.WriteLine("Roughness length: " + Convert.ToString(Math.Round(Program.Z0[Program.inrec[0]][Program.jnrec[0]], 3)) + "m");
+                    Console.WriteLine("Roughness length: " + Convert.ToString(Math.Round(Program.Z0[0][0], 3)) + "m");
                 }
 
                 //set initial values for relative humidity in %
@@ -1830,41 +1830,39 @@ namespace GRAMM_2001
                 Console.Write("   SURFACE PRESSURE AT SEA LEVEL            =  ");
                 PMEER = Convert.ToDouble(Console.ReadLine().Replace(".", Program.decsep));
             }
+            
             Program.POBEN = PMEER * Math.Exp(-Program.ZSPImm[2][2][NK] / 8000);
-
-        GOTO1234:
-
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            do
             {
-                for (int j = 1; j <= NJ; j++)
+                Parallel.For(1, NI + 1, Program.pOptions, i =>
                 {
-                    for (int k = 1; k <= NK; k++)
+                    for (int j = 1; j <= NJ; j++)
                     {
-                        //harmonic mean temperature
-                        double THARM = 0;
-                        for (int m = k; m <= NK - 1; m++)
+                        for (int k = 1; k <= NK; k++)
                         {
-                            THARM += (Program.ZSPImm[i][j][m + 1] - Program.ZSPImm[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
+                            //harmonic mean temperature
+                            double THARM = 0;
+                            for (int m = k; m <= NK - 1; m++)
+                            {
+                                THARM += (Program.ZSPImm[i][j][m + 1] - Program.ZSPImm[i][j][m]) / (Program.T[i][j][m] + Program.T[i][j][m + 1]) * 2;
+                            }
+                            //pressure profile
+                            Program.PBZ[i][j][k] = (float)(Program.POBEN * Math.Exp(Program.GERD / Program.GASCON * THARM));
                         }
-                        //pressure profile
-                        Program.PBZ[i][j][k] = (float)(Program.POBEN * Math.Exp(Program.GERD / Program.GASCON * THARM));
                     }
-                }
-            });
+                });
 
-            if (Math.Abs((Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) / PUNTEN * 100) >= 0.01)
-            {
                 if (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] > PUNTEN)
                 {
                     Program.POBEN -= (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) * 0.1;
-                    goto GOTO1234;
                 }
                 else if (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] < PUNTEN)
                 {
                     Program.POBEN -= (Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) * 0.1;
-                    goto GOTO1234;
                 }
             }
+            while (Math.Abs((Program.PBZ[Program.AHMINI][Program.AHMINJ][1] - PUNTEN) / PUNTEN * 100) >= 0.01);
+            
             TMAX = 0;
             double TMIN = 374;
             for (int i = 1; i <= NI; i++)

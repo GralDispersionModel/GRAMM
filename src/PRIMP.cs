@@ -125,10 +125,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPXi_L = DPXi_LR;
                                     DPYj_L = DPYj_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
                                 }
                                 else
                                 {
@@ -245,10 +245,10 @@ namespace GRAMM_2001
 
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
-                                    Program.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
+                                    FastCopy.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
                                 }
                             }
                         }
@@ -352,10 +352,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPX_L = DPX_LR;
                                     DPY_L = DPY_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
                                 }
                                 else
                                 {
@@ -470,10 +470,10 @@ namespace GRAMM_2001
 
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
-                                    Program.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
                                 }
                             }
                         }
@@ -567,10 +567,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPX_L = DPX_LR;
                                     DPY_L = DPY_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
                                 }
                                 else
                                 {
@@ -684,10 +684,10 @@ namespace GRAMM_2001
 
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
-                                    Program.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
                                 }
                             }
                         }
@@ -778,10 +778,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPXi_L = DPXi_LR;
                                     DPYj_L = DPYj_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
                                 }
                                 else
                                 {
@@ -894,10 +894,10 @@ namespace GRAMM_2001
                                 }
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
-                                    Program.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
+                                    FastCopy.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
                                 }
                             }
                         }
@@ -998,10 +998,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPX_L = DPX_LR;
                                     DPYj_L = DPYj_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
                                 }
                                 else
                                 {
@@ -1114,10 +1114,10 @@ namespace GRAMM_2001
                                 }
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
-                                    Program.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
                                 }
                             }
                         }
@@ -1220,10 +1220,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPXi_L = DPXi_LR;
                                     DPY_L = DPY_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
                                 }
                                 else
                                 {
@@ -1336,10 +1336,10 @@ namespace GRAMM_2001
                                 }
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
-                                    Program.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
+                                    FastCopy.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
                                 }
                             }
                         }
@@ -1432,10 +1432,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPXi_L = DPXi_LR;
                                     DPY_L = DPY_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[iP1][j], DPXi_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][j], DPY_L);
                                 }
                                 else
                                 {
@@ -1548,10 +1548,10 @@ namespace GRAMM_2001
                                 }
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
-                                    Program.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPXi_L, Program.DPX[iP1][j]);
+                                    FastCopy.CopyArrayLockDest(DPY_L, Program.DPY[i][j]);
                                 }
                             }
                         }
@@ -1643,10 +1643,10 @@ namespace GRAMM_2001
                                     DPZ_L = DPZ_LR;
                                     DPX_L = DPX_LR;
                                     DPYj_L = DPYj_LR;
-                                    Program.CopyArrayLockSource(Program.DP[i][j], DP_L);
-                                    Program.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
-                                    Program.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
-                                    Program.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
+                                    FastCopy.CopyArrayLockSource(Program.DP[i][j], DP_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPZ[i][j], DPZ_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPX[i][j], DPX_L);
+                                    FastCopy.CopyArrayLockSource(Program.DPY[i][jP1], DPYj_L);
                                 }
                                 else
                                 {
@@ -1759,10 +1759,10 @@ namespace GRAMM_2001
                                 }
                                 if (border < 2)
                                 {
-                                    Program.CopyArrayLockDest(DP_L, Program.DP[i][j]);
-                                    Program.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
-                                    Program.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
-                                    Program.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
+                                    FastCopy.CopyArrayLockDest(DP_L, Program.DP[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPZ_L, Program.DPZ[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPX_L, Program.DPX[i][j]);
+                                    FastCopy.CopyArrayLockDest(DPYj_L, Program.DPY[i][jP1]);
                                 }
                             }
                         }

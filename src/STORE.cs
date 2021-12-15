@@ -29,30 +29,26 @@ namespace GRAMM_2001
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void STOREcalculate(int NI, int NJ, int NK)
         {
-
             //Boundary values for turbulent kinetic energy and dissipation
-            Parallel.For(2, NI, Program.pOptions, i =>
+            //Parallel.For(2, NI, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(2, NI, (NI - 2) / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int j = 2; j <= NJ - 1; j++)
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    for (int k = 1; k <= NK - 1; k++)
-                    {
-                        if (j == 1)
-                        {
-                            Program.TEN[i][1][k] = Program.TEN[i][2][k];
-                            Program.TEN[i][NJ][k] = Program.TEN[i][NJ - 1][k];
-                            Program.DISSN[i][1][k] = Program.DISSN[i][2][k];
-                            Program.DISSN[i][NJ][k] = Program.DISSN[i][NJ - 1][k];
-                        }
-
-                        if (i == 1)
-                        {
-                            Program.TEN[1][j][k] = Program.TEN[2][j][k];
-                            Program.TEN[NI][j][k] = Program.TEN[NI - 1][j][k];
-                            Program.DISSN[1][j][k] = Program.DISSN[2][j][k];
-                            Program.DISSN[NI][j][k] = Program.DISSN[NI - 1][j][k];
-                        }
-                    }
+                    FastCopy.CopyArraySourceLen(Program.TEN[i][2], Program.TEN[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.TEN[i][NJ - 1], Program.TEN[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.DISSN[i][2], Program.DISSN[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.DISSN[i][NJ - 1], Program.DISSN[i][NJ]);
+                }
+            });
+            Parallel.ForEach(Partitioner.Create(2, NJ, (NJ - 2) / Program.pOptions.MaxDegreeOfParallelism), range =>
+            {
+                for (int j = range.Item1; j < range.Item2; j++)
+                {
+                    FastCopy.CopyArraySourceLen(Program.TEN[2][j], Program.TEN[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.DISSN[2][j], Program.DISSN[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.TEN[NI - 1][j], Program.TEN[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.DISSN[NI - 1][j], Program.DISSN[NI][j]);
                 }
             });
 
@@ -77,8 +73,39 @@ namespace GRAMM_2001
             */
 
             //Update old and actual values
+            for (int k = 1; k <= NK; k++)
+            {
+                Program.U1N[1][1][k] = 0.5F * (Program.UN[1][2][k] + Program.UN[2][1][k]);
+                Program.U2N[1][1][k] = 0.5F * (Program.UN[1][2][k] + Program.UN[2][1][k]);
+                Program.V1N[1][1][k] = 0.5F * (Program.VN[1][2][k] + Program.VN[2][1][k]);
+                Program.V2N[1][1][k] = 0.5F * (Program.VN[1][2][k] + Program.VN[2][1][k]);
+                Program.W1N[1][1][k] = 0.5F * (Program.WN[1][2][k] + Program.WN[2][1][k]);
+                Program.W2N[1][1][k] = 0.5F * (Program.WN[1][2][k] + Program.WN[2][1][k]);
+
+                Program.U1N[1][NJ][k] = 0.5F * (Program.UN[1][NJ - 1][k] + Program.UN[2][NJ][k]);
+                Program.U2N[1][NJ][k] = 0.5F * (Program.UN[1][NJ - 1][k] + Program.UN[2][NJ][k]);
+                Program.V1N[1][NJ][k] = 0.5F * (Program.VN[1][NJ - 1][k] + Program.VN[2][NJ][k]);
+                Program.V2N[1][NJ][k] = 0.5F * (Program.VN[1][NJ - 1][k] + Program.VN[2][NJ][k]);
+                Program.W1N[1][NJ][k] = 0.5F * (Program.WN[1][NJ - 1][k] + Program.WN[2][NJ][k]);
+                Program.W2N[1][NJ][k] = 0.5F * (Program.WN[1][NJ - 1][k] + Program.WN[2][NJ][k]);
+
+                Program.U1N[NI][NJ][k] = 0.5F * (Program.UN[NI][NJ - 1][k] + Program.UN[NI - 1][NJ][k]);
+                Program.U2N[NI][NJ][k] = 0.5F * (Program.UN[NI][NJ - 1][k] + Program.UN[NI - 1][NJ][k]);
+                Program.V1N[NI][NJ][k] = 0.5F * (Program.VN[NI][NJ - 1][k] + Program.VN[NI - 1][NJ][k]);
+                Program.V2N[NI][NJ][k] = 0.5F * (Program.VN[NI][NJ - 1][k] + Program.VN[NI - 1][NJ][k]);
+                Program.W1N[NI][NJ][k] = 0.5F * (Program.WN[NI][NJ - 1][k] + Program.WN[NI - 1][NJ][k]);
+                Program.W2N[NI][NJ][k] = 0.5F * (Program.WN[NI][NJ - 1][k] + Program.WN[NI - 1][NJ][k]);
+
+                Program.U1N[NI][1][k] = 0.5F * (Program.UN[NI][2][k] + Program.UN[NI - 1][1][k]);
+                Program.U2N[NI][1][k] = 0.5F * (Program.UN[NI][2][k] + Program.UN[NI - 1][1][k]);
+                Program.V1N[NI][1][k] = 0.5F * (Program.VN[NI][2][k] + Program.VN[NI - 1][1][k]);
+                Program.V2N[NI][1][k] = 0.5F * (Program.VN[NI][2][k] + Program.VN[NI - 1][1][k]);
+                Program.W1N[NI][1][k] = 0.5F * (Program.WN[NI][2][k] + Program.WN[NI - 1][1][k]);
+                Program.W2N[NI][1][k] = 0.5F * (Program.WN[NI][2][k] + Program.WN[NI - 1][1][k]);
+            }
+
             //Parallel.For(1, NI + 1, Program.pOptions, i =>
-            Parallel.ForEach(Partitioner.Create(1, NI + 1, (int)((NI + 1) / Program.pOptions.MaxDegreeOfParallelism)), range =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
                 for (int i = range.Item1; i < range.Item2; i++)
                 {
@@ -124,63 +151,28 @@ namespace GRAMM_2001
                         float[] VG2_L = Program.VG2[i][j];
                         ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
 
+                        FastCopy.CopyArraySourceLen(U1N_L, U1_L);
+                        FastCopy.CopyArraySourceLen(V1N_L, V1_L);
+                        FastCopy.CopyArraySourceLen(W1N_L, W1_L);
+                        FastCopy.CopyArraySourceLen(U2N_L, U2_L);
+                        FastCopy.CopyArraySourceLen(V2N_L, V2_L);
+                        FastCopy.CopyArraySourceLen(W2N_L, W2_L);
+                        FastCopy.CopyArraySourceLen(TN_L, T_L);
+                        FastCopy.CopyArraySourceLen(QUN_L, QU_L);
+                        FastCopy.CopyArraySourceLen(TEN_L, TE_L);
+                        FastCopy.CopyArraySourceLen(DISSN_L, DISS_L);
+
                         for (int k = 1; k <= NK; k++)
                         {
-                            if (i == 1) // just one times necessary
-                            {
-                                Program.U1N[1][1][k] = 0.5F * (Program.UN[1][2][k] + Program.UN[2][1][k]);
-                                Program.U2N[1][1][k] = 0.5F * (Program.UN[1][2][k] + Program.UN[2][1][k]);
-                                Program.V1N[1][1][k] = 0.5F * (Program.VN[1][2][k] + Program.VN[2][1][k]);
-                                Program.V2N[1][1][k] = 0.5F * (Program.VN[1][2][k] + Program.VN[2][1][k]);
-                                Program.W1N[1][1][k] = 0.5F * (Program.WN[1][2][k] + Program.WN[2][1][k]);
-                                Program.W2N[1][1][k] = 0.5F * (Program.WN[1][2][k] + Program.WN[2][1][k]);
-
-                                Program.U1N[1][NJ][k] = 0.5F * (Program.UN[1][NJ - 1][k] + Program.UN[2][NJ][k]);
-                                Program.U2N[1][NJ][k] = 0.5F * (Program.UN[1][NJ - 1][k] + Program.UN[2][NJ][k]);
-                                Program.V1N[1][NJ][k] = 0.5F * (Program.VN[1][NJ - 1][k] + Program.VN[2][NJ][k]);
-                                Program.V2N[1][NJ][k] = 0.5F * (Program.VN[1][NJ - 1][k] + Program.VN[2][NJ][k]);
-                                Program.W1N[1][NJ][k] = 0.5F * (Program.WN[1][NJ - 1][k] + Program.WN[2][NJ][k]);
-                                Program.W2N[1][NJ][k] = 0.5F * (Program.WN[1][NJ - 1][k] + Program.WN[2][NJ][k]);
-
-                                Program.U1N[NI][NJ][k] = 0.5F * (Program.UN[NI][NJ - 1][k] + Program.UN[NI - 1][NJ][k]);
-                                Program.U2N[NI][NJ][k] = 0.5F * (Program.UN[NI][NJ - 1][k] + Program.UN[NI - 1][NJ][k]);
-                                Program.V1N[NI][NJ][k] = 0.5F * (Program.VN[NI][NJ - 1][k] + Program.VN[NI - 1][NJ][k]);
-                                Program.V2N[NI][NJ][k] = 0.5F * (Program.VN[NI][NJ - 1][k] + Program.VN[NI - 1][NJ][k]);
-                                Program.W1N[NI][NJ][k] = 0.5F * (Program.WN[NI][NJ - 1][k] + Program.WN[NI - 1][NJ][k]);
-                                Program.W2N[NI][NJ][k] = 0.5F * (Program.WN[NI][NJ - 1][k] + Program.WN[NI - 1][NJ][k]);
-
-                                Program.U1N[NI][1][k] = 0.5F * (Program.UN[NI][2][k] + Program.UN[NI - 1][1][k]);
-                                Program.U2N[NI][1][k] = 0.5F * (Program.UN[NI][2][k] + Program.UN[NI - 1][1][k]);
-                                Program.V1N[NI][1][k] = 0.5F * (Program.VN[NI][2][k] + Program.VN[NI - 1][1][k]);
-                                Program.V2N[NI][1][k] = 0.5F * (Program.VN[NI][2][k] + Program.VN[NI - 1][1][k]);
-                                Program.W1N[NI][1][k] = 0.5F * (Program.WN[NI][2][k] + Program.WN[NI - 1][1][k]);
-                                Program.W2N[NI][1][k] = 0.5F * (Program.WN[NI][2][k] + Program.WN[NI - 1][1][k]);
-                            }
-
-                            U1_L[k] = U1N_L[k];
-                            V1_L[k] = V1N_L[k];
-                            W1_L[k] = W1N_L[k];
-                            U2_L[k] = U2N_L[k];
-                            V2_L[k] = V2N_L[k];
-                            W2_L[k] = W2N_L[k];
-
-
                             UN_L[k] = 0.5F * (U1N_L[k] + U2N_L[k]);
                             VN_L[k] = 0.5F * (V1N_L[k] + V2N_L[k]);
                             WN_L[k] = 0.5F * (W1N_L[k] + W2N_L[k]);
-                            U_L[k] = UN_L[k];
-                            V_L[k] = VN_L[k];
-                            W_L[k] = WN_L[k];
-
-                            T_L[k] = TN_L[k];
-                            QU_L[k] = QUN_L[k];
-                            TE_L[k] = TEN_L[k];
-                            DISS_L[k] = DISSN_L[k];
-
                             TABS_L[k] = (T_L[k] + Program.TBZ1) / FAC_L[k]; //updated values for absolute temperature 
-
-                            WAT_VAP_L[k] = WAT_VAPN_L[k];
                         }
+                        FastCopy.CopyArraySourceLen(UN_L, U_L);
+                        FastCopy.CopyArraySourceLen(VN_L, V_L);
+                        FastCopy.CopyArraySourceLen(WN_L, W_L);
+                        FastCopy.CopyArraySourceLen(WAT_VAPN_L, WAT_VAP_L);
                     }
                 }
             });
@@ -246,20 +238,20 @@ namespace GRAMM_2001
             //            });
 
             //updated values for soil and absolute temperature
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, (NI - 1) / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int j = 1; j <= NJ; j++)
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    double[] TBA_L = Program.TBA[i][j];
-                    double[] TB_L = Program.TB[i][j];
-                    double[] TBN_L = Program.TBN[i][j];
-
-                    for (int k = 1; k <= Program.NZB - 1; k++)
+                    for (int j = 1; j <= NJ; j++)
                     {
-                        TBA_L[k] = TB_L[k];
-                        TB_L[k] = TBN_L[k];
+                        double[] TBA_L = Program.TBA[i][j];
+                        double[] TB_L = Program.TB[i][j];
+                        double[] TBN_L = Program.TBN[i][j];
+                        FastCopy.CopyArraySourceLen(TB_L, TBA_L);
+                        FastCopy.CopyArraySourceLen(TBN_L, TB_L);
+                        Program.TG[i][j] = Math.Round(TB_L[2], 2);
                     }
-                    Program.TG[i][j] = Math.Round(TB_L[2], 2);
                 }
             });
 
@@ -308,10 +300,10 @@ namespace GRAMM_2001
                             double[] V_L = Program.V[i][j];
                             double[] VISV_L = Program.VISV[i][j];
                             double[] RITSCH_L = Program.RITSCH[i][j];
+                            Program.ZI[i][j] = 0;
 
                             for (int k = 1; k <= NK - 1; k++)
                             {
-                                Program.ZI[i][j] = 0;
                                 double DZZ = (ZSP_L[k + 1] - ZSP_L[k]);
                                 double ALUN = Math.Abs(Program.FN) / (0.007 * Program.UST[i][j]);
                                 double ALBL = Program.CK * (ZSP_L[k] - Program.AHImm[i][j]) /
@@ -345,102 +337,106 @@ namespace GRAMM_2001
             }
 
             //homogenous Von Neumann boundary-conditions for TE, VIS, W
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int j = 1; j <= NJ; j++)
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    double[] TE_L = Program.TE[i][j];
-                    double[] DISS_L = Program.DISS[i][j];
-                    double[] VISV_L = Program.VISV[i][j];
-
-                    for (int k = 1; k <= NK; k++)
+                    for (int j = 1; j <= NJ; j++)
                     {
+                        double[] TE_L = Program.TE[i][j];
+                        double[] DISS_L = Program.DISS[i][j];
+                        double[] VISV_L = Program.VISV[i][j];
                         TE_L[NK] = TE_L[NK - 1];
                         DISS_L[NK] = DISS_L[NK - 1];
                         VISV_L[NK] = VISV_L[NK - 1];
 
-                        if (j == 1) // just one times
+                        for (int k = 1; k <= NK; k++)
                         {
-                            Program.TE[i][NJ][k] = Program.TE[i][NJ - 1][k];
-                            Program.TE[i][1][k] = Program.TE[i][2][k];
+                            if (j == 1) // just one times
+                            {
+                                Program.TE[i][NJ][k] = Program.TE[i][NJ - 1][k];
+                                Program.TE[i][1][k] = Program.TE[i][2][k];
 
-                            Program.DISS[i][NJ][k] = Program.DISS[i][NJ - 1][k];
-                            Program.DISS[i][1][k] = Program.DISS[i][2][k];
+                                Program.DISS[i][NJ][k] = Program.DISS[i][NJ - 1][k];
+                                Program.DISS[i][1][k] = Program.DISS[i][2][k];
 
-                            Program.VISV[i][NJ][k] = Program.VISV[i][NJ - 1][k];
-                            Program.VISV[i][1][k] = Program.VISV[i][2][k];
+                                Program.VISV[i][NJ][k] = Program.VISV[i][NJ - 1][k];
+                                Program.VISV[i][1][k] = Program.VISV[i][2][k];
 
-                            Program.ZI[i][1] = Program.ZI[i][2];
-                            Program.ZI[i][NJ] = Program.ZI[i][NJ - 1];
+                                Program.ZI[i][1] = Program.ZI[i][2];
+                                Program.ZI[i][NJ] = Program.ZI[i][NJ - 1];
 
-                            Program.RSOLG[i][1] = Program.RSOLG[i][2];
-                            Program.RSOLG[i][NJ] = Program.RSOLG[i][NJ - 1];
+                                Program.RSOLG[i][1] = Program.RSOLG[i][2];
+                                Program.RSOLG[i][NJ] = Program.RSOLG[i][NJ - 1];
+                            }
+
+                            if (i == 1)
+                            {
+                                Program.TE[1][j][k] = Program.TE[2][j][k];
+                                Program.DISS[1][j][k] = Program.DISS[2][j][k];
+                                Program.VISV[1][j][k] = Program.VISV[2][j][k];
+                                Program.VISV[1][1][k] = 0.5F * (Program.VISV[2][1][k] + Program.VISV[1][2][k]);
+                                Program.VISV[1][NJ][k] = 0.5F * (Program.VISV[2][NJ][k] + Program.VISV[1][NJ - 1][k]);
+                                Program.ZI[1][1] = Program.ZI[2][2];
+                                Program.ZI[1][NJ] = Program.ZI[2][NJ - 1];
+                                Program.ZI[1][j] = Program.ZI[2][j];
+                                Program.RSOLG[1][1] = Program.RSOLG[2][2];
+                                Program.RSOLG[1][NJ] = Program.RSOLG[2][NJ - 1];
+                                Program.RSOLG[1][j] = Program.RSOLG[2][j];
+                            }
+                            else if (i == NI)
+                            {
+                                Program.TE[NI][j][k] = Program.TE[NI - 1][j][k];
+                                Program.DISS[NI][j][k] = Program.DISS[NI - 1][j][k];
+                                Program.VISV[NI][j][k] = Program.VISV[NI - 1][j][k];
+                                Program.VISV[NI][1][k] = 0.5F * (Program.VISV[NI - 1][1][k] + Program.VISV[NI][2][k]);
+                                Program.VISV[NI][NJ][k] = 0.5F * (Program.VISV[NI - 1][NJ][k] + Program.VISV[NI][NJ - 1][k]);
+                                Program.ZI[NI][NJ] = Program.ZI[NI - 1][NJ - 1];
+                                Program.ZI[NI][1] = Program.ZI[NI - 1][2];
+                                Program.ZI[NI][j] = Program.ZI[NI - 1][j];
+                                Program.RSOLG[NI][NJ] = Program.RSOLG[NI - 1][NJ - 1];
+                                Program.RSOLG[NI][1] = Program.RSOLG[NI - 1][2];
+                                Program.RSOLG[NI][j] = Program.RSOLG[NI - 1][j];
+                            }
                         }
-
-                        if (i == 1)
-                        {
-                            Program.TE[NI][j][k] = Program.TE[NI - 1][j][k];
-                            Program.TE[1][j][k] = Program.TE[2][j][k];
-
-                            Program.DISS[NI][j][k] = Program.DISS[NI - 1][j][k];
-                            Program.DISS[1][j][k] = Program.DISS[2][j][k];
-
-                            Program.VISV[NI][j][k] = Program.VISV[NI - 1][j][k];
-                            Program.VISV[1][j][k] = Program.VISV[2][j][k];
-
-                            Program.VISV[1][1][k] = 0.5F * (Program.VISV[2][1][k] + Program.VISV[1][2][k]);
-                            Program.VISV[NI][1][k] = 0.5F * (Program.VISV[NI - 1][1][k] + Program.VISV[NI][2][k]);
-                            Program.VISV[1][NJ][k] = 0.5F * (Program.VISV[2][NJ][k] + Program.VISV[1][NJ - 1][k]);
-                            Program.VISV[NI][NJ][k] = 0.5F * (Program.VISV[NI - 1][NJ][k] + Program.VISV[NI][NJ - 1][k]);
-
-                            Program.ZI[1][1] = Program.ZI[2][2];
-                            Program.ZI[1][NJ] = Program.ZI[2][NJ - 1];
-                            Program.ZI[NI][NJ] = Program.ZI[NI - 1][NJ - 1];
-                            Program.ZI[NI][1] = Program.ZI[NI - 1][2];
-                            Program.ZI[1][j] = Program.ZI[2][j];
-                            Program.ZI[NI][j] = Program.ZI[NI - 1][j];
-
-                            Program.RSOLG[1][1] = Program.RSOLG[2][2];
-                            Program.RSOLG[1][NJ] = Program.RSOLG[2][NJ - 1];
-                            Program.RSOLG[NI][NJ] = Program.RSOLG[NI - 1][NJ - 1];
-                            Program.RSOLG[NI][1] = Program.RSOLG[NI - 1][2];
-                            Program.RSOLG[1][j] = Program.RSOLG[2][j];
-                            Program.RSOLG[NI][j] = Program.RSOLG[NI - 1][j];
-                        }
-
                     }
                 }
             });
 
             //nudging at the top boundary
-            Parallel.For(1, NI + 1, Program.pOptions, i =>
+            //Parallel.For(1, NI + 1, Program.pOptions, i =>
+            Parallel.ForEach(Partitioner.Create(1, NI + 1, NI / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
-                for (int j = 1; j <= NJ; j++)
+                const double ATTENU = 1.5;
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    double[] UN_L = Program.UN[i][j];
-                    double[] VN_L = Program.VN[i][j];
-                    double[] WN_L = Program.WN[i][j];
-                    double[] U1N_L = Program.U1N[i][j];
-                    double[] U2N_L = Program.U2N[i][j];
-                    double[] V1N_L = Program.V1N[i][j];
-                    double[] V2N_L = Program.V2N[i][j];
-                    double[] W1N_L = Program.W1N[i][j];
-                    double[] W2N_L = Program.W2N[i][j];
-
-                    for (int k = NK - 3; k <= NK; k++)
+                    for (int j = 1; j <= NJ; j++)
                     {
-                        double ATTENU = 1.5;
-                        double AALPHA = 1 - Math.Tanh(ATTENU * (NK - k));
-                        UN_L[k] -= AALPHA * (UN_L[k] - Program.UG[i][j][k]);
-                        VN_L[k] -= AALPHA * (VN_L[k] - Program.VG[i][j][k]);
-                        WN_L[k] -= AALPHA * (WN_L[k]);
+                        double[] UN_L = Program.UN[i][j];
+                        double[] VN_L = Program.VN[i][j];
+                        double[] WN_L = Program.WN[i][j];
+                        double[] U1N_L = Program.U1N[i][j];
+                        double[] U2N_L = Program.U2N[i][j];
+                        double[] V1N_L = Program.V1N[i][j];
+                        double[] V2N_L = Program.V2N[i][j];
+                        double[] W1N_L = Program.W1N[i][j];
+                        double[] W2N_L = Program.W2N[i][j];
 
-                        U1N_L[k] = UN_L[k];
-                        V1N_L[k] = VN_L[k];
-                        U2N_L[k] = UN_L[k];
-                        V2N_L[k] = VN_L[k];
-                        W1N_L[k] = WN_L[k];
-                        W2N_L[k] = WN_L[k];
+                        for (int k = NK - 3; k <= NK; k++)
+                        {
+                            double AALPHA = 1 - Math.Tanh(ATTENU * (NK - k));
+                            UN_L[k] -= AALPHA * (UN_L[k] - Program.UG[i][j][k]);
+                            VN_L[k] -= AALPHA * (VN_L[k] - Program.VG[i][j][k]);
+                            WN_L[k] -= AALPHA * (WN_L[k]);
+
+                            U1N_L[k] = UN_L[k];
+                            V1N_L[k] = VN_L[k];
+                            U2N_L[k] = UN_L[k];
+                            V2N_L[k] = VN_L[k];
+                            W1N_L[k] = WN_L[k];
+                            W2N_L[k] = WN_L[k];
+                        }
                     }
                 }
             });
@@ -459,26 +455,23 @@ namespace GRAMM_2001
 
                             Program.U2NRHO[i][1][k] = (float)(Program.U[i][1][k] * RHO3);
                             Program.U1NRHO[i][NJ][k] = (float)(Program.U[i][NJ][k] * RHO4);
-
                             Program.V2NRHO[i][1][k] = (float)(Program.V[i][1][k] * RHO3);
                             Program.V1NRHO[i][NJ][k] = (float)(Program.V[i][NJ][k] * RHO4);
-
                             Program.W2NRHO[i][1][k] = (float)(Program.W[i][1][k] * RHO3);
                             Program.W1NRHO[i][NJ][k] = (float)(Program.W[i][NJ][k] * RHO4);
                         }
-
                         if (i == 1)
                         {
                             float RHO1 = Program.RHO[1][j][k];
-                            float RHO2 = Program.RHO[NI][j][k];
-
                             Program.U2NRHO[1][j][k] = (float)(Program.U[1][j][k] * RHO1);
-                            Program.U1NRHO[NI][j][k] = (float)(Program.U[NI][j][k] * RHO2);
-
                             Program.V2NRHO[1][j][k] = (float)(Program.V[1][j][k] * RHO1);
-                            Program.V1NRHO[NI][j][k] = (float)(Program.V[NI][j][k] * RHO2);
-
                             Program.W2NRHO[1][j][k] = (float)(Program.W[1][j][k] * RHO1);
+                        }
+                        else if (i == NI)
+                        {
+                            float RHO2 = Program.RHO[NI][j][k];
+                            Program.U1NRHO[NI][j][k] = (float)(Program.U[NI][j][k] * RHO2);
+                            Program.V1NRHO[NI][j][k] = (float)(Program.V[NI][j][k] * RHO2);
                             Program.W1NRHO[NI][j][k] = (float)(Program.W[NI][j][k] * RHO2);
                         }
                     }

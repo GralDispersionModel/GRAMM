@@ -67,7 +67,7 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 22.09    < <          +";
+            string Info =     "+         > > G R A M M VERSION: 22.09b1  < <          +";
             Console.WriteLine(Info);
             if (unix)
             {
@@ -397,7 +397,10 @@ Console.WriteLine("| .Net Core Version |");
                 INITB.INIT(NX, NY, NZ);
             }
 
-            Relax_Border(); // set reduction factors for the border cells
+            if (Relax_Border_factor[0][0] < 0)
+            {
+                Relax_Border(); // set reduction factors for the border cells
+            }
 
             //initialize the radiation model
             if (((METEO != "Y") && (METEO != "y")) || (Program.ISTAT != 0))
@@ -474,7 +477,6 @@ Console.WriteLine("| .Net Core Version |");
                             //GEOM(); //Not needed - the grid is immutable
                             goto NEXTWEATHERSITUATION;
                         }
-
                     }
                 }
 

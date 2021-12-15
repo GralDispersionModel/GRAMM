@@ -30,10 +30,10 @@ namespace GRAMM_2001
         /// <param name="NK"></param>
         public static void INITA(int NI, int NJ, int NK)
         {
-            double B0 = 38.00699;
-            double B1 = 6546.307;
-            double B2 = -3.257572;
-            double B3 = -0.003163528;
+            const double B0 = 38.00699;
+            const double B1 = 6546.307;
+            const double B2 = -3.257572;
+            const double B3 = -0.003163528;
 
             //Stretching-factor in the vertical
             Program.STRETCH = (Program.ZSPImm[1][1][3] - Program.ZSPImm[1][1][2]) / (Program.ZSPImm[1][1][2] - Program.ZSPImm[1][1][1]);

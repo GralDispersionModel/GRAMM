@@ -407,10 +407,9 @@ namespace GRAMM_2001
             //compute total mass-divergence
             Program.SUMG = 0;
             float sum = 0;
-            object obj = new object(); // Kuntner 14052018: use parallel.foreach()
-            int range_parallel = (int)((NI - 2) / Program.pOptions.MaxDegreeOfParallelism);
-            range_parallel = Math.Min(NI - 2, range_parallel); // if NI < range_parallel
-            Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
+            object obj = new object(); 
+            // Kuntner 14052018: use parallel.foreach()
+            Parallel.ForEach(Partitioner.Create(2, NI, (NI - 2) / Program.pOptions.MaxDegreeOfParallelism), range =>
             {
                 float sum_i = 0;
                 for (int i = range.Item1; i < range.Item2; ++i)
