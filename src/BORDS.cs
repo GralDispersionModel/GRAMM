@@ -137,20 +137,18 @@ namespace GRAMM_2001
                 double ATTENU = 2;
                 for (int j = range.Item1; j < range.Item2; ++j)
                 {
+                    Array.Clear(Program.WN[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.U1N[2][j], Program.U1N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.V1N[2][j], Program.V1N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.U1N[2][j],  Program.UN[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.V1N[2][j],  Program.VN[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[2][j], Program.QUN[1][j]);
+                    Program.TBN[1][j][2] = Program.TBN[2][j][2];
+
                     for (int k = 1; k <= NK; k++)
                     {
-                        Program.U1N[1][j][k] = Program.U1N[2][j][k];
-                        Program.V1N[1][j][k] = Program.V1N[2][j][k];
-                        Program.UN[1][j][k] = Program.U1N[2][j][k];
-                        Program.VN[1][j][k] = Program.V1N[2][j][k];
-
-                        Program.WN[1][j][k] = 0;
-                        Program.TBN[1][j][2] = Program.TBN[2][j][2];
-                        Program.QUN[1][j][k] = Program.QUN[2][j][k];
-
                         if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
-                            Program.UN[1][j][k] = Program.U1N[2][j][k];
                             Program.TN[1][j][k] = Program.TN[2][j][k];
                         }
                         else if (Program.IBOUND == 6 && Program.ISTAT <= 1)
@@ -182,14 +180,13 @@ namespace GRAMM_2001
                             //Program.TN[1][j][k] = Program.TSWN[j][k];
                             Program.QUN[1][j][k] = Program.QUSWN[j][k];
                         }
-
-                        Program.U1N[1][j][k] = Program.UN[1][j][k];
-                        Program.U2N[1][j][k] = Program.UN[1][j][k];
-                        Program.V1N[1][j][k] = Program.VN[1][j][k];
-                        Program.V2N[1][j][k] = Program.VN[1][j][k];
-                        Program.W1N[1][j][k] = Program.WN[1][j][k];
-                        Program.W2N[1][j][k] = Program.WN[1][j][k];
                     }
+                    FastCopy.CopyArraySourceLen(Program.UN[1][j], Program.U1N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.UN[1][j], Program.U2N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.VN[1][j], Program.V1N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.VN[1][j], Program.V2N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.WN[1][j], Program.W1N[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.WN[1][j], Program.W2N[1][j]);
                 }
             });
 
@@ -200,17 +197,16 @@ namespace GRAMM_2001
                 double ATTENU = 2;
                 for (int j = range.Item1; j < range.Item2; ++j)
                 {
+                    Array.Clear(Program.WN[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.U2N[NI - 1][j], Program.U2N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.V2N[NI - 1][j], Program.V2N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.U2N[NI - 1][j],  Program.UN[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.V2N[NI - 1][j],  Program.VN[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[NI - 1][j], Program.QUN[NI][j]);
+                    Program.TBN[NI][j][2] = Program.TBN[NI - 1][j][2];
+
                     for (int k = 1; k <= NK; k++)
                     {
-                        Program.U2N[NI][j][k] = Program.U2N[NI - 1][j][k];
-                        Program.V2N[NI][j][k] = Program.V2N[NI - 1][j][k];
-                        Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
-                        Program.VN[NI][j][k] = Program.V2N[NI - 1][j][k];
-
-                        Program.WN[NI][j][k] = 0;
-                        Program.TBN[NI][j][2] = Program.TBN[NI - 1][j][2];
-                        Program.QUN[NI][j][k] = Program.QUN[NI - 1][j][k];
-
                         if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
                             Program.UN[NI][j][k] = Program.U2N[NI - 1][j][k];
@@ -230,7 +226,6 @@ namespace GRAMM_2001
                         }
                         else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                         {
-
                             for (int i = NI; i <= NI; i++)
                             {
                                 int i1 = Math.Max(i, 1);
@@ -246,14 +241,13 @@ namespace GRAMM_2001
                             //Program.TN[NI][j][k] = Program.TSEN[j][k];
                             Program.QUN[NI][j][k] = Program.QUSEN[j][k];
                         }
-
-                        Program.U1N[NI][j][k] = Program.UN[NI][j][k];
-                        Program.U2N[NI][j][k] = Program.UN[NI][j][k];
-                        Program.V1N[NI][j][k] = Program.VN[NI][j][k];
-                        Program.V2N[NI][j][k] = Program.VN[NI][j][k];
-                        Program.W1N[NI][j][k] = Program.WN[NI][j][k];
-                        Program.W2N[NI][j][k] = Program.WN[NI][j][k];
                     }
+                    FastCopy.CopyArraySourceLen(Program.UN[NI][j], Program.U1N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.UN[NI][j], Program.U2N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.VN[NI][j], Program.V1N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.VN[NI][j], Program.V2N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.WN[NI][j], Program.W1N[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.WN[NI][j], Program.W2N[NI][j]);
                 }
             });
 
@@ -264,16 +258,16 @@ namespace GRAMM_2001
                 double ATTENU = 2;
                 for (int i = range.Item1; i < range.Item2; ++i)
                 {
+                    Array.Clear(Program.WN[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.U1N[i][2], Program.U1N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.V1N[i][2], Program.V1N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.U1N[i][2],  Program.UN[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.V1N[i][2],  Program.VN[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[i][2], Program.QUN[i][1]);
+                    Program.TBN[i][1][2] = Program.TBN[i][2][2];
+
                     for (int k = 1; k <= NK; k++)
                     {
-                        Program.U1N[i][1][k] = Program.U1N[i][2][k];
-                        Program.V1N[i][1][k] = Program.V1N[i][2][k];
-                        Program.UN[i][1][k] = Program.U1N[i][2][k];
-                        Program.VN[i][1][k] = Program.V1N[i][2][k];
-                        Program.WN[i][1][k] = 0;
-                        Program.TBN[i][1][2] = Program.TBN[i][2][2];
-                        Program.QUN[i][1][k] = Program.QUN[i][2][k];
-
                         if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
                             Program.VN[i][1][k] = Program.V1N[i][2][k];
@@ -293,7 +287,6 @@ namespace GRAMM_2001
                         }
                         else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                         {
-
                             for (int j = 1; j <= 1; j++)
                             {
                                 int j1 = Math.Min(j, NJ);
@@ -309,14 +302,13 @@ namespace GRAMM_2001
                             //Program.TN[i][1][k] = Program.TSSN[i][k];
                             Program.QUN[i][1][k] = Program.QUSSN[i][k];
                         }
-
-                        Program.U1N[i][1][k] = Program.UN[i][1][k];
-                        Program.U2N[i][1][k] = Program.UN[i][1][k];
-                        Program.V1N[i][1][k] = Program.VN[i][1][k];
-                        Program.V2N[i][1][k] = Program.VN[i][1][k];
-                        Program.W1N[i][1][k] = Program.WN[i][1][k];
-                        Program.W2N[i][1][k] = Program.WN[i][1][k];
                     }
+                    FastCopy.CopyArraySourceLen(Program.UN[i][1], Program.U1N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.UN[i][1], Program.U2N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.VN[i][1], Program.V1N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.VN[i][1], Program.V2N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.WN[i][1], Program.W1N[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.WN[i][1], Program.W2N[i][1]);
                 }
             });
 
@@ -327,16 +319,16 @@ namespace GRAMM_2001
                 double ATTENU = 2;
                 for (int i = range.Item1; i < range.Item2; ++i)
                 {
+                    Array.Clear(Program.WN[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.U2N[i][NJ - 1], Program.U2N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.V2N[i][NJ - 1], Program.V2N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.U2N[i][NJ - 1],  Program.UN[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.V2N[i][NJ - 1],  Program.VN[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[i][NJ - 1], Program.QUN[i][NJ]);
+                    Program.TBN[i][NJ][2] = Program.TBN[i][NJ - 1][2];
+
                     for (int k = 1; k <= NK; k++)
                     {
-                        Program.U2N[i][NJ][k] = Program.U2N[i][NJ - 1][k];
-                        Program.V2N[i][NJ][k] = Program.V2N[i][NJ - 1][k];
-                        Program.UN[i][NJ][k] = Program.U2N[i][NJ - 1][k];
-                        Program.VN[i][NJ][k] = Program.V2N[i][NJ - 1][k];
-                        Program.WN[i][NJ][k] = 0;
-                        Program.TBN[i][NJ][2] = Program.TBN[i][NJ - 1][2];
-                        Program.QUN[i][NJ][k] = Program.QUN[i][NJ - 1][k];
-
                         if (Program.IBOUND == 1 && Program.ISTAT <= 1)
                         {
                             Program.VN[i][NJ][k] = Program.V2N[i][NJ - 1][k];
@@ -356,7 +348,6 @@ namespace GRAMM_2001
                         }
                         else if (Program.IBOUND == 6 && Program.ISTAT >= 2)
                         {
-
                             for (int j = NJ; j <= NJ; j++)
                             {
                                 int j1 = Math.Max(j, 1);
@@ -372,14 +363,13 @@ namespace GRAMM_2001
                             //Program.TN[i][NJ][k] = Program.TSNN[i][k];
                             Program.QUN[i][NJ][k] = Program.QUSNN[i][k];
                         }
-
-                        Program.U1N[i][NJ][k] = Program.UN[i][NJ][k];
-                        Program.U2N[i][NJ][k] = Program.UN[i][NJ][k];
-                        Program.V1N[i][NJ][k] = Program.VN[i][NJ][k];
-                        Program.V2N[i][NJ][k] = Program.VN[i][NJ][k];
-                        Program.W1N[i][NJ][k] = Program.WN[i][NJ][k];
-                        Program.W2N[i][NJ][k] = Program.WN[i][NJ][k];
                     }
+                    FastCopy.CopyArraySourceLen(Program.UN[i][NJ], Program.U1N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.UN[i][NJ], Program.U2N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.VN[i][NJ], Program.V1N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.VN[i][NJ], Program.V2N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.WN[i][NJ], Program.W1N[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.WN[i][NJ], Program.W2N[i][NJ]);
                 }
             });
 
@@ -388,14 +378,10 @@ namespace GRAMM_2001
             {
                 for (int j = range.Item1; j < range.Item2; ++j)
                 {
-                    for (int k = 1; k <= NK; k++)
-                    {
-                        Program.T[1][j][k] = Program.TN[1][j][k];
-                        Program.QU[1][j][k] = Program.QUN[1][j][k];
-
-                        Program.T[NI][j][k] = Program.TN[NI][j][k];
-                        Program.QU[NI][j][k] = Program.QUN[NI][j][k];
-                    }
+                    FastCopy.CopyArraySourceLen(Program.TN[1][j],     Program.T[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[1][j],   Program.QU[1][j]);
+                    FastCopy.CopyArraySourceLen(Program.TN[NI][j],   Program.T[NI][j]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[NI][j], Program.QU[NI][j]);
                 }
             });
 
@@ -405,50 +391,41 @@ namespace GRAMM_2001
             {
                 for (int i = range.Item1; i < range.Item2; ++i)
                 {
-                    for (int k = 1; k <= NK; k++)
-                    {
-                        Program.T[i][1][k] = Program.TN[i][1][k];
-                        Program.QU[i][1][k] = Program.QUN[i][1][k];
-
-                        Program.T[i][NJ][k] = Program.TN[i][NJ][k];
-                        Program.QU[i][NJ][k] = Program.QUN[i][NJ][k];
-                    }
+                    FastCopy.CopyArraySourceLen(Program.TN[i][1],     Program.T[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[i][1],   Program.QU[i][1]);
+                    FastCopy.CopyArraySourceLen(Program.TN[i][NJ],   Program.T[i][NJ]);
+                    FastCopy.CopyArraySourceLen(Program.QUN[i][NJ], Program.QU[i][NJ]);
                 }
             });
 
-            //Corner values
-            for (int k = 1; k <= NK; k++)
-            {
-                //Corner points 1,1
-                Program.UN[1][1][k] = Program.UN[2][2][k];
-                Program.VN[1][1][k] = Program.VN[2][2][k];
-                Program.WN[1][1][k] = 0;
-                Program.TN[1][1][k] = Program.TN[2][2][k];
-                Program.QUN[1][1][k] = Program.QUN[2][2][k];
+            //Copy corner values
+            //Corner points 1,1
+            FastCopy.CopyArraySourceLen( Program.UN[2][2],  Program.UN[1][1]);
+            FastCopy.CopyArraySourceLen( Program.VN[2][2],  Program.VN[1][1]);
+            FastCopy.CopyArraySourceLen( Program.TN[2][2],  Program.TN[1][1]);
+            FastCopy.CopyArraySourceLen(Program.QUN[2][2], Program.QUN[1][1]);
+            Array.Clear(Program.WN[1][1]);
 
-                //Corner points 1,NJ
-                Program.UN[1][NJ][k] = Program.UN[2][NJ - 1][k];
-                Program.VN[1][NJ][k] = Program.VN[2][NJ - 1][k];
-                Program.WN[1][NJ][k] = 0;
-                Program.TN[1][NJ][k] = Program.TN[2][NJ - 1][k];
-                Program.QUN[1][NJ][k] = Program.QUN[2][NJ - 1][k];
+            //Corner points 1,NJ
+            FastCopy.CopyArraySourceLen( Program.UN[2][NJ - 1],  Program.UN[1][NJ]);
+            FastCopy.CopyArraySourceLen( Program.VN[2][NJ - 1],  Program.VN[1][NJ]);
+            FastCopy.CopyArraySourceLen( Program.TN[2][NJ - 1],  Program.TN[1][NJ]);
+            FastCopy.CopyArraySourceLen(Program.QUN[2][NJ - 1], Program.QUN[1][NJ]);
+            Array.Clear(Program.WN[1][NJ]);
 
-                //Corner points NI,1
-                Program.UN[NI][1][k] = Program.UN[NI - 1][2][k];
-                Program.VN[NI][1][k] = Program.VN[NI - 1][2][k];
-                Program.WN[NI][1][k] = 0;
-                Program.TN[NI][1][k] = Program.TN[NI - 1][2][k];
-                Program.QUN[NI][1][k] = Program.QUN[NI - 1][2][k];
-
-                //Corner points NI,NJ
-                Program.UN[NI][NJ][k] = Program.UN[NI][NJ - 1][k];
-                Program.UN[NI][NJ][k] = Program.UN[NI - 1][NJ][k];
-                Program.VN[NI][NJ][k] = Program.VN[NI][NJ - 1][k];
-                Program.VN[NI][NJ][k] = Program.VN[NI - 1][NJ][k];
-                Program.WN[NI][NJ][k] = 0;
-                Program.TN[NI][NJ][k] = Program.TN[NI - 1][NJ - 1][k];
-                Program.QUN[NI][NJ][k] = Program.QUN[NI - 1][NJ - 1][k];
-            }
+            //Corner points NI,1
+            FastCopy.CopyArraySourceLen( Program.UN[NI - 1][2],  Program.UN[NI][1]);
+            FastCopy.CopyArraySourceLen( Program.VN[NI - 1][2],  Program.VN[NI][1]);
+            FastCopy.CopyArraySourceLen( Program.TN[NI - 1][2],  Program.TN[NI][1]);
+            FastCopy.CopyArraySourceLen(Program.QUN[NI - 1][2], Program.QUN[NI][1]);
+            Array.Clear(Program.WN[NI][1]);
+            
+            //Corner points NI,NJ
+            FastCopy.CopyArraySourceLen( Program.UN[NI - 1][NJ],  Program.UN[NI][NJ]);
+            FastCopy.CopyArraySourceLen( Program.VN[NI - 1][NJ],  Program.VN[NI][NJ]);
+            FastCopy.CopyArraySourceLen( Program.TN[NI - 1][NJ - 1],  Program.TN[NI][NJ]);
+            FastCopy.CopyArraySourceLen(Program.QUN[NI - 1][NJ - 1], Program.QUN[NI][NJ]);
+            Array.Clear(Program.WN[NI][NJ]);
         }
 
     }
