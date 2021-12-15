@@ -15,134 +15,91 @@ using System;
 
 namespace GRAMM_2001
 {
-    partial class Program
+    /// <summary>
+    /// Fast array copying using MemoryCopy
+    /// </summary>
+    public class FastCopy
     {
         /// <summary>
-        /// Copy an array using AVX intrinsics and lock the source array
+        /// Copy an array using MemoryCopy and lock the source array
         /// </summary>
-        /// <param name="copyFrom">Source</param>
-        /// <param name="copyTo">Destination</param>
+        /// <param name="source">Source</param>
+        /// <param name="destination">Destination</param>
         /// <param name="length">Number of elements</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public static unsafe void CopyArrayLockSource(double[] copyFrom, double[] copyTo)
+        public static unsafe void CopyArrayLockSource(double[] source, double[] destination)
         {
-            lock (copyFrom.SyncRoot)
+            lock (source.SyncRoot)
             {
-                // if (Avx.IsSupported)
-                // {
-                //     fixed (double* source = copyFrom, dest = copyTo)
-                //     {
-                //         int len = copyFrom.Length - Vector256<double>.Count;
-                //         for (; i < len; i += Vector256<double>.Count)
-                //         {
-                //             Avx.Store(dest + i, Avx.LoadVector256(source + i));
-                //         }
-                //     }
-                // }
-                fixed (double* source = copyFrom, dest = copyTo)
+                fixed (double* srcPtr = source, destPtr = destination)
                 {
-                    long length = copyFrom.LongLength * sizeof(double);
-                    Buffer.MemoryCopy(source, dest, length, length);
+                    long length = source.LongLength * sizeof(double);
+                    Buffer.MemoryCopy(srcPtr, destPtr, length, length);
                 }
-                // for (int i = 0; i < copyFrom.Length; i++)
-                // {
-                //     copyTo[i] = copyFrom[i];
-                // }
             }
         }
 
         /// <summary>
-        /// Copy an array using AVX intrinsics 
+        /// Copy an array using MemoryCopy
         /// </summary>
-        /// <param name="copyFrom">Source</param>
-        /// <param name="copyTo">Destination</param>
+        /// <param name="source">Source</param>
+        /// <param name="destination">Destination</param>
         /// <param name="length">Number of elements</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public static void CopyArray(double[] copyFrom, double[] copyTo, int length)
+        public static void CopyArray(double[] source, double[] destination, int length)
         {
-            int i = 0;
-            // if (Avx.IsSupported)
-            // {
-            //     fixed (double* source = copyFrom, dest = copyTo)
-            //     {
-            //         int len = length - Vector256<double>.Count;
-            //         for (; i < len; i += Vector256<double>.Count)
-            //         {
-            //             Avx.Store(dest + i, Avx.LoadVector256(source + i));
-            //         }
-            //     }
-            // }
-            for (; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
-                copyTo[i] = copyFrom[i];
+                destination[i] = source[i];
             }
         }
         /// <summary>
         /// Copy an array using the source length
         /// </summary>
-        /// <param name="copyFrom">Source</param>
-        /// <param name="copyTo">Destination</param>
+        /// <param name="source">Source</param>
+        /// <param name="destination">Destination</param>
         /// <param name="length">Number of elements</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public static unsafe void CopyArraySourceLen(double[] copyFrom, double[] copyTo)
+        public static unsafe void CopyArraySourceLen(double[] source, double[] destination)
         {
-            fixed (double* source = copyFrom, dest = copyTo)
+            fixed (double* srcPtr = source, destPtr = destination)
             {
-                long length = copyFrom.LongLength * sizeof(double);
-                Buffer.MemoryCopy(source, dest, length, length);
+                long length = source.LongLength * sizeof(double);
+                Buffer.MemoryCopy(srcPtr, destPtr, length, length);
             }
-            // for (int i = 0; i < copyFrom.Length; i++)
-            // {
-            //     copyTo[i] = copyFrom[i];
-            // }
         }
         /// <summary>
         /// Copy an array using the destination length
         /// </summary>
-        /// <param name="copyFrom">Source</param>
-        /// <param name="copyTo">Destination</param>
+        /// <param name="source">Source</param>
+        /// <param name="destination">Destination</param>
         /// <param name="length">Number of elements</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public static void CopyArrayDestLen(double[] copyFrom, double[] copyTo)
+        public static void CopyArrayDestLen(double[] source, double[] destination)
         {
             int i = 0;
-            for (; i < copyTo.Length; i++)
+            for (; i < destination.Length; i++)
             {
-                copyTo[i] = copyFrom[i];
+                destination[i] = source[i];
             }
         }
 
         /// <summary>
-        /// Copy an array using AVX intrinsics and the lenght of the destination array
+        /// Copy an array using MemoryCopy and the lenght of the destination array
         /// </summary>
-        /// <param name="copyFrom">Source</param>
-        /// <param name="copyTo">Destination</param>
+        /// <param name="source">Source</param>
+        /// <param name="destination">Destination</param>
         /// <param name="length">Number of elements</param>
         [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-        public static unsafe void CopyArrayLockDest(double[] copyFrom, double[] copyTo)
+        public static unsafe void CopyArrayLockDest(double[] source, double[] destination)
         {
-            lock (copyTo.SyncRoot)
+            lock (destination.SyncRoot)
             {
-                // if (Avx.IsSupported)
-                // {
-                //     fixed (double* source = copyFrom, dest = copyTo)
-                //     {
-                //         int len = length - Vector256<double>.Count;
-                //         for (; i < len; i += Vector256<double>.Count)
-                //         {
-                //             Avx.Store(dest + i, Avx.LoadVector256(source + i));
-                //         }
-                //     }
-                // }    
-                fixed (double* source = copyFrom, dest = copyTo)
+                fixed (double* srcPtr = source, destPtr = destination)
                 {
-                    long length = copyTo.LongLength * sizeof(double);
-                    Buffer.MemoryCopy(source, dest, length, length);
+                    long length = destination.LongLength * sizeof(double);
+                    Buffer.MemoryCopy(srcPtr, destPtr, length, length);
                 }        
-                // for (int i = 0; i < copyTo.Length; i++)
-                // {
-                //     copyTo[i] = copyFrom[i];
-                // }
             }
         }
     }
