@@ -1114,7 +1114,7 @@ namespace GRAMM_2001
         ///</summary>
         public static double TGRAD;
         ///<summary>
-        ///Height of the neutral boundary layer - not used anymore
+        ///Height of the neutral boundary layer 
         ///</summary>
         public static double ZNEUT;
         ///<summary>
@@ -1366,7 +1366,7 @@ namespace GRAMM_2001
         ///</summary>
         public static string METEO;
         ///<summary>
-        ///Anemometer heat when using meteopgt.all as input file
+        ///Anemometer height when using meteopgt.all as input file
         ///</summary>
         public static double ANEMO;
         ///<summary>
@@ -1400,7 +1400,7 @@ namespace GRAMM_2001
         ///<summary>
         ///heat capacity of soil
         ///</summary>
-        public const double CPBOD = 900;
+        public const float CPBOD = 900;
         ///<summary>
         ///Stefan Bolzmann constant
         ///</summary>
@@ -1538,7 +1538,6 @@ namespace GRAMM_2001
         ///<summary>
         /// Write online data
         ///</summary>
-
         public static bool GRAMM_Online_flag = true;
         ///<summary>
         /// Running in linux?
@@ -1734,5 +1733,9 @@ namespace GRAMM_2001
         ///Partitioner from 2 to (excl.) NY list for changing the width of the stripes for each iteration in y direction
         ///</summary>
         public static List<OrderablePartitioner<Tuple<int, int>>> PartitionerJ = new List<OrderablePartitioner<Tuple<int, int>>>();
+        ///<summary>
+        /// Check for online output, 0 = No, 1 = True
+        ///</summary>
+        public static int OnlineOutputCheck = 0;
     }
 }
