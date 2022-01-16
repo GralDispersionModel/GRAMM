@@ -1484,10 +1484,10 @@ namespace GRAMM_2001
             Program.RSOLG[i][j] = (1 - Ag[i][j]) * Program.GLOBRAD[i][j];
 
             //influence of snow cover, except in urban areas and water bodies
-            if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
-            {
-                Program.RSOLG[i][j] = (1 - 0.6) * Program.GLOBRAD[i][j];
-            }
+            // if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
+            // {
+            //     Program.RSOLG[i][j] = (1 - 0.6) * Program.GLOBRAD[i][j];
+            // }
 
             return XH;
         }
