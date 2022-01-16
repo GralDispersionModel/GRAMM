@@ -95,10 +95,10 @@ namespace GRAMM_2001
 
 
                                 //influence of snow cover, except in urban areas and water bodies
-                                if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
-                                {
-                                    DTBDZ = 0.0;
-                                }
+                                // if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
+                                // {
+                                //     DTBDZ = 0.0;
+                                // }
 
                                 //saturation vapour pressure - Magnus formulae
                                 double EGSAT = 611.2 * Math.Exp(17.269 * (Program.TB[i][j][2] - 273.16) / (Program.TB[i][j][2] - 30.04));
@@ -140,16 +140,13 @@ namespace GRAMM_2001
                                     Console.WriteLine(" langwellige Strahlungsbilanz: "+((Program.RL[i][j] - Program.EPSG[i][j] * Program.SIGMA * Pow4(Program.TB[i][j][2]))).ToString("0.00"));
                                 }
                                 */
-
                             }
-
                             Program.TBN[i][j][k] = Program.TB[i][j][k] + 1.0 * (TERMTB / Program.CPBOD / Program.RHOB[i][j]); //Relaxation der Bodentemperaturänderung
-
                             //influence of snow cover, except in urban areas and water bodies
-                            if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
-                            {
-                                Program.TBN[i][j][k] = Math.Min(Program.TBN[i][j][k], 273);
-                            }
+                            // if (Program.SNOW[i][j] > 0.15 && Program.SNOW[i][j] > Program.Z0[i][j] && Program.ALAMBDA[i][j] != 4.0 && Program.FW[i][j] < 0.99)
+                            // {
+                            //     Program.TBN[i][j][k] = Math.Min(Program.TBN[i][j][k], 273);
+                            // }
                         }
                     }
                 }
@@ -168,7 +165,7 @@ namespace GRAMM_2001
 
             if (Program.TerminalOut >= TerminalThreshold) // 
             {
-                Console.WriteLine(" WQU-S[W/m**2] WQU-L[W/m**2] RSOLG[W/m**2] RTERR[W/m**2] HEATF[W/m**2] RELAXV RELAXT");
+                Console.WriteLine("   WQU-S[W/m²]   WQU-L[W/m²]   RSOLG[W/m²]   RTERR[W/m²]   HEATF[W/m²]  RELAXV RELAXT");
                 Console.WriteLine(EINTRAG1.ToString("0.0").PadLeft(14) + EINTRAG4.ToString("0.0").PadLeft(14) + EINTRAG2.ToString("0.0").PadLeft(14)
                                   + EINTRAG3.ToString("0.0").PadLeft(14) + EINTRAG5.ToString("0.0").PadLeft(14) + Program.RELAXV.ToString("0.000".PadLeft(7)) + Program.RELAXT.ToString("0.000".PadLeft(7)));
                 Console.WriteLine("-------------------------------------------------------------------------------------");
