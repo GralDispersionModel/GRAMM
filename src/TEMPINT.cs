@@ -486,10 +486,15 @@ namespace GRAMM_2001
                     }
                 }
 
+                // override setting with user defined values?
+                (double snowHeightThreshold, double tAir2m, double userDefinedAirTemp, Program.TBINIT, Program.TBINIT1, Program.QUINIT, double inversionHeight) = INITB.ReadCustomInit();
+                Console.WriteLine("Initial values: Air temperature at 2 m {0}K  Surface temperature {1}K  Soil temperature -1 m {2}K  Relative humidity {3}%", Math.Round(tAir2m, 1), Math.Round(Program.TBINIT, 1), Math.Round(Program.TBINIT1, 1), Math.Round(Program.QUINIT * 100, 0));
+
                 //vertical temperature profile->not sure if needed here??
                 for (int k = 1; k <= NK; k++)
                 {
-                    Program.T[Program.AHMINI][Program.AHMINJ][k] = Program.TINIT + GRADIENT * (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - 0);
+                    Program.T[Program.AHMINI][Program.AHMINJ][k] = tAir2m + GRADIENT * (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - 0);
+                    //Program.ZNEUT = 5000 for default IIN.dat
                     if (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - Program.AHMIN > Program.ZNEUT)
                     {
                         Program.T[Program.AHMINI][Program.AHMINJ][k] = TMAX;
@@ -530,10 +535,16 @@ namespace GRAMM_2001
                 Console.WriteLine("Initial Boundary-Layer height: " + Convert.ToString(Math.Round(blh0, 0)) + "m");
                 Console.WriteLine("Fricition velocity: " + Convert.ToString(Math.Round(USTinit, 2)) + "m/s");
 
-                //vertical temperature profile if (Program.AKLA==7)
-                Inversion_Height = 400;
-                Wind_Velocity = (float)WINDGE;
+                //user defined inversion height?
+                if (inversionHeight < 2000)
                 {
+                    Inversion_Height = (float) inversionHeight;
+                }
+                else
+                {
+                    Inversion_Height = 400;
+                    Wind_Velocity = (float)WINDGE;
+
                     float factor_inv = 1f;
                     if (Wind_Velocity < 0.5F)
                     {
@@ -562,10 +573,10 @@ namespace GRAMM_2001
                         Inversion_Height = (float)(Math.Max(400, Inversion_Height));
                     }
                     //INV_HEIGHT = (float)(Math.Max(400, INV_HEIGHT));
-                    if (Program.AKLA == 7)
-                    {
-                        Console.WriteLine("Inversion height: " + Convert.ToString(Math.Round(Inversion_Height, 0)) + "m");
-                    }
+                }
+                if (Program.AKLA == 7)
+                {
+                    Console.WriteLine("Inversion height: " + Convert.ToString(Math.Round(Inversion_Height, 0)) + "m");
                 }
 
                 Parallel.For(1, NI + 1, Program.pOptions, i =>
@@ -574,77 +585,98 @@ namespace GRAMM_2001
                     {
                         for (int k = 1; k <= NK; k++)
                         {
-                            Program.T[i][j][k] = Program.TINIT + GRADIENT * Program.ZSPImm[i][j][k];
-
-                            if (Program.AKLA == 7)
-                            {
-                                if (Program.Wind_Velocity >= 0.35F)
-                                {
-                                    // Kuntner 28.6.2018: initialization like SC6, but lower temperature
-                                    Program.T[i][j][k] = Program.TINIT + 2 + GRADIENT * Program.ZSPImm[i][j][k];
-                                }
-                                else // low wind velocities
-                                {
-                                    //in case of stability class 7 (strongly stable) ans low wind velocities it is assumed that strong ground inversions have already developed
-                                    //these suppress the development of cold air drainage flows in this zone
-                                    //the initial air temperature at ground is set 5K below the surface temperature -> probably not correct because the surface temperature is set equal to the air temperature in all cases in INITB.cs
-                                    if ((Program.ZSPImm[i][j][k] - Program.AHMIN) <= Inversion_Height)
-                                    {
-                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
-                                    }
-                                    else if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Inversion_Height)
-                                    {
-                                        Program.T[i][j][k] = Program.TINIT - 5 - 0.005 * Program.AHMIN + 0.01 * Inversion_Height + GRADIENT * (Math.Max(0, Program.ZSPImm[i][j][k] - Program.AHMIN - Inversion_Height));
-                                    }
-                                    else if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
-                                    {
-                                        Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
-                                    }
-                                }
-                            }
-
-                            //in case of stability class 6 (moderatly stable) cold air drainage flows are assumed to be strongest.
-                            else if (Program.AKLA == 6)
-                            {
-                                Program.T[i][j][k] = Program.TINIT + 10 + GRADIENT * Program.ZSPImm[i][j][k];
-
-                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
-                                {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
-                                }
-                            }
-                            //in case of stability class 1 (strongly convective) temperature need to be high enough, otherwise thunderstorms develop
-                            else if (Program.AKLA == 1)
-                            {
-                                Program.T[i][j][k] = Program.TINIT + 15 + GRADIENT * Program.ZSPImm[i][j][k];
-
-                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
-                                {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
-                                }
-                            }
-                            else if (Program.AKLA == 2 || Program.AKLA == 3)
-                            {
-                                Program.T[i][j][k] = Program.TINIT + 5 + GRADIENT * Program.ZSPImm[i][j][k];
-
-                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
-                                {
-                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
-                                }
-                            }
-
+                            //Non-Steady-state forcing
                             if (Program.ISTAT == 1)
                             {
+                                //Program.ZNEUT = 5000 for default IIN.dat
                                 if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = Program.TINIT - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + GRADIENT * (Program.ZSPImm[i][j][k] - Program.ZNEUT - Program.AHMIN);
+                                    Program.T[i][j][k] = tAir2m - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + GRADIENT * (Program.ZSPImm[i][j][k] - Program.ZNEUT - Program.AHMIN);
                                 }
                                 else
                                 {
-                                    Program.T[i][j][k] = Program.TINIT - 0.09 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
+                                    Program.T[i][j][k] = tAir2m - 0.09 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
                                 }
                             }
-
+                            else
+                            //Default steady state forcing using meteopgt.all
+                            {
+                                //Program.ZNEUT = 5000 for default IIN.dat
+                                if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
+                                {
+                                    Program.T[i][j][k] = Program.T[i][j][k - 1] - 0.003 * (Program.ZSPImm[i][j][k] - Program.ZSPImm[i][j][k - 1]);
+                                }
+                                //below 5000 m
+                                else
+                                {
+                                    if (Program.AKLA == 7)
+                                    {
+                                        if (Program.Wind_Velocity >= 0.35F)
+                                        {
+                                            double offset = 2;
+                                            if (userDefinedAirTemp > 0)
+                                            {
+                                                offset = 0;
+                                            }
+                                            // Kuntner 28.6.2018: initialization like SC6, but lower temperature
+                                            Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                        }
+                                        else // low wind velocities
+                                        {
+                                            //in case of stability class 7 (strongly stable) ans low wind velocities it is assumed that strong ground inversions have already developed
+                                            //these suppress the development of cold air drainage flows in this zone
+                                            //the initial air temperature at ground is set 5K below the surface temperature -> probably not correct because the surface temperature is set equal to the air temperature in all cases in INITB.cs
+                                            double offset = -5;
+                                            if (userDefinedAirTemp > 0)
+                                            {
+                                                offset = 0;
+                                            }
+                                            if ((Program.ZSPImm[i][j][k] - Program.AHMIN) <= Inversion_Height)
+                                            {
+                                                Program.T[i][j][k] = tAir2m + offset - 0.005 * Program.AHMIN + 0.01 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
+                                            }
+                                            else 
+                                            {
+                                                Program.T[i][j][k] = tAir2m + offset - 0.005 * Program.AHMIN + 0.01 * Inversion_Height + GRADIENT * (Math.Max(0, Program.ZSPImm[i][j][k] - Program.AHMIN - Inversion_Height));
+                                            }
+                                        }
+                                    }
+                                    //in case of stability class 6 (moderatly stable) cold air drainage flows are assumed to be strongest.
+                                    else if (Program.AKLA == 6)
+                                    {
+                                        double offset = 10;
+                                        if (userDefinedAirTemp > 0)
+                                        {
+                                            offset = 0;
+                                        }
+                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                    }
+                                    //in case of stability class 1 (strongly convective) temperature need to be high enough, otherwise thunderstorms develop
+                                    else if (Program.AKLA == 1)
+                                    {
+                                        double offset = 15;
+                                        if (userDefinedAirTemp > 0)
+                                        {
+                                            offset = 0;
+                                        }
+                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                    }
+                                    else if (Program.AKLA == 2 || Program.AKLA == 3)
+                                    {
+                                        double offset = 5;
+                                        if (userDefinedAirTemp > 0)
+                                        {
+                                            offset = 0;
+                                        }
+                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                    }
+                                    else
+                                    {
+                                        Program.T[i][j][k] = tAir2m + GRADIENT * Program.ZSPImm[i][j][k];
+                                    }
+                                }
+                            }
+                            
                             Program.U[i][j][k] = WU * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / Program.ANEMO, windexpon);
                             Program.V[i][j][k] = WV * Math.Pow((Program.ZSPImm[i][j][k] - Program.AHImm[i][j]) / Program.ANEMO, windexpon);
                         }
