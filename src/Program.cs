@@ -360,6 +360,12 @@ Console.WriteLine("| .Net Core Version |");
             // init radiation model 
             RadiationModel = new RadiationCalculation(); 
 
+            //define a timer to check for online output of a GRAMM calculation
+            System.Timers.Timer checkOnlineOutput = new System.Timers.Timer(30000); 
+            checkOnlineOutput.AutoReset = true;
+            checkOnlineOutput.Elapsed += OnlineTimerEvent;
+            checkOnlineOutput.Enabled = true;
+
         //Loop_______________________________________________________________________________________________
         NEXTWEATHERSITUATION:
 
@@ -456,9 +462,10 @@ Console.WriteLine("| .Net Core Version |");
 
 
                 //Online output of fields for GUI
-                if (GRAMM_Online_flag || (ITIME % 10d) == 0)
+                if (GRAMM_Online_flag || OnlineOutputCheck > 0)
                 {
                     GRAMM_Online_flag = false; // reset flag
+                    System.Threading.Interlocked.Exchange(ref OnlineOutputCheck, 0); // reset flag
                     GrammOnline(NX, NY, NZ); // flag is at GRAMMOnline set to true, if only output is necessary
                 }
 
@@ -876,6 +883,14 @@ Console.WriteLine("| .Net Core Version |");
                 catch { }
             }
             return hashstring;
+        }
+
+        /// <summary>
+        /// Online Output timer event
+        /// </summary>
+        private static void OnlineTimerEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            System.Threading.Interlocked.Increment(ref OnlineOutputCheck);
         }
 
     }
