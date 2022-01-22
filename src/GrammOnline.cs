@@ -131,7 +131,10 @@ namespace GRAMM_2001
                         using (StreamReader rd = new StreamReader(filename + ".txt")) // dann einlesen des gewuenschten Ausgabelevels ueber Grund
                         {
                             config1 = rd.ReadLine();   // versuche string zu lesen - bei Fehler ans Ende des using-Statements
-                            config2 = rd.ReadLine();   // auch zweite Zeile vorhanden?
+                            if (!rd.EndOfStream)
+                            {
+                                config2 = rd.ReadLine();   // auch zweite Zeile vorhanden?
+                            }
                         }
 
                         int LX = 1; // Defaultwert
