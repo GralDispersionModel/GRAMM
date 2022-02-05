@@ -335,6 +335,7 @@ namespace GRAMM_2001
                 {
                     if (Program.ICATAFORC != 1)
                     {
+                        //No catabatic force with meteopgt.all
                         /*The soil temperature in 1m depth should be around 5-10°C at a latitude around 47N and a sea level of around 300m
                          * Around 2000m above sea level permafrost exists in the Alps (=0°C)
                          * Further, permafrost is found at latitudes larger/smaller than 70N/70S -> dependency on the latitude is considered
@@ -487,13 +488,22 @@ namespace GRAMM_2001
                 }
 
                 // override setting with user defined values?
-                (double snowHeightThreshold, double tAir2m, double userDefinedAirTemp, Program.TBINIT, Program.TBINIT1, Program.QUINIT, double inversionHeight) = INITB.ReadCustomInit();
-                Console.WriteLine("Initial values: Air temperature at 2 m {0}K  Surface temperature {1}K  Soil temperature -1 m {2}K  Relative humidity {3}%", Math.Round(tAir2m, 1), Math.Round(Program.TBINIT, 1), Math.Round(Program.TBINIT1, 1), Math.Round(Program.QUINIT * 100, 0));
+                CustomAirSoilInit cInit = new CustomAirSoilInit(Program.TINIT, Program.TBINIT, Program.TBINIT1, Program.QUINIT);
+                Program.TBINIT = cInit.TSurface;
+                Program.TBINIT1 = cInit.TSurface1m;
+                Program.QUINIT = cInit.RelHumidity;
+                double inversionHeight = cInit.InversionHeight;
+                GRADIENT = cInit.AirTempGradient;
+                Console.WriteLine("Initial values at sea-level: Air temperature at 2 m {0}K  Surface temperature {1}K  Soil temperature -1 m {2}K  Relative humidity {3}%", Math.Round(cInit.TAir2m, 1), 
+                                   Math.Round(Program.TBINIT, 1), Math.Round(Program.TBINIT1, 1), Math.Round(Program.QUINIT * 100, 0));
+                Console.WriteLine("Air temperature gradient {0}K/m  Air temperature gradient for SC7 below inversion height {1}K/m  Soil temperature  gradient {2}K/m", Math.Round(cInit.AirTempGradient, 4), 
+                                   Math.Round(cInit.AirTempGradientBelowInversionHeight, 4), Math.Round(cInit.SoilTempGradient, 4));
+                Program.TINIT = cInit.TAir2m;
 
                 //vertical temperature profile->not sure if needed here??
                 for (int k = 1; k <= NK; k++)
                 {
-                    Program.T[Program.AHMINI][Program.AHMINJ][k] = tAir2m + GRADIENT * (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - 0);
+                    Program.T[Program.AHMINI][Program.AHMINJ][k] = cInit.TAir2m + cInit.AirTempGradient * (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - 0);
                     //Program.ZNEUT = 5000 for default IIN.dat
                     if (Program.ZSPImm[Program.AHMINI][Program.AHMINJ][k] - Program.AHMIN > Program.ZNEUT)
                     {
@@ -591,11 +601,11 @@ namespace GRAMM_2001
                                 //Program.ZNEUT = 5000 for default IIN.dat
                                 if ((Program.ZSPImm[i][j][k] - Program.AHMIN) > Program.ZNEUT)
                                 {
-                                    Program.T[i][j][k] = tAir2m - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + GRADIENT * (Program.ZSPImm[i][j][k] - Program.ZNEUT - Program.AHMIN);
+                                    Program.T[i][j][k] = cInit.TAir2m - 0.09 * Math.Max(Program.ZNEUT - Program.AHMIN, 0) + cInit.AirTempGradient * (Program.ZSPImm[i][j][k] - Program.ZNEUT - Program.AHMIN);
                                 }
                                 else
                                 {
-                                    Program.T[i][j][k] = tAir2m - 0.09 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
+                                    Program.T[i][j][k] = cInit.TAir2m - 0.09 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
                                 }
                             }
                             else
@@ -614,12 +624,12 @@ namespace GRAMM_2001
                                         if (Program.Wind_Velocity >= 0.35F)
                                         {
                                             double offset = 2;
-                                            if (userDefinedAirTemp > 0)
+                                            if (cInit.UserdefinedAirTemp)
                                             {
                                                 offset = 0;
                                             }
                                             // Kuntner 28.6.2018: initialization like SC6, but lower temperature
-                                            Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                            Program.T[i][j][k] = cInit.TAir2m + offset + cInit.AirTempGradient * Program.ZSPImm[i][j][k];
                                         }
                                         else // low wind velocities
                                         {
@@ -627,17 +637,17 @@ namespace GRAMM_2001
                                             //these suppress the development of cold air drainage flows in this zone
                                             //the initial air temperature at ground is set 5K below the surface temperature -> probably not correct because the surface temperature is set equal to the air temperature in all cases in INITB.cs
                                             double offset = -5;
-                                            if (userDefinedAirTemp > 0)
+                                            if (cInit.UserdefinedAirTemp)
                                             {
                                                 offset = 0;
                                             }
                                             if ((Program.ZSPImm[i][j][k] - Program.AHMIN) <= Inversion_Height)
                                             {
-                                                Program.T[i][j][k] = tAir2m + offset - 0.005 * Program.AHMIN + 0.01 * (Program.ZSPImm[i][j][k] - Program.AHMIN);
+                                                Program.T[i][j][k] = cInit.TAir2m + offset + cInit.SoilTempGradient * Program.AHMIN + cInit.AirTempGradientBelowInversionHeight * (Program.ZSPImm[i][j][k] - Program.AHMIN);
                                             }
                                             else 
                                             {
-                                                Program.T[i][j][k] = tAir2m + offset - 0.005 * Program.AHMIN + 0.01 * Inversion_Height + GRADIENT * (Math.Max(0, Program.ZSPImm[i][j][k] - Program.AHMIN - Inversion_Height));
+                                                Program.T[i][j][k] = cInit.TAir2m + offset + cInit.SoilTempGradient * Program.AHMIN + cInit.AirTempGradientBelowInversionHeight * Inversion_Height + cInit.AirTempGradient * (Math.Max(0, Program.ZSPImm[i][j][k] - Program.AHMIN - Inversion_Height));
                                             }
                                         }
                                     }
@@ -645,34 +655,34 @@ namespace GRAMM_2001
                                     else if (Program.AKLA == 6)
                                     {
                                         double offset = 10;
-                                        if (userDefinedAirTemp > 0)
+                                        if (cInit.UserdefinedAirTemp)
                                         {
                                             offset = 0;
                                         }
-                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                        Program.T[i][j][k] = cInit.TAir2m + offset + cInit.AirTempGradient * Program.ZSPImm[i][j][k];
                                     }
                                     //in case of stability class 1 (strongly convective) temperature need to be high enough, otherwise thunderstorms develop
                                     else if (Program.AKLA == 1)
                                     {
                                         double offset = 15;
-                                        if (userDefinedAirTemp > 0)
+                                        if (cInit.UserdefinedAirTemp)
                                         {
                                             offset = 0;
                                         }
-                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                        Program.T[i][j][k] = cInit.TAir2m + offset + cInit.AirTempGradient * Program.ZSPImm[i][j][k];
                                     }
                                     else if (Program.AKLA == 2 || Program.AKLA == 3)
                                     {
                                         double offset = 5;
-                                        if (userDefinedAirTemp > 0)
+                                        if (cInit.UserdefinedAirTemp)
                                         {
                                             offset = 0;
                                         }
-                                        Program.T[i][j][k] = tAir2m + offset + GRADIENT * Program.ZSPImm[i][j][k];
+                                        Program.T[i][j][k] = cInit.TAir2m + offset + cInit.AirTempGradient * Program.ZSPImm[i][j][k];
                                     }
                                     else
                                     {
-                                        Program.T[i][j][k] = tAir2m + GRADIENT * Program.ZSPImm[i][j][k];
+                                        Program.T[i][j][k] = cInit.TAir2m + cInit.AirTempGradient * Program.ZSPImm[i][j][k];
                                     }
                                 }
                             }

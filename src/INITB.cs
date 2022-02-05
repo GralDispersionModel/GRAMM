@@ -202,10 +202,10 @@ namespace GRAMM_2001
                 }
             });
 
-            (double snowHeightThreshold, double tAir2m, double temp, temp, temp, temp, temp) = ReadCustomInit();
-            if (snowHeightThreshold < 100000)
+            CustomAirSoilInit cInit = new CustomAirSoilInit(Program.TINIT, Program.TBINIT, Program.TBINIT1, Program.QUINIT);
+            if (cInit.SnowHeightThreshold < 100000)
             {
-                Console.WriteLine(" Snow altitude threshold: {0} m", snowHeightThreshold);
+                Console.WriteLine(" Snow altitude threshold: {0} m", cInit.SnowHeightThreshold);
             }
 
             //boundary values for surface parameters
@@ -259,7 +259,7 @@ namespace GRAMM_2001
                         double tbInitDepth = Program.TBINIT1;
                         
                         //in case of snow covered terrain
-                        if (Program.AHImm[i][j] > snowHeightThreshold)
+                        if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
                         {
                             tbInit = Math.Min(270, Program.TBINIT);
                             tbInitDepth = Math.Min(272, Program.TBINIT1);
@@ -270,9 +270,9 @@ namespace GRAMM_2001
                             tbInitDepth = Program.TBINIT1;
                         }
                         
-                        double DELTA_TB =tAir2m - tbInit; //this is the desired temperature difference between the surface and the air temperature at the ground
+                        double DELTA_TB = cInit.TAir2m - tbInit; //this is the desired temperature difference between the surface and the air temperature at the ground
                         //Dependency on height above sea level -> note that the dependency on latitude is taken into account in the calculation of TBINIT1 (tempint.cs)
-                        Program.TB[i][j][kb] = (tbInitDepth - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (tbInitDepth - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                        Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
 
                         /*
                          * !Oettl, 7.Juni 2013 - Versuch die oberste Schicht der Erdbodentemperatur in Abhängigkeit von der AKLA abweichend zur Lufttemperatur darüber einzustellen
@@ -285,15 +285,15 @@ namespace GRAMM_2001
                             {
                                 if (Program.AKLA == 7)
                                 {
-                                    Program.TB[i][j][kb] = (tbInitDepth - 0.005 * Program.AHImm[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (tbInitDepth)) * DUMMY - 2;
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (tbInitDepth)) * DUMMY - 2;
                                 }
                                 if (Program.AKLA == 6)
                                 {
-                                    Program.TB[i][j][kb] = (tbInitDepth - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
                                 }
                                 if (Program.AKLA == 5)
                                 {
-                                    Program.TB[i][j][kb] = (tbInitDepth - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
                                 }
 
                                 /*
@@ -554,7 +554,7 @@ namespace GRAMM_2001
                                     Program.RHOB[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow, set soil density to snow value
-                                    if (Program.AHImm[i][j] > snowHeightThreshold)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
                                     {
                                        Program.RHOB[i][j] = Math.Max(1 / 0.0000005F / 900, Program.RHOB[i][j]);
                                     }
@@ -569,7 +569,7 @@ namespace GRAMM_2001
                                     Program.ALAMBDA[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow, set low surface albedo to snow value
-                                    if (Program.AHImm[i][j] > snowHeightThreshold && Program.ALAMBDA[i][j] < 1)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.ALAMBDA[i][j] < 1)
                                     {
                                         Program.ALAMBDA[i][j] = 1F;
                                     }
@@ -584,7 +584,7 @@ namespace GRAMM_2001
                                     Program.Z0[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow cover, set green areas to a lower roughness lenght
-                                    if (Program.AHImm[i][j] > snowHeightThreshold && Program.Z0[i][j] < 0.4F)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.Z0[i][j] < 0.4F)
                                     {
                                        Program.Z0[i][j] = Math.Min(Program.Z0[i][j], 0.01F);
                                     }
@@ -599,7 +599,7 @@ namespace GRAMM_2001
                                     Program.FW[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow cover, set soil moisture to snow
-                                    if (Program.AHImm[i][j] > snowHeightThreshold && Program.FW[i][j] < 0.1F)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.FW[i][j] < 0.1F)
                                     {
                                         Program.FW[i][j] = 0.1F;
                                     }
@@ -614,7 +614,7 @@ namespace GRAMM_2001
                                     Program.EPSG[i][j] = Convert.ToDouble(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow cover, set surface emissivity to snow
-                                    if (Program.AHImm[i][j] > snowHeightThreshold)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
                                     {
                                         Program.EPSG[i][j] = 0.95F;
                                     }
@@ -629,7 +629,7 @@ namespace GRAMM_2001
                                     Program.ALBEDO[i][j] = Convert.ToDouble(text[n].Replace(".", Program.decsep));
                                     n++;
                                     // in case of snow cover, set surface albedo to snow
-                                    if (Program.AHImm[i][j] > snowHeightThreshold)
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
                                     {
                                         Program.ALBEDO[i][j] = 0.6F;
                                     }

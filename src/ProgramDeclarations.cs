@@ -1162,7 +1162,7 @@ namespace GRAMM_2001
         ///</summary>
         public static double RELAXT;
         ///<summary>
-        ///Forcing of catabatic flows with -40/-25/-15 W/m² AKLA 7/6/5
+        ///Forcing of catabatic flows with -40/-25/-15 W/m² AKLA 7/6/5 1=on, 0=off (default)
         ///</summary>
         public static Int32 ICATAFORC;
         ///<summary>
