@@ -826,7 +826,10 @@ namespace GRAMM_2001
                         string text = myreader.ReadLine();
                         IPROC = Convert.ToInt32(text);
                         IPROC = Math.Min(IPROC, Math.Min(NX, NY) / 2); // limit IPROC to 1/2 of lowest cell number count
-                        IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
+                        if (Environment.ProcessorCount > 0)
+                        {
+                            IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
+                        }
                     }
                 }
             }
@@ -844,8 +847,10 @@ namespace GRAMM_2001
                 }
                 else
                 {
-                    pOptions.MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 2);
-                    IPROC = Environment.ProcessorCount - 2;
+                    // Fallback if Max_Proc.txt is corrupt or not available
+                    int envProcCount = Math.Max(6, Environment.ProcessorCount);
+                    pOptions.MaxDegreeOfParallelism = Math.Max(1, envProcCount - 2);
+                    IPROC = Math.Max(1, envProcCount - 2);
                 }
 
                 //Define the partitioners for changing stripe widths for new MaxDegreeOfParallelism
