@@ -36,9 +36,9 @@ namespace GRAMM_2001
                         double[] DIMU_L = Program.DIMU[i][j];
                         float[] F1U_L = Program.F1U[i][j];
                         float[] F2U_L = Program.F2U[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] V1N_L = Program.V1N[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] VG_L = Program.VG[i][j];
                         double[] W1N_L = Program.W1N[i][j];
                         double[] TPDX_L = Program.TPDX[i][j];
@@ -62,8 +62,9 @@ namespace GRAMM_2001
                 });
 
 
-                int range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                int range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, i =>
@@ -71,8 +72,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int i = range.Item1; i < range.Item2; i++)
@@ -83,14 +84,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -103,7 +104,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -125,7 +129,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     help = 1 / (AIM_L[kn] - CIM_L[kn] * PIM[kn - 1]);
@@ -156,8 +163,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, ih =>
@@ -165,8 +173,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
                     for (int ih = range.Item1; ih < range.Item2; ih++)
                     {
@@ -177,14 +185,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -197,7 +205,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
                                     //Recurrence formula
                                     if (k > 1)
@@ -219,7 +230,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -251,8 +265,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, jh =>
@@ -260,8 +275,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int jh = range.Item1; jh < range.Item2; jh++)
@@ -274,14 +289,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -294,7 +309,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -317,7 +335,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -349,8 +370,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, j =>
@@ -358,8 +380,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int j = range.Item1; j < range.Item2; j++)
@@ -370,14 +392,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -390,7 +412,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -413,7 +438,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -445,8 +473,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, ih =>
@@ -454,8 +483,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int ih = range.Item1; ih < range.Item2; ih++)
@@ -467,14 +496,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -487,7 +516,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -510,7 +542,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -542,8 +577,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NI, Program.pOptions, i =>
@@ -551,8 +587,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
                     for (int i = range.Item1; i < range.Item2; i++)
                     {
@@ -562,14 +598,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -582,7 +618,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -605,7 +644,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -637,8 +679,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, jh =>
@@ -646,8 +689,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int jh = range.Item1; jh < range.Item2; jh++)
@@ -659,14 +702,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -679,7 +722,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -702,7 +748,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -734,8 +783,9 @@ namespace GRAMM_2001
                     }
                 });
 
-                range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-                range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+                range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+                range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+                StripeCounter++;
                 range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                                //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                                                                //Parallel.For(2, NJ, Program.pOptions, j =>
@@ -743,8 +793,8 @@ namespace GRAMM_2001
                 {
                     int NK_P = NK; int NI_P = NI;
                     double DIM;
-                    double[] PIM = new double[2 * NK_P];
-                    double[] QIM = new double[2 * NK_P];
+                    Span<double> PIM = stackalloc double[2 * NK_P];
+                    Span<double> QIM = stackalloc double[2 * NK_P];
                     double help;
 
                     for (int j = range.Item1; j < range.Item2; j++)
@@ -755,14 +805,14 @@ namespace GRAMM_2001
                             float[] AE2_L = Program.AE2[i][j];
                             float[] AN2_L = Program.AN2[i][j];
                             float[] AIM_L = Program.AIM[i][j];
-                            float[] AREA_L = Program.AREA[i][j];
+                            ReadOnlySpan<float> AREA_L = Program.AREAImm[i][j].AsSpan();
                             float[] AS1_L = Program.AS1[i][j];
                             float[] AW1_L = Program.AW1[i][j];
                             float[] BIM_L = Program.BIM[i][j];
                             float[] CIM_L = Program.CIM[i][j];
                             float[] F1U_L = Program.F1U[i][j];
                             float[] F2U_L = Program.F2U[i][j];
-                            float[] RHO_L = Program.RHO[i][j];
+                            ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                             double[] U1N_L = Program.U1N[i][j]; double[] U1Ni_L = Program.U1N[i + 1][j]; double[] U1NJ_P_L = Program.U1N[i][j + 1];
                             double[] U2N_L = Program.U2N[i][j]; double[] U2Ni_L = Program.U2N[i - 1][j]; double[] U2NJ_P_L = Program.U2N[i][j - 1];
                             float USTxUSTV = (float)(Program.UST[i][j] * Program.USTV[i][j]);
@@ -775,7 +825,10 @@ namespace GRAMM_2001
                                 if (m == 2)
                                 {
                                     DIM = AW1_L[k] * U2Ni_L[k] + AS1_L[k] * U2NJ_P_L[k] + F1U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U1N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula
@@ -798,7 +851,10 @@ namespace GRAMM_2001
                                 else
                                 {
                                     DIM = AE2_L[k] * U1Ni_L[k] + AN2_L[k] * U1NJ_P_L[k] + F2U_L[kn];
-                                    if (k == 1) DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    if (k == 1)
+                                    {
+                                        DIM -= RHO_L[k] * U2N_L[k] * USTxUSTV * AREA_L[k];
+                                    }
 
 
                                     //Recurrence formula

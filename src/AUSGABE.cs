@@ -20,12 +20,15 @@ namespace GRAMM_2001
     partial class Program
     {
 
+        /// <summary>
+        /// Write result files to the calculation folder
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
+        /// <param name="intermediate"></param>
         public static void OUTPUT(int NI, int NJ, int NK, bool intermediate)
         {
-            // force a garbage collection on the Large Object heap to clean up the envrionment
-            //GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
-            GC.Collect();
-
             //Check for quasi-steady-state requirement (VDI 3783-7) -> the lateral region where topography is smoothed is not considered
             if (Program.REALTIME > 0.8 * Program.DTI)
             {
@@ -40,9 +43,9 @@ namespace GRAMM_2001
                         writesteadystate = new StreamWriter(filename);
                         writesteadystate.WriteLine("ncols         " + Convert.ToString(NI - 2 * Program.nr_cell_smooth));
                         writesteadystate.WriteLine("nrows         " + Convert.ToString(NJ - 2 * Program.nr_cell_smooth));
-                        writesteadystate.WriteLine("xllcorner     " + Convert.ToString(Program.IKOOA + Program.nr_cell_smooth * Program.DDX[1]));
-                        writesteadystate.WriteLine("yllcorner     " + Convert.ToString(Program.JKOOA + Program.nr_cell_smooth * Program.DDX[1]));
-                        writesteadystate.WriteLine("cellsize      " + Convert.ToString(Program.DDX[1]));
+                        writesteadystate.WriteLine("xllcorner     " + Convert.ToString(Program.IKOOA + Program.nr_cell_smooth * Program.DDXImm[1]));
+                        writesteadystate.WriteLine("yllcorner     " + Convert.ToString(Program.JKOOA + Program.nr_cell_smooth * Program.DDXImm[1]));
+                        writesteadystate.WriteLine("cellsize      " + Convert.ToString(Program.DDXImm[1]));
                         writesteadystate.WriteLine("NODATA_value  " + "-9999");
                     }
                     catch { }
@@ -76,9 +79,13 @@ namespace GRAMM_2001
                         if (writesteadystate != null) // write file!
                         {
                             if (j == 1 + Program.nr_cell_smooth && i == 1 + Program.nr_cell_smooth) // Avoid blank raster data set for GUI
+                            {
                                 steadystateline += Convert.ToString((double)steadystatevalue + 0.01).Replace(Program.decsep, ".") + " ";
+                            }
                             else
+                            {
                                 steadystateline += Convert.ToString(steadystatevalue) + " ";
+                            }
                         }
                     }
 
@@ -163,7 +170,7 @@ namespace GRAMM_2001
                     {
                         time_real = Program.IOUTPUT + 2;
                     }
-                    Meteopgtall.meteopgtall_calculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
+                    Meteopgtall.MeteopgtAllCalculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
                     wndfilename = (Convert.ToString(FILENUMBER).PadLeft(5, '0') + ".wnd");
                 }
             }
@@ -173,7 +180,7 @@ namespace GRAMM_2001
             BinaryWriter writer = new BinaryWriter(File.Open(wndfilename, FileMode.Create));
             int header = -1;
             Int16 dummy;
-            float GRAMMhorgridsize = (float)Program.DDX[1];
+            float GRAMMhorgridsize = (float)Program.DDXImm[1];
 
             //there are two different formats: IOUTPUT = 0 (standard output for GRAL-GUI users) and IOUTPUT = 3 for SOUNDPLAN USERS
             if (Program.IOUT == 0)
@@ -184,7 +191,9 @@ namespace GRAMM_2001
                 writer.Write(NK);
                 writer.Write(GRAMMhorgridsize);
                 for (int i = 1; i <= NI; i++)
+                {
                     for (int j = 1; j <= NJ; j++)
+                    {
                         for (int k = 1; k <= NK; k++)
                         {
                             try
@@ -219,17 +228,23 @@ namespace GRAMM_2001
                             }
                             writer.Write(dummy);
                         }
+                    }
+                }
             }
             if (Program.IOUT == 3)
             {
                 for (int i = 1; i <= NI; i++)
+                {
                     for (int j = 1; j <= NJ; j++)
+                    {
                         for (int k = 1; k <= NK; k++)
                         {
                             writer.Write((float)Program.U[i][j][k]);
                             writer.Write((float)Program.V[i][j][k]);
                             writer.Write((float)Program.W[i][j][k]);
                         }
+                    }
+                }
             }
 
             writer.Close();
@@ -256,7 +271,7 @@ namespace GRAMM_2001
                     {
                         time_real = Program.IOUTPUT + 2;
                     }
-                    Meteopgtall.meteopgtall_calculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
+                    Meteopgtall.MeteopgtAllCalculate(Program.meteopgt_nr, Program.IWETTER, Program.DTI, time_real, Program.IOUTPUT, Program.TLIMIT2, ref FILENUMBER);
                     stabclassfilename = (Convert.ToString(FILENUMBER).PadLeft(5, '0') + ".scl");
                 }
             }
@@ -328,7 +343,7 @@ namespace GRAMM_2001
             } // catch
             catch { }
 
-            Program.Max_Proc_File_Read(); // read number of max. Processors
+            Program.Max_Proc_File_Read(false); // read number of max. Processors
 
             if (recexist == true && IWetter_Console_First == 0) // write receptor wind fields; not if multi-instances are used
             {
@@ -338,7 +353,7 @@ namespace GRAMM_2001
                     {
                         for (int ianz = 0; ianz < Urec.Count(); ianz++)
                         {
-                            double angle = winkel(Urec[ianz], Vrec[ianz]);
+                            double angle = CalcWindDir(Urec[ianz], Vrec[ianz]);
                             wr.Write(Math.Sqrt(Math.Pow(Urec[ianz], 2) + Math.Pow(Vrec[ianz], 2)).ToString("0.00").Replace(decsep, ".") +
                                      "," + angle.ToString("0").Replace(decsep, ".") + "," + Trec[ianz].ToString("0.0").Replace(decsep, ".") + "," + Globradrec[ianz].ToString("0").Replace(decsep, ".")
                                      + "," + Longradrec[ianz].ToString("0").Replace(decsep, ".") + "," + Soilheatfluxrec[ianz].ToString("0").Replace(decsep, ".")

@@ -16,20 +16,27 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Init basic values
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void INITA(int NI, int NJ, int NK)
         {
-            double B0 = 38.00699;
-            double B1 = 6546.307;
-            double B2 = -3.257572;
-            double B3 = -0.003163528;
+            const double B0 = 38.00699;
+            const double B1 = 6546.307;
+            const double B2 = -3.257572;
+            const double B3 = -0.003163528;
 
             //Stretching-factor in the vertical
-            Program.STRETCH = (Program.ZSP[1][1][3] - Program.ZSP[1][1][2]) / (Program.ZSP[1][1][2] - Program.ZSP[1][1][1]);
+            Program.STRETCH = (Program.ZSPImm[1][1][3] - Program.ZSPImm[1][1][2]) / (Program.ZSPImm[1][1][2] - Program.ZSPImm[1][1][1]);
 
             //Coriolisfrequencies
             Program.FN = Math.PI / 21600 * Math.Sin(Program.BGRAD * Math.PI / 180);
@@ -56,14 +63,11 @@ namespace GRAMM_2001
             {
                 double TSAT = 149.95 + (float)n;
                 double PSATN = 100000 * Math.Exp(B0 - B1 / TSAT + B2 * Math.Log(TSAT) + B3 * TSAT);
-                if (Program.PSAT[n] == 0) Program.PSAT[n] = PSATN;
+                if (Program.PSAT[n] == 0)
+                {
+                    Program.PSAT[n] = PSATN;
+                }
             }
-
-            //Gravitational acceleration, general gas constant, heat capacity of air by constant pressure, evaporation heat of water
-            Program.GERD = 9.81;
-            Program.GASCON = 287;
-            Program.CPLUFT = 1000;
-            Program.ALW = 2500000;
 
             //Initialization procedure
             //Program.ISOL = 1; //Switch for radiation model: 1=thin clouds 2=thick clouds
@@ -116,24 +120,12 @@ namespace GRAMM_2001
                         }
                     }
                 });
-
+                
                 //Alpha: parameter used for nudging variables towards large-scale values at lateral boundaries
                 for (int k = 1; k <= NK; k++)
                 {
                     Program.ALPHA[k] = 0.05;
                 }
-
-                //van Karman constant
-                Program.CK = 0.35;
-
-                //minimum turbulent viscosity
-                Program.VISEL = 0.05;
-
-                //heat capacity soil
-                Program.CPBOD = 900;
-
-                //Stefan-Bolzmann constant
-                Program.SIGMA = 5.6697e-8;
             }
         }
 
@@ -145,21 +137,21 @@ namespace GRAMM_2001
             List<float> TPI_300 = new List<float>();
             List<float> TPI_2000 = new List<float>();
 
-            float Radius_inner = 1.5F * DDX[1];
+            float Radius_inner = 1.5F * Program.DDXImm[1];
             float Radius_outer_1 = 800;
             float Radius_outer_2 = 4000;
 
             Read_TPI_Settings(ref Radius_inner, ref Radius_outer_1, ref Radius_outer_2);
 
-            if (Radius_inner < DDX[1] || Radius_outer_1 < DDX[1] || Radius_outer_2 < 4 * DDX[1]) // if settings not valid
+            if (Radius_inner < Program.DDXImm[1] || Radius_outer_1 < Program.DDXImm[1] || Radius_outer_2 < 4 * Program.DDXImm[1]) // if settings not valid
             {
                 Set_Bassins_to_AHmin();
                 Console.WriteLine("failed");
                 return;
             }
 
-            int Radius_300 = (int)Math.Max(1, Radius_inner / DDX[1] + 0.5F);
-            int Radius_2000 = (int)Math.Max(1, Radius_outer_2 / DDX[1] + 0.5F);
+            int Radius_300 = (int)Math.Max(1, Radius_inner / Program.DDXImm[1] + 0.5F);
+            int Radius_2000 = (int)Math.Max(1, Radius_outer_2 / Program.DDXImm[1] + 0.5F);
 
             float[][] TPI300 = CreateArray<float[]>(NX1, () => new float[NY1]);
             float[][] TPI2000 = CreateArray<float[]>(NX1, () => new float[NY1]);
@@ -257,10 +249,22 @@ namespace GRAMM_2001
                     {
                         TPI[i][j] = 9; // local ridges in planes
                     }
-                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi >= 100) TPI[i][j] = 3;  // Upland incised drainages
-                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi <= -100) TPI[i][j] = 1; // V Shape valley
-                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi >= 100) TPI[i][j] = 10;  // Mountain Top
-                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi <= -100) TPI[i][j] = 8;  // local hilltop within broad valleys
+                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi >= 100)
+                    {
+                        TPI[i][j] = 3;  // Upland incised drainages
+                    }
+                    else if (TPI_300_Stdi <= -100 && TPI_2000_Stdi <= -100)
+                    {
+                        TPI[i][j] = 1; // V Shape valley
+                    }
+                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi >= 100)
+                    {
+                        TPI[i][j] = 10;  // Mountain Top
+                    }
+                    else if (TPI_300_Stdi >= 100 && TPI_2000_Stdi <= -100)
+                    {
+                        TPI[i][j] = 8;  // local hilltop within broad valleys
+                    }
                     else
                     {
                         TPI[i][j] = 2; // not found -> set to local valley in plain
@@ -370,7 +374,7 @@ namespace GRAMM_2001
                         if ((_TPI == 1 || _TPI == 4 || _TPI == 5) && Slope300_Min[i][j] < 10) // flat V valleys, U-valleys, broad flat aereas
                         //if ((_TPI == 4 || _TPI == 5) && Slope300_Min[i][j] < 5) // U-valleys, broad flat aereas
                         {
-                            AH_Bassins[i][j] = AH[i][j] + frac; // take the original height for that cells
+                            AH_Bassins[i][j] = Program.AHImm[i][j] + frac; // take the original height for that cells
                             frac += 0.01F;
                         }
                         else
@@ -390,7 +394,7 @@ namespace GRAMM_2001
                 while (finish == false) // as long, as some cells are not modified
                 {
                     finish = true;
-                    AH_upper += DDX[1] / 6F;
+                    AH_upper += Program.DDXImm[1] / 6F;
 
                     Parallel.For(0, NX, Program.pOptions, i => // set enlarge[][] to true
                     {
@@ -411,8 +415,8 @@ namespace GRAMM_2001
                                     for (int jj = j - 1; jj < j + 2; jj++)
                                     {
                                         if (AH_Bassins[ii][jj] < -900F && enlarged[ii][jj] == true
-                                        /*&& (AH[ii][jj] < (AH_Bassins[i][j] + 250))  // influence up to 250 m
-                                        && (AH[ii][jj] > (AH_Bassins[i][j] - 50))   // limit the influence of an higher bassin to a lower valley
+                                        /*&& (Program.AHImm[ii][jj] < (AH_Bassins[i][j] + 250))  // influence up to 250 m
+                                        && (Program.AHImm[ii][jj] > (AH_Bassins[i][j] - 50))   // limit the influence of an higher bassin to a lower valley
                                         && (TPI[ii][jj] < 9)*/)                       // do not enlarge at hilltops
                                         {
                                             if (AH_Bassins[ii][jj] < -900F)
@@ -467,7 +471,7 @@ namespace GRAMM_2001
                         {
                             AH_Bassins[i][j] = (float)AHMIN;
                         }
-                        else if (AH_Bassins[i][j] > AH[i][j]) // AH_Bassin must not be higher than AH[][]
+                        else if (AH_Bassins[i][j] > Program.AHImm[i][j]) // AH_Bassin must not be higher than Program.AHImm[][]
                         {
                             Parallel.For(0, NX, Program.pOptions, ii => // set complete Bassin to lowest cell height inside the bassin
                             {
@@ -475,7 +479,7 @@ namespace GRAMM_2001
                                 {
                                     if (Math.Abs(AH_Bassins[ii][jj] - AH_Bassins[i][j]) < 2 * float.Epsilon)
                                     {
-                                        AH_Bassins[i][j] = AH[i][j];
+                                        AH_Bassins[i][j] = Program.AHImm[i][j];
                                     }
                                 }
                             });
@@ -506,7 +510,7 @@ namespace GRAMM_2001
             float AH_max = -100000; int ind_xmax = 0; int ind_ymax = 0;
             float AH_min = 100000; int ind_xmin = 0; int ind_ymin = 0;
 
-            int r_out_ind = Math.Max(1, (int)(R_out / DDX[1] + 1.5F)); // outer donut circle
+            int r_out_ind = Math.Max(1, (int)(R_out / Program.DDXImm[1] + 1.5F)); // outer donut circle
 
             for (int xi = xm - r_out_ind; xi <= xm + r_out_ind; xi++)
             {
@@ -516,17 +520,17 @@ namespace GRAMM_2001
                     {
                         if (xi > 0 && yi > 0 && xi < NX1 && yi < NY1)
                         {
-                            Mean_inner += AH[xi][yi];
+                            Mean_inner += Program.AHImm[xi][yi];
                             Count_inner++;
-                            if (AH[xi][yi] > AH_max)
+                            if (Program.AHImm[xi][yi] > AH_max)
                             {
-                                AH_max = AH[xi][yi];
+                                AH_max = Program.AHImm[xi][yi];
                                 ind_xmax = xi;
                                 ind_ymax = yi;
                             }
-                            if (AH[xi][yi] < AH_min)
+                            if (Program.AHImm[xi][yi] < AH_min)
                             {
-                                AH_min = AH[xi][yi];
+                                AH_min = Program.AHImm[xi][yi];
                                 ind_xmin = xi;
                                 ind_ymin = yi;
                             }
@@ -541,17 +545,17 @@ namespace GRAMM_2001
                         {
                             if (xi > 0 && yi > 0 && xi < NX1 && yi < NY1)
                             {
-                                Mean_outer += AH[xi][yi];
+                                Mean_outer += Program.AHImm[xi][yi];
                                 Count_outer++;
-                                if (AH[xi][yi] > AH_max)
+                                if (Program.AHImm[xi][yi] > AH_max)
                                 {
-                                    AH_max = AH[xi][yi];
+                                    AH_max = Program.AHImm[xi][yi];
                                     ind_xmax = xi;
                                     ind_ymax = yi;
                                 }
-                                if (AH[xi][yi] < AH_min)
+                                if (Program.AHImm[xi][yi] < AH_min)
                                 {
-                                    AH_min = AH[xi][yi];
+                                    AH_min = Program.AHImm[xi][yi];
                                     ind_xmin = xi;
                                     ind_ymin = yi;
                                 }
@@ -566,22 +570,22 @@ namespace GRAMM_2001
             //Console.Write(Count_outer.ToString() + " ");
             if (Count_outer > 0)
             {
-                Mean_outer = Mean_outer / Count_outer;
+                Mean_outer /= Count_outer;
                 TPI = Mean_inner - Mean_outer;
                 //Console.Write((AH_max - AH_min).ToString() + " ");
-                //slope = (float) (Math.Atan(Math.Abs(AH_max - AH_min) / (R_out * 2)) * 180F / Math.PI); // slope is calculated with a diameter of 1.5 * DDX[1]
+                //slope = (float) (Math.Atan(Math.Abs(AH_max - AH_min) / (R_out * 2)) * 180F / Math.PI); // slope is calculated with a diameter of 1.5 * Program.DDXImm[1]
                 // find the maximum slope from cell xm/ym to cells xmin/ymin or xmax/ymax
                 float rmin = Distance_between_cells(xm, ym, ind_xmin, ind_ymin);
                 float sl1 = 0;
                 if (rmin > 1)
                 {
-                    sl1 = (float)(Math.Atan(Math.Abs(AH[xm][ym] - AH_min) / rmin) * 180F / Math.PI);
+                    sl1 = (float)(Math.Atan(Math.Abs(Program.AHImm[xm][ym] - AH_min) / rmin) * 180F / Math.PI);
                 }
                 float rmax = Distance_between_cells(xm, ym, ind_xmax, ind_ymax);
                 float sl2 = 0;
                 if (rmax > 1)
                 {
-                    sl2 = (float)(Math.Atan(Math.Abs(AH[xm][ym] - AH_max) / rmax) * 180F / Math.PI);
+                    sl2 = (float)(Math.Atan(Math.Abs(Program.AHImm[xm][ym] - AH_max) / rmax) * 180F / Math.PI);
                 }
 
                 slopemax = Math.Max(sl1, sl2);
@@ -593,8 +597,8 @@ namespace GRAMM_2001
 
         static private float Distance_between_cells(int x1, int y1, int x2, int y2)
         {
-            float dx = (x1 - x2) * DDX[1];
-            float dy = (y1 - y2) * DDX[1];
+            float dx = (x1 - x2) * Program.DDXImm[1];
+            float dy = (y1 - y2) * Program.DDXImm[1];
             return (float)(Math.Sqrt(Pow2(dx) + Pow2(dy)));
         }
 
@@ -602,7 +606,7 @@ namespace GRAMM_2001
         {
             float TPI_mean = 0;
             int count = 0;
-            int dx = (int)(Math.Max(1, 300 / DDX[1] + 0.5));
+            int dx = (int)(Math.Max(1, 300 / Program.DDXImm[1] + 0.5));
 
             for (int i = x - dx; i < x + dx; i++)
             {
@@ -656,7 +660,7 @@ namespace GRAMM_2001
                     wt.WriteLine("nrows         " + Program.NY.ToString(CultureInfo.InvariantCulture));
                     wt.WriteLine("xllcorner     " + Program.GRAMM_West.ToString(CultureInfo.InvariantCulture));
                     wt.WriteLine("yllcorner     " + Program.GRAMM_South.ToString(CultureInfo.InvariantCulture));
-                    wt.WriteLine("cellsize      " + Program.DDX[1].ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("cellsize      " + Program.DDXImm[1].ToString(CultureInfo.InvariantCulture));
                     wt.WriteLine("NODATA_value  " + "-9999");
 
                     for (int jj = Program.NY; jj >= 1; jj--)

@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace GRAMM_2001
 {
@@ -21,15 +22,16 @@ namespace GRAMM_2001
         public static void Tkeimp_calculate(int NI, int NJ, int NK)
         {
 
-            int range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            int range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+            StripeCounter++;
             range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                            //computation of the new turbulent kinetic energy
                                                            //Parallel.For(2, NI, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
                 for (int i = range.Item1; i < range.Item2; i++)
                 {
@@ -44,16 +46,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -125,14 +127,15 @@ namespace GRAMM_2001
                 }
             });
 
-            range_parallel = (int)(NI / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = NI / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+            StripeCounter++;
             range_parallel = Math.Min(NI, range_parallel); // if NI < range_parallel
                                                            //Parallel.For(2, NI, Program.pOptions, i1 =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -149,16 +152,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -237,8 +240,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NI, Program.pOptions, i1 =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i1 = range.Item1; i1 < range.Item2; i1++)
@@ -255,16 +258,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -342,8 +345,8 @@ namespace GRAMM_2001
                                                            // Parallel.For(2, NI, Program.pOptions, i =>
             Parallel.ForEach(Partitioner.Create(2, NI, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -359,16 +362,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -440,14 +443,15 @@ namespace GRAMM_2001
                 }
             });
 
-            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+            StripeCounter++;
             range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                            //Parallel.For(2, NJ, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -463,16 +467,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -544,14 +548,15 @@ namespace GRAMM_2001
                 }
             });
 
-            range_parallel = (int)(NJ / Program.pOptions.MaxDegreeOfParallelism - (ITIME % 3) * 2);
-            range_parallel = Math.Max(30 - (ITIME % 3) * 2, range_parallel); // min. 30 steps per processor
+            range_parallel = NJ / Program.pOptions.MaxDegreeOfParallelism - (StripeCounter % 6);
+            range_parallel = Math.Max(Program.StripeWidth - (StripeCounter % 6), range_parallel); // min. Program.StripeWidth cells per processor
+            StripeCounter++;
             range_parallel = Math.Min(NJ, range_parallel); // if NI < range_parallel
                                                            //Parallel.For(2, NJ, Program.pOptions, j1 =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)
@@ -568,16 +573,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -655,8 +660,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NJ, Program.pOptions, j =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j = range.Item1; j < range.Item2; j++)
@@ -672,16 +677,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;
@@ -759,8 +764,8 @@ namespace GRAMM_2001
                                                            //Parallel.For(2, NJ, Program.pOptions, j1 =>
             Parallel.ForEach(Partitioner.Create(2, NJ, range_parallel), range =>
             {
-                double[] PIM = new double[NK + 1];
-                double[] QIM = new double[NK + 1];
+                Span<double> PIM = stackalloc double[NK + 1];
+                Span<double> QIM = stackalloc double[NK + 1];
                 double help;
 
                 for (int j1 = range.Item1; j1 < range.Item2; j1++)
@@ -777,16 +782,16 @@ namespace GRAMM_2001
                         double[] B_PS_L = Program.B_PS[i][j];
                         double[] C_PS_L = Program.C_PS[i][j];
                         double[] DISS_L = Program.DISS[i][j];
-                        float[] RHO_L = Program.RHO[i][j];
+                        ReadOnlySpan<float> RHO_L = Program.RHO[i][j];
                         double[] T_L = Program.T[i][j];
                         double[] TE_L = Program.TE[i][j];
                         double[] TEN_L = Program.TEN[i][j];
                         double[] U_L = Program.U[i][j];
                         double[] V_L = Program.V[i][j];
                         double[] VISV_L = Program.VISV[i][j];
-                        float[] VOL_L = Program.VOL[i][j];
+                        ReadOnlySpan<float> VOL_L = Program.VOLImm[i][j].AsSpan();
                         double[] W_L = Program.W[i][j];
-                        float[] ZSP_L = Program.ZSP[i][j];
+                        ReadOnlySpan<float> ZSP_L = Program.ZSPImm[i][j].AsSpan();
                         double ZAX_i = 1 / (Program.ZAX[i] + Program.ZAX[i - 1]);
                         double ZAX_j = 1 / (Program.ZAY[j] + Program.ZAY[j - 1]);
                         double DIM;

@@ -13,11 +13,16 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Immutable;
+using System.Collections.Concurrent;
 
 namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Read the GRAMM.geb file
+        /// </summary>
         private static void Read_Gramm_Geb()
         {
             try
@@ -64,7 +69,11 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("Error when reading domain data from file 'GRAMM.geb' - Execution stopped - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
@@ -94,11 +103,18 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("Error when reading file 'chemistry.txt' - Execution stopped - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
 
+        /// <summary>
+        /// Define the size of all used arrays
+        /// </summary>
         private static void Define_Arrays()
         {
             NX1 = NX + 1;
@@ -127,6 +143,18 @@ namespace GRAMM_2001
             AREAZY = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ2]));
             AHE = CreateArray<float[][]>(NX2, () => CreateArray<float[]>(NY2, () => new float[NZ2]));
             ZSP = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
+            
+            AHImm   = new ImmutableArray<float>[NX1];
+            ZSPImm  = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            VOLImm  = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAXImm = CreateArray<ImmutableArray<float>[]>(NX2, () => new ImmutableArray<float>[NY1]);
+            AREAYImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY2]);
+            AREAZXImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAZYImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAZImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            AREAXYZImm = CreateArray<ImmutableArray<float>[]>(NX1, () => new ImmutableArray<float>[NY1]);
+            
             DDX = new float[NX1];
             DDY = new float[NY1];
             ZAX = new float[NX1];
@@ -245,7 +273,7 @@ namespace GRAMM_2001
             XWQ = CreateArray<float[]>(NX1, () => new float[NY1]);
             Z0 = CreateArray<float[]>(NX1, () => new float[NY1]);
             FAC = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
-            RITSCH = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            RITSCH = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ]));
             WQU = CreateArray<double[]>(NX1, () => new double[NY1]);
             AWQ = CreateArray<float[]>(NX1, () => new float[NY1]);
             TB = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZB + 1]));
@@ -293,7 +321,7 @@ namespace GRAMM_2001
             AN = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[2 * NZ1]));
             AW = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[2 * NZ1]));
             AE = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[2 * NZ1]));
-            RADIATION = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
+            RADIATION = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ]));
             Relax_Border_factor = CreateArray<float[]>(NX1, () => new float[NY1]);
 
             VDATA1 = CreateArray<float[]>(NX1, () => new float[NY1]);
@@ -355,6 +383,9 @@ namespace GRAMM_2001
             stabilityclass = CreateArray<Int16[]>(NX1, () => new Int16[NY1]);
         }
 
+        /// <summary>
+        /// Read the file IIN.dat
+        /// </summary>
         private static void Read_IIN_Dat()
         {
             try
@@ -488,11 +519,18 @@ namespace GRAMM_2001
             catch
             {
                 Console.WriteLine("File 'IIN.dat' not found - Execution stopped  - press ESC to continue");
-                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                {
+                    ;
+                }
+
                 Environment.Exit(0);
             }
         }
 
+        /// <summary>
+        /// Read the file Receptor.dat
+        /// </summary>
         private static void Read_Receptor_Dat()
         {
             try
@@ -568,7 +606,11 @@ namespace GRAMM_2001
                     catch
                     {
                         Console.WriteLine("Error when reading receptor data from file 'Receptor_GRAMM.dat' - Execution stopped - press ESC to continue");
-                        while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape)) ;
+                        while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Escape))
+                        {
+                            ;
+                        }
+
                         Environment.Exit(0);
                     }
                     myreader.Close();
@@ -582,12 +624,12 @@ namespace GRAMM_2001
                         {
                             using (StreamWriter wr = new StreamWriter("GRAMM.dat", false))
                             {
-                                for (int ianz = 0; ianz < Xrec.Count(); ianz++)
+                                for (int ianz = 0; ianz < Xrec.Count; ianz++)
                                 {
                                     wr.Write(" Receptor" + (ianz + 1).ToString() + ", x:" + Xrec[ianz] + ", y:" + Yrec[ianz] + ", z:" + Zrec[ianz] + ", , , , ,");
                                 }
                                 wr.WriteLine();
-                                for (int ianz = 0; ianz < Xrec.Count(); ianz++)
+                                for (int ianz = 0; ianz < Xrec.Count; ianz++)
                                 {
                                     wr.Write(" V, Dir, Temp, Solrad, Terrrad, Soilflux, Sensflux, Latentflux, ");
                                 }
@@ -621,7 +663,10 @@ namespace GRAMM_2001
             }
         }
 
-        private static void clear_arrays()
+        /// <summary>
+        /// Reset array values to 0
+        /// </summary>
+        private static void ClearArrays()
         {
             IDIV_Up = 0;        //5.4.2017 Ku Reset Counter for MASSOURCE Queue
             IDIV_LockDown2 = 30;
@@ -632,63 +677,146 @@ namespace GRAMM_2001
             RELAXV = Relaxv_ori; //5.4.2017 Ku Reset relax
             RELAXT = Relaxt_ori; //5.4.2017 Ku Reset relax
             Divergence_Min = 10e9;
+            Program.TerminalOut = 0;
+            Array.Clear(Program.MASSOURCE, 0, Program.MASSOURCE.Length);
+            Program.MASSOURCE_Act = 0;
+            Program.MASSOURCE_Old = 0;
+            Program.MASSOURCE_Queue.Clear();
+            Program.STEIGUNG = 0;
+            Program.IDIV = 0;
+            Program.SUMG = 0;
 
-            for (int i = 0; i < NX1; i++)
+            ClearJaggedArray(U);
+            ClearJaggedArray(V);
+            ClearJaggedArray(W);
+            ClearJaggedArray(U);
+            ClearJaggedArray(V);
+            ClearJaggedArray(W);
+            ClearJaggedArray(RHO);
+            ClearJaggedArray(U1);
+            ClearJaggedArray(V1);
+            ClearJaggedArray(W1);
+            ClearJaggedArray(U1N);
+            ClearJaggedArray(V1N);
+            ClearJaggedArray(W1N);
+            ClearJaggedArray(U2N);
+            ClearJaggedArray(V2N);
+            ClearJaggedArray(W2N);
+            ClearJaggedArray(U1NRHO);
+            ClearJaggedArray(V1NRHO);
+            ClearJaggedArray(W1NRHO);
+            ClearJaggedArray(U2NRHO);
+            ClearJaggedArray(V2NRHO);
+            ClearJaggedArray(W2NRHO);
+            ClearJaggedArray(SUX);
+            ClearJaggedArray(SUY);
+            ClearJaggedArray(SUZ);
+            ClearJaggedArray(DPX);
+            ClearJaggedArray(DPY);
+            ClearJaggedArray(DPZ);
+            ClearJaggedArray(DDP1DX);
+            ClearJaggedArray(DDP1DY);
+            ClearJaggedArray(DDP1DZ);
+            ClearJaggedArray(DDP2DX);
+            ClearJaggedArray(DDP2DY);
+            ClearJaggedArray(DDP2DZ);
+            ClearJaggedArray(T);
+            ClearJaggedArray(TN);
+            ClearJaggedArray(TBZ);
+            ClearJaggedArray(TE);
+            ClearJaggedArray(TEN);
+            ClearJaggedArray(DISS);
+            ClearJaggedArray(DISSN);
+            ClearJaggedArray(FACTOR);                 
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[][][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
             {
-                for (int j = 0; j < NY1; j++)
+                for (int j = 0; j < array[i].Length; j++)
                 {
-                    for (int k = 0; k < NZ1; k++)
-                    {
-                        U[i][j][k] = 0;
-                        V[i][j][k] = 0;
-                        W[i][j][k] = 0;
-                        U[i][j][k] = 0;
-                        V[i][j][k] = 0;
-                        W[i][j][k] = 0;
-                        RHO[i][j][k] = 0;
-                        U1[i][j][k] = 0;
-                        V1[i][j][k] = 0;
-                        W1[i][j][k] = 0;
-                        U1N[i][j][k] = 0;
-                        V1N[i][j][k] = 0;
-                        W1N[i][j][k] = 0;
-                        U2N[i][j][k] = 0;
-                        V2N[i][j][k] = 0;
-                        W2N[i][j][k] = 0;
-                        U1NRHO[i][j][k] = 0;
-                        V1NRHO[i][j][k] = 0;
-                        W1NRHO[i][j][k] = 0;
-                        U2NRHO[i][j][k] = 0;
-                        V2NRHO[i][j][k] = 0;
-                        W2NRHO[i][j][k] = 0;
-                        SUX[i][j][k] = 0;
-                        SUY[i][j][k] = 0;
-                        SUZ[i][j][k] = 0;
-                        DPX[i][j][k] = 0;
-                        DPY[i][j][k] = 0;
-                        DPZ[i][j][k] = 0;
-                        DDP1DX[i][j][k] = 0;
-                        DDP1DY[i][j][k] = 0;
-                        DDP1DZ[i][j][k] = 0;
-                        DDP2DX[i][j][k] = 0;
-                        DDP2DY[i][j][k] = 0;
-                        DDP2DZ[i][j][k] = 0;
-                        T[i][j][k] = 0;
-                        TN[i][j][k] = 0;
-                        TBZ[i][j][k] = 0;
-                        TE[i][j][k] = 0;
-                        TEN[i][j][k] = 0;
-                        DISS[i][j][k] = 0;
-                        DISSN[i][j][k] = 0;
-                        FACTOR[i][j][k] = 0;
-                    }
+                    Array.Clear(array[i][j], 0, array[i][j].Length);
                 }
             }
         }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[][][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                for (int j = 0; j < array[i].Length; j++)
+                {
+                    Array.Clear(array[i][j], 0, array[i][j].Length);
+                }
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(short[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(int[][] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                Array.Clear(array[i], 0, array[i].Length);
+            }
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(double[] array)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
+        /// <summary>
+        /// Clear jagged array
+        /// </summary>
+        private static void ClearJaggedArray(float[] array)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
 
-        public static void Max_Proc_File_Read()
+        /// <summary>
+        /// Read the number of max. used processor cores
+        /// </summary>
+        public static void Max_Proc_File_Read(bool setNewPartitioners)
         {
             //Set the maximum number of threads to be used in each parallelized region
+            int IPROC = -1;
             try
             {
                 using (FileStream fs = new FileStream("Max_Proc.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -698,16 +826,66 @@ namespace GRAMM_2001
                         string text = myreader.ReadLine();
                         IPROC = Convert.ToInt32(text);
                         IPROC = Math.Min(IPROC, Math.Min(NX, NY) / 2); // limit IPROC to 1/2 of lowest cell number count
-                        IPROC = Math.Min(63, IPROC); // limit IPROC to 63
-                        pOptions.MaxDegreeOfParallelism = IPROC;
+                        if (Environment.ProcessorCount > 0)
+                        {
+                            IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
+                        }
                     }
                 }
             }
             catch
-            { }
+            { 
+                IPROC = -1;
+            }
+
+            // At the start or if the number of processors has been changed
+            if (pOptions.MaxDegreeOfParallelism != IPROC || setNewPartitioners)
+            {
+                if (IPROC > 0)
+                {
+                    pOptions.MaxDegreeOfParallelism = IPROC;
+                }
+                else
+                {
+                    // Fallback if Max_Proc.txt is corrupt or not available
+                    int envProcCount = Math.Max(6, Environment.ProcessorCount);
+                    pOptions.MaxDegreeOfParallelism = Math.Max(1, envProcCount - 2);
+                    IPROC = Math.Max(1, envProcCount - 2);
+                }
+
+                //Define the partitioners for changing stripe widths for new MaxDegreeOfParallelism
+                PartitionerI.Clear();
+                PartitionerJ.Clear();
+                int[] delta = new int[] { -6, 2, -4, 0, 4, -2, 3, -3, 1, -5, 0, 4};
+                
+                foreach (int val in delta)
+                {
+                    int range_parallel = (Program.NX - 2) / IPROC + val;
+                    range_parallel = Math.Max(Program.StripeWidth + val, range_parallel); // min. Program.StripeWidth cells per processor
+                    range_parallel = Math.Min(Program.NX, range_parallel); // if NX < range_parallel
+                    PartitionerI.Add(Partitioner.Create(2, NX, range_parallel));
+
+                    range_parallel = (NY - 2) / Program.pOptions.MaxDegreeOfParallelism + val;
+                    range_parallel = Math.Max(Program.StripeWidth + val, range_parallel); // min. Program.StripeWidth cells per processor
+                    range_parallel = Math.Min(NY, range_parallel); // if NY < range_parallel
+                    PartitionerJ.Add(Partitioner.Create(2, NY, range_parallel));
+                }
+
+                int maxLen = Math.Max(Program.NX, Program.NY);
+                int minLen = Math.Min(Program.NX, Program.NY);
+
+                maxLen = Math.Min(pOptions.MaxDegreeOfParallelism, maxLen / (Program.StripeWidth + delta.Min()) + 1);
+                minLen = Math.Min(pOptions.MaxDegreeOfParallelism, minLen / (Program.StripeWidth + delta.Max()) + 1);
+                
+                Console.Write("User defined or available maximum degree of parallelism: {0:D}", pOptions.MaxDegreeOfParallelism);
+                Console.WriteLine(" used processors max/min: {0:D}/{0:D}", maxLen, minLen);
+            }
         }
 
-        // read File GRAMMin.dat, if iWetter == 1 then intialize computation
+        /// <summary>
+        /// Read the file GRAMMin.dat, if iWetter == 1 then intialize computation
+        /// </summary>
+        /// <param name="iWetter"></param>
         public static void GRAMMin_File_Read(int iWetter)
         {
             try
@@ -722,10 +900,16 @@ namespace GRAMM_2001
                         {
                             text = myreader.ReadLine();
                             if (iWetter == 1)
+                            {
                                 Program.METEO = text;
+                            }
+
                             text = myreader.ReadLine();
                             if (iWetter == 1)
+                            {
                                 Program.Rauigkeit = Convert.ToDouble(text.Replace(".", Program.decsep));
+                            }
+
                             string[] text5 = new string[10];
                             text5 = myreader.ReadLine().Split(new char[] { ' ', ',', '\t', ';', '!' }, StringSplitOptions.RemoveEmptyEntries);
                             if (iWetter == 1)
@@ -733,7 +917,9 @@ namespace GRAMM_2001
                                 Program.IWETTER = Convert.ToInt16(text5[0]);
                                 Program.nr_cell_smooth = Convert.ToInt16(text5[1]);
                                 if (IWetter_Console_First > 0) // 11.4.17 Ku use arguments
+                                {
                                     Program.IWETTER = IWetter_Console_First;
+                                }
                             }
 
                             if (!myreader.EndOfStream)
@@ -743,17 +929,23 @@ namespace GRAMM_2001
                                 {
                                     Program.WriteSteadyState = true;
                                     if (iWetter == 1)
+                                    {
                                         Console.WriteLine("Write _steady_state.txt: yes");
+                                    }
                                 }
                                 else
                                 {
                                     Program.WriteSteadyState = false;
                                     if (iWetter == 1)
+                                    {
                                         Console.WriteLine("Write _steady_state.txt: no");
+                                    }
                                 }
                             }
                             else
+                            {
                                 Program.WriteSteadyState = false;
+                            }
 
                             //read original number of weather situations stored in meteopgt.all
                             Program.meteopgt_nr = 0;
@@ -774,8 +966,9 @@ namespace GRAMM_2001
                             Program.IWETTER = Convert.ToInt16(text);
 
                             if (IWetter_Console_First > 0) // 11.4.17 Ku use arguments
+                            {
                                 Program.IWETTER = IWetter_Console_First;
-
+                            }
                         }
                     }
                 }

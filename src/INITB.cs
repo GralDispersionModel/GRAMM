@@ -13,11 +13,18 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace GRAMM_2001
 {
-    class INITB
+    public class INITB
     {
+        /// <summary>
+        /// Init specific values
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void INIT(int NI, int NJ, int NK)
         {
             double UINIT = Program.U[1][1][NK];
@@ -27,21 +34,26 @@ namespace GRAMM_2001
             double TURBIN = 0.01;
             double TEINIT = 0;
 
-            //turbulent Prandtl-number
-            Program.PRTE = 0.9;
-
             //initial turbulent kinetic energy
             if ((UINIT == 0) && (VINIT == 0))
+            {
                 TEINIT = 0.01;
+            }
             else
+            {
                 TEINIT = TURBIN * (Math.Pow(UINIT, 2) + Math.Pow(VINIT, 2));
+            }
 
             //turbulent eddy viscosity
             double VISINIT = 0;
             if (TEINIT > 0)
+            {
                 VISINIT = Program.CK * Math.Sqrt(TEINIT) * 10;
+            }
             else if (TEINIT == 0)
+            {
                 VISINIT = Program.VISEL;
+            }
 
             //computing specific humidity from relative humidity
 
@@ -68,7 +80,7 @@ namespace GRAMM_2001
 
                         if (Program.AKLA == 7 && Program.METEO.ToUpper() == "Y" && Program.ISTAT == 0)
                         {
-                            //if (Program.AH[i][j] - 30 < Program.AH_Bassins[i][j])
+                            //if (Program.AHImm[i][j] - 30 < Program.AH_Bassins[i][j])
                             if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
                             {
                                 if (Program.Wind_Velocity >= 0.35F) // lower humidity at the ground and above the inversion height
@@ -80,7 +92,7 @@ namespace GRAMM_2001
                                     QBZ_L[k] = 18.02F / 28.96F * PDST / (PBZ_L[k] / 0.95 - PDST) * 1000;
                                 }
                             }
-                            else if ((Program.ZSP[i][j][k] - Program.AH_Bassins[i][j]) > Program.Inversion_Height)
+                            else if ((Program.ZSPImm[i][j][k] - Program.AH_Bassins[i][j]) > Program.Inversion_Height)
                             {
                                 QBZ_L[k] *= 0.4;
                             }
@@ -190,6 +202,12 @@ namespace GRAMM_2001
                 }
             });
 
+            CustomAirSoilInit cInit = new CustomAirSoilInit(Program.TINIT, Program.TBINIT, Program.TBINIT1, Program.QUINIT);
+            if (cInit.SnowHeightThreshold < 100000)
+            {
+                Console.WriteLine(" Snow altitude threshold: {0} m", cInit.SnowHeightThreshold);
+            }
+
             //boundary values for surface parameters
             Parallel.For(1, NI + 1, Program.pOptions, i =>
             {
@@ -197,13 +215,22 @@ namespace GRAMM_2001
                 {
                     //friction velocity
                     Program.UST[i][j] = 0;
-                    if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.UST[i][j] = 0.15;
+                    if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
+                        Program.UST[i][j] = 0.15;
+                    }
+
                     Program.USTV[i][j] = 0;
-                    if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSP[3][3][1] - Program.AH[3][3]) / Program.Rauigkeit);
+                    if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
+                        Program.USTV[i][j] = 0.15 * Program.CK / Math.Log((Program.ZSPImm[3][3][1] - Program.AHImm[3][3]) / Program.Rauigkeit);
+                    }
 
                     //initial values for stability classes
                     if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                    {
                         Program.stabilityclass[i][j] = Program.AKLA;
+                    }
 
                     //characteristic potential temperature
                     Program.TST[i][j] = 0;
@@ -228,9 +255,24 @@ namespace GRAMM_2001
                          * The surface temperature is initialized in dependence on the height above sea level and the latitude (ÖTTL, 22 JULY 2015)
                         */
                         DUMMY -= Program.DWB[kb];
+                        double tbInit = Program.TBINIT;
+                        double tbInitDepth = Program.TBINIT1;
+                        
+                        //in case of snow covered terrain
+                        if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
+                        {
+                            tbInit = Math.Min(270, Program.TBINIT);
+                            tbInitDepth = Math.Min(272, Program.TBINIT1);
+                        }
+                        else
+                        {
+                            tbInit = Program.TBINIT;
+                            tbInitDepth = Program.TBINIT1;
+                        }
+                        
+                        double DELTA_TB = cInit.TAir2m - tbInit; //this is the desired temperature difference between the surface and the air temperature at the ground
                         //Dependency on height above sea level -> note that the dependency on latitude is taken into account in the calculation of TBINIT1 (tempint.cs)
-                        double DELTA_TB = Program.TINIT - Program.TBINIT; //this is the desired temperature difference between the surface and the air temperature at the ground
-                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                        Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - DELTA_TB - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
 
                         /*
                          * !Oettl, 7.Juni 2013 - Versuch die oberste Schicht der Erdbodentemperatur in Abhängigkeit von der AKLA abweichend zur Lufttemperatur darüber einzustellen
@@ -243,34 +285,15 @@ namespace GRAMM_2001
                             {
                                 if (Program.AKLA == 7)
                                 {
-                                    // Kuntner 28.6.2018: reduce the ground temperature continously, beginning at the lowest ground level
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (Program.TBINIT1)) * DUMMY - 2;
-
-                                    /*
-                                    // Kuntner 28.6.2018: reduce the temperature at the ground of valleys and bassins
-                                    if ((Program.AH[i][j] - 40) < Program.AH_Bassins[i][j])
-                                    //if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
-                                    {
-                                        Program.TB[i][j][kb] -= 2 * (Program.NZB - kb) / ((float) Program.NZB);
-                                    }
-                                    */
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[Program.AHMINI][Program.AHMINJ][1] - (tbInitDepth)) * DUMMY - 2;
                                 }
                                 if (Program.AKLA == 6)
                                 {
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
-
-                                    /*
-                                    // Kuntner 28.6.2018: reduce the temperature at the ground of valleys and bassins
-                                    if ((Program.AH[i][j] - 20) < Program.AH_Bassins[i][j])
-                                    //if (Program.TPI[i][j] == 1 || Program.TPI[i][j] == 2 || Program.TPI[i][j] == 4 || Program.TPI[i][j] == 5)
-                                    {
-                                        Program.TB[i][j][kb] -= 2 * (Program.NZB - kb) / ((float) Program.NZB);
-                                    }
-                                    */
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
                                 }
                                 if (Program.AKLA == 5)
                                 {
-                                    Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    Program.TB[i][j][kb] = (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - (tbInitDepth + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
                                 }
 
                                 /*
@@ -312,7 +335,7 @@ namespace GRAMM_2001
                             }
                             else
                             {
-                                Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AH[i][j];
+                                Program.TB[i][j][kb] = tbInitDepth - 0.005 * Program.AHImm[i][j];
                             }
                         }
 
@@ -342,7 +365,10 @@ namespace GRAMM_2001
                         Program.U1N[i][j][k] = U_L[k];
                         Program.U2N[i][j][k] = U_L[k];
                         Program.UN[i][j][k] = U_L[k];
-                        if (Program.UN[i][j][k] > 50) Console.WriteLine("U-component: " + Convert.ToString(Math.Round(Program.UN[i][j][k], 1)) + "m/s");
+                        if (Program.UN[i][j][k] > 50)
+                        {
+                            Console.WriteLine("U-component: " + Convert.ToString(Math.Round(Program.UN[i][j][k], 1)) + "m/s");
+                        }
 
                         //Geostrophic wind estimation
                         if (k < NK)
@@ -509,7 +535,7 @@ namespace GRAMM_2001
                 DUMMY5 = 2;
                 DUMMY6 = 0.9;
             }
-
+            
             if (File.Exists("landuse.asc"))
             {
                 string[] text = new string[(NI + 2) * (NJ + 2)];
@@ -527,6 +553,11 @@ namespace GRAMM_2001
                                 {
                                     Program.RHOB[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow, set soil density to snow value
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
+                                    {
+                                       Program.RHOB[i][j] = Math.Max(1 / 0.0000005F / 900, Program.RHOB[i][j]);
+                                    }
                                 }
                             }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -537,6 +568,11 @@ namespace GRAMM_2001
                                 {
                                     Program.ALAMBDA[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow, set low surface albedo to snow value
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.ALAMBDA[i][j] < 1)
+                                    {
+                                        Program.ALAMBDA[i][j] = 1F;
+                                    }
                                 }
                             }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -547,6 +583,11 @@ namespace GRAMM_2001
                                 {
                                     Program.Z0[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow cover, set green areas to a lower roughness lenght
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.Z0[i][j] < 0.4F)
+                                    {
+                                       Program.Z0[i][j] = Math.Min(Program.Z0[i][j], 0.01F);
+                                    }
                                 }
                             }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -557,6 +598,11 @@ namespace GRAMM_2001
                                 {
                                     Program.FW[i][j] = Convert.ToSingle(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow cover, set soil moisture to snow
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold && Program.FW[i][j] < 0.1F)
+                                    {
+                                        Program.FW[i][j] = 0.1F;
+                                    }
                                 }
                             }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -567,6 +613,11 @@ namespace GRAMM_2001
                                 {
                                     Program.EPSG[i][j] = Convert.ToDouble(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow cover, set surface emissivity to snow
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
+                                    {
+                                        Program.EPSG[i][j] = 0.95F;
+                                    }
                                 }
                             }
                             text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -577,17 +628,21 @@ namespace GRAMM_2001
                                 {
                                     Program.ALBEDO[i][j] = Convert.ToDouble(text[n].Replace(".", Program.decsep));
                                     n++;
+                                    // in case of snow cover, set surface albedo to snow
+                                    if (Program.AHImm[i][j] > cInit.SnowHeightThreshold)
+                                    {
+                                        Program.ALBEDO[i][j] = 0.6F;
+                                    }
                                 }
                             }
 
-                            //snow cover and clouds are both set to zero in the current version
-
+                            //clouds are set to zero in the current version
                             for (int j = 1; j < NJ + 1; j++)
                             {
                                 for (int i = 1; i < NI + 1; i++)
                                 {
                                     Program.CLOUDS[i][j] = 0;
-                                    Program.SNOW[i][j] = 0;
+                                    //Program.SNOW[i][j] = 0;
                                 }
                             }
 
@@ -599,13 +654,13 @@ namespace GRAMM_2001
                                 {
                                     //CORINE CLASS 111 CONTINUOUS URBAN FABRIC
                                     if (Program.Z0[i][j] >= 1.2)
-                                        Program.AWQ[i][j] = 40 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 40 * Program.DDXImm[i] * Program.DDYImm[j];
                                     //CORINE CLASS 112 DISCONTINUOUS URBAN FABRIC
                                     if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 4))
-                                        Program.AWQ[i][j] = 20 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 20 * Program.DDXImm[i] * Program.DDYImm[j];
                                     //CORINE CLASS 121 INUDSTRIAL UNITS
                                     if ((Program.Z0[i][j] == 0.5F) && (Program.ALAMBDA[i][j] == 3.5))
-                                        Program.AWQ[i][j] = 50 * Program.DDX[i] * Program.DDY[j];
+                                        Program.AWQ[i][j] = 50 * Program.DDXImm[i] * Program.DDYImm[j];
                                 }
                             }
                             */
@@ -743,7 +798,11 @@ namespace GRAMM_2001
                         Program.ALBEDO[i][j] = DUMMY1;
                         Program.FW[i][j] = (float)DUMMY3;
                         Program.Z0[i][j] = (float)(DUMMY2);
-                        if ((Program.METEO == "Y") || (Program.METEO == "y")) Program.Z0[i][j] = (float)(Program.Rauigkeit);
+                        if ((Program.METEO == "Y") || (Program.METEO == "y"))
+                        {
+                            Program.Z0[i][j] = (float)(Program.Rauigkeit);
+                        }
+
                         Program.EPSG[i][j] = DUMMY6;
                         Program.ALAMBDA[i][j] = (float)(DUMMY5);
                         Program.RHOB[i][j] = (float)(Program.ALAMBDA[i][j] / DUMMY4 / Program.CPBOD);
@@ -768,21 +827,38 @@ namespace GRAMM_2001
                                 if (kb < Program.NZB)
                                 {
                                     if (Program.AKLA == 7)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 6)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 5)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 1)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 2)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
+
                                     if (Program.AKLA == 3)
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AH[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AH[i][j])) * DUMMY;
+                                    {
+                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
+                                    }
                                 }
                                 else
                                 {
-                                    Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AH[i][j];
+                                    Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AHImm[i][j];
                                 }
                                 Program.TG[i][j] = Program.TB[i][j][2];
                                 Program.TBN[i][j][kb] = Program.TB[i][j][kb];
@@ -800,17 +876,148 @@ namespace GRAMM_2001
             {
                 for (int j = 2; j < NJ; j++)
                 {
-                    ARSUM += Program.DDX[i] * Program.DDY[j] * 0.000001;
+                    ARSUM += Program.DDXImm[i] * Program.DDYImm[j] * 0.000001;
                     for (int k = 1; k < NK; k++)
                     {
                         IZELL++;
-                        VOLSUM += Program.VOL[i][j][k] * 0.000000001;
+                        VOLSUM += Program.VOLImm[i][j][k] * 0.000000001;
                     }
                 }
             }
+            WriteZ0ToFile();
             Console.WriteLine(" IINIT : NUMBER OF CALCULATED CELLS    : " + IZELL.ToString());
             Console.WriteLine(" IINIT : SIZE OF CALCULATED AREA       : " + ARSUM.ToString("0") + " km**2");
             Console.WriteLine(" IINIT : SIZE OF CALCULATED VOLUME     : " + VOLSUM.ToString("0") + " km**3");
+        }
+
+        /// <summary>
+        /// Write used Z0 values to Roughness.txt
+        /// </summary>
+        private static void WriteZ0ToFile()
+        {
+            try
+            {
+                using (StreamWriter wt = new StreamWriter("RoughnessUsed.txt"))
+                {
+                    wt.WriteLine("ncols         " + Program.NX.ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("nrows         " + Program.NY.ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("xllcorner     " + Program.IKOOA.ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("yllcorner     " + Program.JKOOA.ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("cellsize      " + Program.DDXImm[1].ToString(CultureInfo.InvariantCulture));
+                    wt.WriteLine("NODATA_value  " + "-9999");
+
+                    for (int y = Program.NY; y >= 1; y--)
+                    {
+                        for (int x = 1; x <= Program.NX; x++)
+                        {
+                            wt.Write(Math.Round(Program.Z0[x][y], 5).ToString(CultureInfo.InvariantCulture) + " ");
+                        }
+                        wt.WriteLine();
+                    }
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Read the snow file and set snow to 1 if the height is exceeded<br></br>
+        /// <b>Returns user defined</b> (snowHeightThreshold)(airTemp at 2 m)(surfaceTemp)(surfaceTemp 1m depth)(relative humidity)
+        /// </summary>
+        public static (double, double, double, double, double, double, double) ReadCustomInit()
+        {
+            double snowHeight = 1000000;
+            double tAir2m = Program.TINIT;
+            double tSurface = Program.TBINIT;
+            double tSurface1m = Program.TBINIT1;
+            double relHumidity = Program.QUINIT;
+            double inversionHeight = 10000;
+            double userdefinedAirTemp = 0;
+            
+            if (File.Exists("CustomInit.txt"))
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream("CustomInit.txt", FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        string[] text;
+                        using (StreamReader r = new StreamReader(fs))
+                        {
+                            r.ReadLine();
+                            r.ReadLine();
+                            for (int inid = 1; inid < Program.IWETTER; inid++)
+                            {
+                                r.ReadLine();
+                            }
+                            text = Convert.ToString(r.ReadLine()).Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (text.Length > 4)
+                            {
+                                double.TryParse(text[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out snowHeight);
+                            }
+                            if (text.Length > 5)
+                            {
+                                double.TryParse(text[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
+                                {
+                                    tAir2m = temp;
+                                    userdefinedAirTemp = 1;
+                                }
+                            }
+                            if (text.Length > 6)
+                            {
+                                double.TryParse(text[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
+                                {
+                                    tSurface = temp;
+                                }
+                            }
+                            if (text.Length > 7)
+                            {
+                                double.TryParse(text[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
+                                {
+                                    tSurface1m = temp;
+                                }
+                            }
+                            if (text.Length > 8)
+                            {
+                                double.TryParse(text[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
+                                {
+                                    relHumidity = temp;
+                                }
+                            }
+                            if (text.Length > 9)
+                            {
+                                double.TryParse(text[9], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
+                                {
+                                    inversionHeight = temp;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch{}
+            }
+            //the array snow is not used, except for receptors (Ku 01/2022)
+            for (int x = 0; x < Program.NX1; x++)
+            {
+                for (int y = 0; y < Program.NY1; y++)
+                {
+                    if (Program.AH[x][y] < snowHeight)
+                    {
+                        // no snow
+                        Program.SNOW[x][y] = 0;
+                    }
+                    else
+                    {
+                        //set snow to 1
+                        Program.SNOW[x][y] = 1;
+                    }
+                }
+            }
+            return (snowHeight, tAir2m, userdefinedAirTemp, tSurface, tSurface1m, relHumidity, inversionHeight);
         }
     }
 }

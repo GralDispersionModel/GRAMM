@@ -18,11 +18,20 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Start and control the iterative solution
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
+        /// <returns></returns>
         public static bool SOLUTION(int NI, int NJ, int NK)
         {
             //Check for numerical problems using overall massdivergence
             if (Program.MASSOURCE[Program.IDIV] > 1000) // 13.4.2017 Ku Check if Divergence increased to a very high value 
+            {
                 Program.Divergence_Min = Math.Min(Program.Divergence_Min, Program.MASSOURCE[Program.IDIV]);
+            }
 
             if ((Program.MASSOURCE[Program.IDIV] * 0.001 >= 500000) || (Program.MASSOURCE[Program.IDIV] > Program.Divergence_Min * 50))
             {
@@ -38,7 +47,10 @@ namespace GRAMM_2001
                     Program.REALTIME = Program.TLIMIT; // exit this situation
                 }
                 for (int i = 0; i < 11; i++)
+                {
                     Program.MASSOURCE[i] = 0;
+                }
+
                 return false; // error
             }
 
@@ -54,36 +66,46 @@ namespace GRAMM_2001
                 TERMIPterms(NI, NJ, NK);
 
                 //Prandtl-layer quantities
-                if (Program.ICPR) Prandtl_calculate(NI, NJ, NK);
+                if (Program.ICPR)
+                {
+                    Prandtl_calculate(NI, NJ, NK);
+                }
 
                 //Soil temperature (as the last 5 cells near the borders are not calculated, the routine just makes sense if model domains have more than 10 grid cells in the horizontal directions
-                if ((NI > 10) && (NJ > 10) && (Program.ICTB)) Calctb_calculate(NI, NJ, NK);
+                if ((NI > 10) && (NJ > 10) && (Program.ICTB))
+                {
+                    Calctb_calculate(NI, NJ, NK);
+                }
 
                 //Solve momentum equations
-                if (Program.pOptions.MaxDegreeOfParallelism > 5) // more cores - divide the work -> try to avoid false sharing             	
-                {
-                    //                	int cores = Program.pOptions.MaxDegreeOfParallelism;
-                    //                	Program.pOptions.MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling(cores / 3.0f));
+                UVWIMPcalculate(NI, NJ, NK);
+                // if (Program.pOptions.MaxDegreeOfParallelism > 5) // more cores - divide the work -> try to avoid false sharing             	
+                // {
+                //     //                	int cores = Program.pOptions.MaxDegreeOfParallelism;
+                //     //                	Program.pOptions.MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling(cores / 3.0f));
 
-                    Parallel.Invoke(Program.pOptions,
-                    () => UIMPcalculate(NI, NJ, NK),
-                    () => VIMPcalculate(NI, NJ, NK),
-                    () => WVELcalculate(NI, NJ, NK));
+                //     Parallel.Invoke(Program.pOptions,
+                //     () => UIMPcalculate(NI, NJ, NK),
+                //     () => VIMPcalculate(NI, NJ, NK),
+                //     () => WVELcalculate(NI, NJ, NK));
 
-                    //                	Program.pOptions.MaxDegreeOfParallelism = cores; // reset core-count
-                }
-                else
-                {
-                    UIMPcalculate(NI, NJ, NK);
-                    VIMPcalculate(NI, NJ, NK);
-                    WVELcalculate(NI, NJ, NK);
-                }
+                //     //                	Program.pOptions.MaxDegreeOfParallelism = cores; // reset core-count
+                // }
+                // else
+                // {
+                //     UIMPcalculate(NI, NJ, NK);
+                //     VIMPcalculate(NI, NJ, NK);
+                //     WVELcalculate(NI, NJ, NK);
+                // }
 
                 //Boundary conditions
                 Bords_calculate(NI, NJ, NK);
 
                 //Solve the non-hydrostatic pressure equation
-                if (Program.ICPN == true) CALCPR_calculate(NI, NJ, NK);
+                if (Program.ICPN == true)
+                {
+                    CALCPR_calculate(NI, NJ, NK);
+                }
 
                 //save initial mass-divergence to check for numerical instabilities at the end of the simulation
                 if (Program.REALTIME <= (1.5 * Program.DT))
@@ -91,23 +113,36 @@ namespace GRAMM_2001
                     Program.MASSOURCE_FIRST = Program.SUMG;
                 }
 
-
                 if (Program.ICT == true && Program.ICQU == true)
                 {
-                    Parallel.Invoke(Program.pOptions,
-                    () => Timp_calculate(NI, NJ, NK),
-                    () => Fimp_calculate(NI, NJ, NK));
+                    // Parallel.Invoke(Program.pOptions,
+                    // () => Timp_calculate(NI, NJ, NK),
+                    // () => Fimp_calculate(NI, NJ, NK));
+                    Timp_calculate(NI, NJ, NK);
+                    Fimp_calculate(NI, NJ, NK);
                     //computation of water vapour content
-                    if (Program.ICQU == true && Program.ISTAT != 0) WatVap_calculate(NI, NJ, NK);
+                    if (Program.ICQU == true && Program.ISTAT != 0)
+                    {
+                        WatVap_calculate(NI, NJ, NK);
+                    }
                 }
                 else
                 {
                     //computation of pot. temperature
-                    if (Program.ICT == true) Timp_calculate(NI, NJ, NK);
+                    if (Program.ICT == true)
+                    {
+                        Timp_calculate(NI, NJ, NK);
+                    }
                     //computation of humidity
-                    if (Program.ICQU == true) Fimp_calculate(NI, NJ, NK);
+                    if (Program.ICQU == true)
+                    {
+                        Fimp_calculate(NI, NJ, NK);
+                    }
                     //computation of water vapour content
-                    if (Program.ICQU == true && Program.ISTAT != 0) WatVap_calculate(NI, NJ, NK);
+                    if (Program.ICQU == true && Program.ISTAT != 0)
+                    {
+                        WatVap_calculate(NI, NJ, NK);
+                    }
                 }
 
                 //computation of thermal pressure
@@ -116,9 +151,11 @@ namespace GRAMM_2001
                 //computation of turbulent kinetic energy and dissipation rate
                 if (Program.ICTE == true)
                 {
-                    Parallel.Invoke(Program.pOptions,
-                    () => Tkeimp_calculate(NI, NJ, NK),
-                    () => Epsimp_calculate(NI, NJ, NK));
+                    //Parallel.Invoke(Program.pOptions,
+                    //() => Tkeimp_calculate(NI, NJ, NK),
+                    //() => Epsimp_calculate(NI, NJ, NK));
+                    Tkeimp_calculate(NI, NJ, NK);
+                    Epsimp_calculate(NI, NJ, NK);
                 }
 
                 //time-step adjustion
@@ -133,12 +170,14 @@ namespace GRAMM_2001
                     {
                         Program.STEIGUNG = Math.Round(Program.STEIGUNG, 2);
                         if ((Program.IDIV == 10) && (Program.STEIGUNG <= 0))
+                        {
                             if (REALTIME <= DTI * 0.75) // do not adjust time step if steady state criterion is measured
                             {
                                 Program.DT = Math.Min(Program.DT + 0.5, Program.DTMAX); //3.4.2017 Ku
                                 Program.IDIV_LockUp = 0;
                                 Program.IDIV_LockDown2 = 40;
                             }
+                        }
                     }
 
                     //5.4.2017 Ku
@@ -170,7 +209,6 @@ namespace GRAMM_2001
                     }
                 }
                 //5.4.2017 Ku
-
 
                 //2.9.2019 Öt
                 //dynamic time step and relaxation factor adjustments for GRAMM full transient simulations
@@ -207,11 +245,31 @@ namespace GRAMM_2001
                     string LOGU = "-";
                     string LOGV = "-";
                     string LOGW = "-";
-                    if (Program.ICT) LOGT = "+";
-                    if (Program.ICQU) LOGH = "+";
-                    if (Program.ICU) LOGU = "+";
-                    if (Program.ICV) LOGV = "+";
-                    if (Program.ICW) LOGW = "+";
+                    if (Program.ICT)
+                    {
+                        LOGT = "+";
+                    }
+
+                    if (Program.ICQU)
+                    {
+                        LOGH = "+";
+                    }
+
+                    if (Program.ICU)
+                    {
+                        LOGU = "+";
+                    }
+
+                    if (Program.ICV)
+                    {
+                        LOGV = "+";
+                    }
+
+                    if (Program.ICW)
+                    {
+                        LOGW = "+";
+                    }
+
                     Console.WriteLine("-------------------------------------------------------------------------------------");
                     Console.WriteLine("WEATHER-SIT. TIME[s]  TIMESTEP[s]  ENDTIME[s]  PRESS-ITERATIONS  DIVERGENCE U V W T H");
                     Console.WriteLine(Program.IWETTER.ToString().PadLeft(10) + "/" + (1 + computation_retry).ToString().PadLeft(1) + " " + Program.REALTIME.ToString("0.0").PadLeft(7) + "  " +
@@ -247,19 +305,19 @@ namespace GRAMM_2001
                         }
                         else if (i < Program.nr_cell_smooth)
                         {
-                            factor = 1 - Math.Abs((AH[Program.nr_cell_smooth][j] - AH[1][j]) / (2 * Program.DDX[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[Program.nr_cell_smooth][j] - Program.AHImm[1][j]) / (2 * Program.DDXImm[1] * Program.nr_cell_smooth));
                         }
                         else if (j < Program.nr_cell_smooth)
                         {
-                            factor = 1 - Math.Abs((AH[i][Program.nr_cell_smooth] - AH[i][1]) / (2 * Program.DDY[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[i][Program.nr_cell_smooth] - Program.AHImm[i][1]) / (2 * Program.DDYImm[1] * Program.nr_cell_smooth));
                         }
                         else if (i > BorderE)
                         {
-                            factor = 1 - Math.Abs((AH[NX - Program.nr_cell_smooth][j] - AH[NX][j]) / (2 * Program.DDX[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[NX - Program.nr_cell_smooth][j] - Program.AHImm[NX][j]) / (2 * Program.DDXImm[1] * Program.nr_cell_smooth));
                         }
                         else if (j > BorderS)
                         {
-                            factor = 1 - Math.Abs((AH[i][NY - Program.nr_cell_smooth] - AH[i][NY]) / (2 * Program.DDY[1] * Program.nr_cell_smooth));
+                            factor = 1 - Math.Abs((Program.AHImm[i][NY - Program.nr_cell_smooth] - Program.AHImm[i][NY]) / (2 * Program.DDYImm[1] * Program.nr_cell_smooth));
                         }
 
                         // check transition area

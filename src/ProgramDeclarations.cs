@@ -13,6 +13,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
+using System.Collections.Concurrent;
+using System.Globalization;
 
 namespace GRAMM_2001
 {
@@ -28,7 +31,7 @@ namespace GRAMM_2001
         ///<summary>
         ///global decimal separator of the system
         ///</summary>
-        public static string decsep;
+        public static readonly string decsep = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
         ///<summary>
         ///number of cells in x-direction
         ///</summary>
@@ -82,6 +85,10 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][] AH = CreateArray<float[]>(1, () => new float[1]);
         ///<summary>
+        ///Height of the surface immutable
+        ///</summary>
+        public static ImmutableArray<float>[] AHImm;
+        ///<summary>
         /// Height of the bassins and valleys
         ///</summary>
         public static float[][] AH_Bassins = CreateArray<float[]>(1, () => new float[1]);
@@ -98,33 +105,66 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][][] VOL = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Volume of grid cells immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] VOLImm;
+        ///<summary>
         ///Area of the grid cell in x-direction
         ///</summary>
         public static float[][][] AREAX = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        ///Area of the grid cell in x-direction immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAXImm;
         ///<summary>
         ///Area of the grid cell in y-direction
         ///</summary>
         public static float[][][] AREAY = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
-        ///Bottom area of the grid cell
+        ///Area of the grid cell in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAYImm;
+        ///<summary>
+        ///Bottom area of the grid cell in z-direction
         ///</summary>
         public static float[][][] AREAZ = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
-        ///Projection of the ground area of the grid cell in z-direction
+        ///Bottom area of the grid cell in z-direction immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAZImm;
+        ///<summary>
+        ///Projection of the ground area of the grid cell 
         ///</summary>
         public static float[][][] AREA = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        ///Projection of the ground area of the grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAImm;
+        //public static ImmutableArray<float>[][] AREAImm;
         ///<summary>
         ///Area between the two halfs of the grid cell
         ///</summary>
         public static float[][][] AREAXYZ = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        ///Area between the two halfs of the grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAXYZImm;
+        ///<summary>
         /// Projection of the ground area of the grid cell in x-direction
         ///</summary>
         public static float[][][] AREAZX = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Projection of the ground area of the grid cell in x-direction immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAZXImm;
+        ///<summary>
         /// Projection of the ground area of the grid cell in y-direction
         ///</summary>
         public static float[][][] AREAZY = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
+        ///<summary>
+        /// Projection of the ground area of the grid cell in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] AREAZYImm;
         ///<summary>
         /// Heights of the corner points of each grid cell
         ///</summary>
@@ -134,13 +174,25 @@ namespace GRAMM_2001
         ///</summary>
         public static float[][][] ZSP = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
         ///<summary>
+        /// Height of the centre point of each grid cell immutable
+        ///</summary>
+        public static ImmutableArray<float>[][] ZSPImm;
+        ///<summary>
         ///Horizontal grid size in x-direction
         ///</summary>
         public static float[] DDX = new float[1];
         ///<summary>
+        ///Horizontal grid size in x-direction immutable
+        ///</summary>
+        public static ImmutableArray<float> DDXImm;
+        ///<summary>
         ///Horizontal grid size in y-direction
         ///</summary>
         public static float[] DDY = new float[1];
+        ///<summary>
+        ///Horizontal grid size in y-direction immutable
+        ///</summary>
+        public static ImmutableArray<float> DDYImm;
         ///<summary>
         ///Distance between neighbouring grid cells in x-direction
         ///</summary>
@@ -1062,7 +1114,7 @@ namespace GRAMM_2001
         ///</summary>
         public static double TGRAD;
         ///<summary>
-        ///Height of the neutral boundary layer - not used anymore
+        ///Height of the neutral boundary layer 
         ///</summary>
         public static double ZNEUT;
         ///<summary>
@@ -1110,7 +1162,7 @@ namespace GRAMM_2001
         ///</summary>
         public static double RELAXT;
         ///<summary>
-        ///Forcing of catabatic flows with -40/-25/-15 W/m² AKLA 7/6/5
+        ///Forcing of catabatic flows with -40/-25/-15 W/m² AKLA 7/6/5 1=on, 0=off (default)
         ///</summary>
         public static Int32 ICATAFORC;
         ///<summary>
@@ -1149,10 +1201,6 @@ namespace GRAMM_2001
         ///Maximum allowed time step
         ///</summary>
         public static double DTMAX;
-        ///<summary>
-        ///Maximum number of processors/threads used in each parallelized procedure
-        ///</summary>
-        public static Int32 IPROC;
         ///<summary>
         ///Year of the simulation (only for transient simulations)
         ///</summary>
@@ -1292,19 +1340,19 @@ namespace GRAMM_2001
         ///<summary>
         ///Gravitational acceleration
         ///</summary>
-        public static double GERD;
+        public const double GERD = 9.81;
         ///<summary>
         /// General gas constant
         ///</summary>
-        public static double GASCON;
+        public const double GASCON = 287;
         ///<summary>
         /// Heat capacity of air for constant pressure
         ///</summary>
-        public static double CPLUFT;
+        public const double CPLUFT = 1000;
         ///<summary>
         ///Evaporation heat of water
         ///</summary>
-        public static double ALW;
+        public const double ALW = 2500000;
         ///<summary>
         ///Switch for radiation model: 1=thin clouds 2=thick clouds
         ///</summary>
@@ -1318,7 +1366,7 @@ namespace GRAMM_2001
         ///</summary>
         public static string METEO;
         ///<summary>
-        ///Anemometer heat when using meteopgt.all as input file
+        ///Anemometer height when using meteopgt.all as input file
         ///</summary>
         public static double ANEMO;
         ///<summary>
@@ -1344,19 +1392,19 @@ namespace GRAMM_2001
         ///<summary>
         /// van Karman constant
         ///</summary>
-        public static double CK;
+        public const double CK = 0.35;
         ///<summary>
         ///minimum turbulent viscosity
         ///</summary>
-        public static double VISEL;
+        public const double VISEL = 0.05;
         ///<summary>
         ///heat capacity of soil
         ///</summary>
-        public static double CPBOD;
+        public const float CPBOD = 900;
         ///<summary>
         ///Stefan Bolzmann constant
         ///</summary>
-        public static double SIGMA;
+        public const double SIGMA = 5.6697e-8;
         ///<summary>
         ///temperature value used to improve numerical accuracy of the solution algorithm for temperature
         ///</summary>
@@ -1380,7 +1428,7 @@ namespace GRAMM_2001
         ///<summary>
         ///number of pressure-iterations
         ///</summary>
-        public static Int16 INUMS;
+        public static int INUMS;
         ///<summary>
         ///total mass divergence
         ///</summary>
@@ -1400,8 +1448,7 @@ namespace GRAMM_2001
         ///<summary>
         ///turbulent Prandtl-number
         ///</summary>
-        public static double PRTE;
-
+        public const double PRTE = 0.9;
         ///<summary>
         ///Flag switching the computation of the u-component on/off
         ///</summary>
@@ -1491,7 +1538,6 @@ namespace GRAMM_2001
         ///<summary>
         /// Write online data
         ///</summary>
-
         public static bool GRAMM_Online_flag = true;
         ///<summary>
         /// Running in linux?
@@ -1549,7 +1595,7 @@ namespace GRAMM_2001
         ///<summary>
         ///5.4.2017 ÖT MASSOURCE previous time step
         ///</summary>
-        public static double MASSOURCE_minusone;
+        //public static double MASSOURCE_minusone;
         ///<summary>
         ///11.4.2017 Ku first weather situation from console
         ///</summary>
@@ -1667,5 +1713,29 @@ namespace GRAMM_2001
         ///Calculation of solar radiation
         ///</summary>
         public static RadiationCalculation RadiationModel;
+        ///<summary>
+        ///Array buffer for border cells of parallel calculated stripes
+        ///</summary>
+        public static System.Buffers.ArrayPool<double> GrammArrayPool = System.Buffers.ArrayPool<double>.Shared;
+        ///<summary>
+        ///Width of one parallel calculated stripe must be larger than 6
+        ///</summary>
+        public const int StripeWidth = 28;
+        ///<summary>
+        ///Counter for changing the width of the stripes for each iteration
+        ///</summary>
+        public static byte StripeCounter = 0; 
+        ///<summary>
+        ///Partitioner from 2 to (excl.) NX list for changing the width of the stripes for each iteration in x direction
+        ///</summary>
+        public static List<OrderablePartitioner<Tuple<int, int>>> PartitionerI = new List<OrderablePartitioner<Tuple<int, int>>>();
+        ///<summary>
+        ///Partitioner from 2 to (excl.) NY list for changing the width of the stripes for each iteration in y direction
+        ///</summary>
+        public static List<OrderablePartitioner<Tuple<int, int>>> PartitionerJ = new List<OrderablePartitioner<Tuple<int, int>>>();
+        ///<summary>
+        /// Check for online output, 0 = No, 1 = True
+        ///</summary>
+        public static int OnlineOutputCheck = 0;
     }
 }

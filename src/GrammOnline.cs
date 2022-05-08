@@ -18,17 +18,18 @@ namespace GRAMM_2001
 {
     partial class Program
     {
+        /// <summary>
+        /// Write GRAMM online data 
+        /// </summary>
+        /// <param name="NI"></param>
+        /// <param name="NJ"></param>
+        /// <param name="NK"></param>
         public static void GrammOnline(int NI, int NJ, int NK)
         { // Schreibe Berechnungsdaten für GRAMM Online
 
             string config1 = "";
             string config2 = "";
             string filename = "";
-
-            if (IWetter_Console_First > 1) // 11.4.17 Ku - do not write GRAMM Online for multiple instances
-            {
-                return;
-            }
 
             for (int Ausgabe = 1; Ausgabe <= 29; Ausgabe++) // insgesamt 29 Fälle
             {
@@ -125,66 +126,81 @@ namespace GRAMM_2001
 
                 if (File.Exists(filename + ".txt")) // muss file ausgeschrieben werden?
                 {
-                    GRAMM_Online_flag = true;
                     try
                     {
                         using (StreamReader rd = new StreamReader(filename + ".txt")) // dann einlesen des gewuenschten Ausgabelevels ueber Grund
                         {
                             config1 = rd.ReadLine();   // versuche string zu lesen - bei Fehler ans Ende des using-Statements
-                            config2 = rd.ReadLine();   // auch zweite Zeile vorhanden?
+                            if (!rd.EndOfStream)
+                            {
+                                config2 = rd.ReadLine();   // auch zweite Zeile vorhanden?
+                            }
                         }
 
                         int LX = 1; // Defaultwert
-                        Int32.TryParse(config1, out LX); // Layer oder LX
+                        string[] textSplit = config1.Split(new char[] { ' ', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                        Int32.TryParse(textSplit[0], out LX); // Layer oder LX
+                        int situation = 1;
+                        if (textSplit.Length > 1)
+                        {
+                            Int32.TryParse(textSplit[1], out situation); // situation that should be shown
+                        }
                         int LY = 1; // default
                         Int32.TryParse(config2, out LY); // immer LY
 
-                        string writefile;
-                        if (Ausgabe < 20) // man könnte auf den Textteil "vp_" prüfen, ist unabhängiger, aber nicht so schnell
-                            writefile = filename + "_GRAMM.txt";
-                        else
-                            writefile = "GRAMM-" + filename + ".txt";
-
-                        using (StreamWriter wt = new StreamWriter(writefile)) // ausgabe des windfeldes - using = try-catch
+                        if (IWetter_Console_First <= 1 || IWETTER == situation) // 11.4.17 Ku - do not write GRAMM Online for multiple instances 01/2022: except the additional situation is set
                         {
-                            if (Ausgabe < 20)
+                            GRAMM_Online_flag = true;
+                            string writefile;
+                            if (Ausgabe < 20) // man könnte auf den Textteil "vp_" prüfen, ist unabhängiger, aber nicht so schnell
                             {
-                                wt.WriteLine("ncols         " + NI.ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("nrows         " + NJ.ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("xllcorner     " + Program.IKOOA.ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("yllcorner     " + Program.JKOOA.ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("cellsize      " + Program.DDX[1].ToString(CultureInfo.InvariantCulture));
-                                wt.WriteLine("NODATA_value  " + "-9999");
+                                writefile = filename + "_GRAMM.txt";
+                            }
+                            else
+                            {
+                                writefile = "GRAMM-" + filename + ".txt";
+                            }
 
-                                for (int jj = NJ; jj >= 1; jj--)
+                            using (StreamWriter wt = new StreamWriter(writefile)) // ausgabe des windfeldes - using = try-catch
+                            {
+                                if (Ausgabe < 20)
                                 {
-                                    for (int o = 1; o <= NI; o++)
+                                    wt.WriteLine("ncols         " + NI.ToString(CultureInfo.InvariantCulture));
+                                    wt.WriteLine("nrows         " + NJ.ToString(CultureInfo.InvariantCulture));
+                                    wt.WriteLine("xllcorner     " + Program.IKOOA.ToString(CultureInfo.InvariantCulture));
+                                    wt.WriteLine("yllcorner     " + Program.JKOOA.ToString(CultureInfo.InvariantCulture));
+                                    wt.WriteLine("cellsize      " + Program.DDXImm[1].ToString(CultureInfo.InvariantCulture));
+                                    wt.WriteLine("NODATA_value  " + "-9999");
+
+                                    for (int jj = NJ; jj >= 1; jj--)
                                     {
-                                        if (Ausgabe == 1) // Sonderfall Ausgabe 1
+                                        for (int o = 1; o <= NI; o++)
                                         {
-                                            //wt.Write(Convert.ToString(Math.Round(Program.U[o][jj][LX], 3)).Replace(Program.decsep, ".") + " " + Convert.ToString(Math.Round(Program.V[o][jj][LX], 3)).Replace(Program.decsep, ".") + " ");
-                                            wt.Write(Math.Round(Program.U[o][jj][LX], 3).ToString(CultureInfo.InvariantCulture) + " " + Math.Round(Program.V[o][jj][LX], 3).ToString(System.Globalization.CultureInfo.InvariantCulture) + " ");
+                                            if (Ausgabe == 1) // Sonderfall Ausgabe 1
+                                            {
+                                                //wt.Write(Convert.ToString(Math.Round(Program.U[o][jj][LX], 3)).Replace(Program.decsep, ".") + " " + Convert.ToString(Math.Round(Program.V[o][jj][LX], 3)).Replace(Program.decsep, ".") + " ");
+                                                wt.Write(Math.Round(Program.U[o][jj][LX], 3).ToString(CultureInfo.InvariantCulture) + " " + Math.Round(Program.V[o][jj][LX], 3).ToString(System.Globalization.CultureInfo.InvariantCulture) + " ");
+                                            }
+                                            else
+                                            {
+                                                //wt.Write(Convert.ToString(value(Ausgabe,o,jj,LX,LY)).Replace(Program.decsep, ".") + " ");
+                                                wt.Write(RoundValues(Ausgabe, o, jj, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                            }
                                         }
-                                        else
-                                        {
-                                            //wt.Write(Convert.ToString(value(Ausgabe,o,jj,LX,LY)).Replace(Program.decsep, ".") + " ");
-                                            wt.Write(value(Ausgabe, o, jj, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
-                                        }
+                                        wt.WriteLine();
                                     }
-                                    wt.WriteLine();
                                 }
-                            }
 
-                            else // Ausgabe ab Variante 20
-                            {
-                                for (int k = 1; k <= Program.NZ; k++)
+                                else // Ausgabe ab Variante 20
                                 {
-                                    //wt.Write(Convert.ToString(value(Ausgabe,0,k,LX,LY)).Replace(Program.decsep, ".") + " " + Convert.ToString(value(Ausgabe,1,k,LX,LY)).Replace(Program.decsep, ".") + " ");
-                                    wt.WriteLine(Math.Round(Program.ZSP[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + value(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                    for (int k = 1; k <= Program.NZ; k++)
+                                    {
+                                        //wt.Write(Convert.ToString(value(Ausgabe,0,k,LX,LY)).Replace(Program.decsep, ".") + " " + Convert.ToString(value(Ausgabe,1,k,LX,LY)).Replace(Program.decsep, ".") + " ");
+                                        wt.WriteLine(Math.Round(Program.ZSPImm[LX][LY][k], 3).ToString(CultureInfo.InvariantCulture) + " " + RoundValues(Ausgabe, 1, k, LX, LY).ToString(CultureInfo.InvariantCulture) + " ");
+                                    }
                                 }
-                            }
-
-                        } // StreamWriter Ende
+                            } // StreamWriter Ende
+                        }
                     }
                     catch
                     {
@@ -195,7 +211,7 @@ namespace GRAMM_2001
 
         } // GRAMMONLINE Ende
 
-        private static double value(int Ausgabe, int o, int jj, int LX, int LY)
+        private static double RoundValues(int Ausgabe, int o, int jj, int LX, int LY)
         { // Ermittle Ausgabewerte und Zahlen-Rundung
             try
             {
@@ -237,12 +253,12 @@ namespace GRAMM_2001
                         }
 
                     case 10: //ausgabe der turbulenten kinetischen Energie fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                             //return Math.Round(Program.TEN[o][jj][LX], 3);
-                        return Math.Round(Program.CLOUDS[o][jj], 3);
+                        return Math.Round(Program.TEN[o][jj][LX], 3);
+                        //return Math.Round(Program.CLOUDS[o][jj], 3);
 
                     case 11: //ausgabe der Dissipation fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                             //return Math.Round(Program.DISSN[o][jj][LX], 3);
-                        return Math.Round(Program.SNOW[o][jj], 3);
+                        return Math.Round(Program.DISSN[o][jj][LX], 3);
+                        //return Math.Round(Program.SNOW[o][jj], 3);
 
                     case 12: //ausgabe der Globalstrahlung fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         return Math.Round(Program.GLOBRAD[o][jj], 3);
@@ -251,9 +267,12 @@ namespace GRAMM_2001
                         return Math.Round(Program.EPSG[o][jj] * (Program.RL[o][jj] - Program.SIGMA * Math.Pow(Program.TB[o][jj][2], 4)), 3);
 
                     case 14: //  ausgabe des sensiblen Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
-                        val = Program.WQU[o][jj] / Program.DDX[o] / Program.DDY[jj];
+                        val = Program.WQU[o][jj] / Program.DDXImm[o] / Program.DDYImm[jj];
                         if (double.IsInfinity(val) || double.IsNaN(val))
+                        {
                             val = -9999; // Error
+                        }
+
                         return Math.Round(val, 3);
 
                     case 15: // ausgabe des latenten Waermeflusses fuer GRAMM Online Analyse mit Benutzeroberflaeche
@@ -265,7 +284,10 @@ namespace GRAMM_2001
                     case 17: // ausgabe der inversen Monin-Obukhov Laenge fuer GRAMM Online Analyse mit Benutzeroberflaeche
                         val = 1 / Program.OL[o][jj];
                         if (double.IsInfinity(val) || double.IsNaN(val))
+                        {
                             val = -9999; // Error
+                        }
+
                         return Math.Round(val, 3);
 
                     case 18: // ausgabe der Bodentemperatur fuer GRAMM Online Analyse mit Benutzeroberflaeche

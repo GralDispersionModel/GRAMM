@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <VersionPrefix>20.09.0</VersionPrefix>
+    <TargetFramework>net6.0</TargetFramework>
+    <VersionPrefix>22.09.0</VersionPrefix>
     <Authors>Dietmar Oettl;Markus Kuntner</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>GRAMM</AssemblyTitle>
@@ -12,6 +12,7 @@
     <Optimize>true</Optimize>
     <TieredCompilation>true</TieredCompilation>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 </Project>
