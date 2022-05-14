@@ -39,6 +39,10 @@ namespace GRAMM_2001
         /// </summary>
         public readonly double TSurface1m;
         /// <summary>
+        /// Delta T to surface for water bodies
+        /// </summary>
+        public readonly double DeltaTSurfaceWater;
+        /// <summary>
         /// Relative air humidity 
         /// </summary>
         public readonly double RelHumidity;
@@ -79,6 +83,7 @@ namespace GRAMM_2001
             AirTempGradient = -0.0065;
             AirTempGradientBelowInversionHeight = 0.01;
             SoilTempGradient = -0.005;
+            DeltaTSurfaceWater = 0;
 
             // Read the custom init file and set snow to 1 if the height is exceeded<br></br>
             // <b>Set user defined custom init values
@@ -133,10 +138,10 @@ namespace GRAMM_2001
                             }
                             if (text.Length > 8)
                             {
-                                double.TryParse(text[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
-                                if (temp > 0)
+                                double.TryParse(text[8], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out double temp);
+                                if (temp != 0)
                                 {
-                                    RelHumidity = temp;
+                                    DeltaTSurfaceWater = temp;
                                 }
                             }
                             if (text.Length > 9)
@@ -144,15 +149,15 @@ namespace GRAMM_2001
                                 double.TryParse(text[9], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
                                 if (temp > 0)
                                 {
-                                    InversionHeight = temp;
+                                    RelHumidity = temp;
                                 }
                             }
                             if (text.Length > 10)
                             {
-                                double.TryParse(text[10], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out double temp);
-                                if (temp != 0)
+                                double.TryParse(text[10], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double temp);
+                                if (temp > 0)
                                 {
-                                    AirTempGradient = temp;
+                                    InversionHeight = temp;
                                 }
                             }
                             if (text.Length > 11)
@@ -160,12 +165,20 @@ namespace GRAMM_2001
                                 double.TryParse(text[11], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out double temp);
                                 if (temp != 0)
                                 {
-                                    AirTempGradientBelowInversionHeight = temp;
+                                    AirTempGradient = temp;
                                 }
                             }
                             if (text.Length > 12)
                             {
                                 double.TryParse(text[12], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out double temp);
+                                if (temp != 0)
+                                {
+                                    AirTempGradientBelowInversionHeight = temp;
+                                }
+                            }
+                            if (text.Length > 13)
+                            {
+                                double.TryParse(text[13], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out double temp);
                                 if (temp != 0)
                                 {
                                     SoilTempGradient = temp;

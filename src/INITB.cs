@@ -207,6 +207,10 @@ namespace GRAMM_2001
             {
                 Console.WriteLine(" Snow altitude threshold: {0} m", cInit.SnowHeightThreshold);
             }
+            if (Math.Abs(cInit.DeltaTSurfaceWater) > 0)
+            {
+                Console.WriteLine(" Temperature difference to ground temperature: {0} °C", cInit.DeltaTSurfaceWater);
+            }
 
             //boundary values for surface parameters
             Parallel.For(1, NI + 1, Program.pOptions, i =>
@@ -823,42 +827,50 @@ namespace GRAMM_2001
                             double DUMMY = 1;
                             for (int kb = 1; kb <= Program.NZB; kb++)
                             {
-                                DUMMY -= Program.DWB[kb];
-                                if (kb < Program.NZB)
+                                // user defined deltaT for water bodies
+                                if (Math.Abs(cInit.DeltaTSurfaceWater) > 0.2)
                                 {
-                                    if (Program.AKLA == 7)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
-
-                                    if (Program.AKLA == 6)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
-
-                                    if (Program.AKLA == 5)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
-
-                                    if (Program.AKLA == 1)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
-
-                                    if (Program.AKLA == 2)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
-
-                                    if (Program.AKLA == 3)
-                                    {
-                                        Program.TB[i][j][kb] = (Program.TBINIT1 - 0.005 * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 - 0.005 * Program.AHImm[i][j])) * DUMMY;
-                                    }
+                                    Program.TB[i][j][kb] = Math.Max(270, (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + cInit.DeltaTSurfaceWater);
                                 }
                                 else
-                                {
-                                    Program.TB[i][j][kb] = Program.TBINIT1 - 0.005 * Program.AHImm[i][j];
+                                {   // default deltaT for water bodies
+                                    DUMMY -= Program.DWB[kb];
+                                    if (kb < Program.NZB)
+                                    {
+                                        if (Program.AKLA == 7)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 10 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+
+                                        if (Program.AKLA == 6)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 5 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+
+                                        if (Program.AKLA == 5)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] + 2 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+
+                                        if (Program.AKLA == 1)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 10 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+
+                                        if (Program.AKLA == 2)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 5 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+
+                                        if (Program.AKLA == 3)
+                                        {
+                                            Program.TB[i][j][kb] = (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j]) + (Program.TABS[i][j][1] - 2 - (Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j])) * DUMMY;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Program.TB[i][j][kb] = Program.TBINIT1 + cInit.SoilTempGradient * Program.AHImm[i][j];
+                                    }
                                 }
                                 Program.TG[i][j] = Program.TB[i][j][2];
                                 Program.TBN[i][j][kb] = Program.TB[i][j][kb];
