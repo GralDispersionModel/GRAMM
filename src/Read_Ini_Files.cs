@@ -828,7 +828,8 @@ namespace GRAMM_2001
                         IPROC = Math.Min(IPROC, Math.Min(NX, NY) / 2); // limit IPROC to 1/2 of lowest cell number count
                         if (Environment.ProcessorCount > 0)
                         {
-                            IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
+                            // removed, due to the braking changes from .NET5 to .NET6 for Environment.ProcessorCount
+                            // IPROC = Math.Min(Environment.ProcessorCount, IPROC); // limit IPROC to Environment.ProcessorCount
                         }
                     }
                 }
@@ -848,7 +849,7 @@ namespace GRAMM_2001
                 else
                 {
                     // Fallback if Max_Proc.txt is corrupt or not available
-                    int envProcCount = Math.Max(6, Environment.ProcessorCount);
+                    int envProcCount = 32;
                     pOptions.MaxDegreeOfParallelism = Math.Max(1, envProcCount - 2);
                     IPROC = Math.Max(1, envProcCount - 2);
                 }
