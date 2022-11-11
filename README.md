@@ -13,7 +13,7 @@ We developed a powerful graphical user interface (GUI) to simplify the numerous 
 * [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Official Release and Documentation
-The current validated and signed GRAMM version, the documentation and a recommendation guide is available at the [GRAL homepage](http://lampz.tugraz.at/~gral/)
+The current validated and signed GRAMM version, the documentation and a recommendation guide is available at the [GRAL homepage](https://gral.tugraz.at/)
 
 ## Contributing
 Everyone is invited to contribute to the project [Contributing](Contributing.md)
