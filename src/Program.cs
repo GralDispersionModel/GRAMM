@@ -67,18 +67,20 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 22.09 < <             +";
+            string Info =     "+         > > G R A M M VERSION: 23.09 < <             +";
             Console.WriteLine(Info);
             if (unix)
             {
                 Console.WriteLine("|                      L I N U X                     |");
             }
-#if NETCOREAPP2_1 || NETCOREAPP2_0 || NETCOREAPP3_0
-Console.WriteLine("| .Net Core Version |");
-#endif
-
-#if NET6_0_OR_GREATER
+#if NET6_0
             Console.WriteLine("|                   .NET6 Version                      |");
+#elif NET7_0
+            Console.WriteLine("|                   .NET7 Version                      |");
+#elif NET8_0_OR_GREATER
+            Console.WriteLine("|                   .NET8 Version                      |");
+#else
+            Console.WriteLine("|                 .Net Core Version                    |");
 #endif
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine(" ");
