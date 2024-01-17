@@ -3,20 +3,24 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <VersionPrefix>23.09.0</VersionPrefix>
+    <VersionPrefix>23.11.0</VersionPrefix>
     <Authors>Dietmar Oettl;Markus Kuntner</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <AssemblyTitle>GRAMM</AssemblyTitle>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <RetainVMGarbageCollection>false</RetainVMGarbageCollection>
     <Optimize>true</Optimize>
-    <TieredCompilation>true</TieredCompilation>
+    <TieredCompilation>false</TieredCompilation>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <DOTNET_TC_QuickJitForLoops>false</DOTNET_TC_QuickJitForLoops>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TieredPGO>true</TieredPGO>
+    <TieredPGO>false</TieredPGO>
     <DOTNET_EnableDiagnostics>false</DOTNET_EnableDiagnostics>
     <DOTNET_ENABLE_PROFILING>false</DOTNET_ENABLE_PROFILING>
     <RetainVMGarbageCollection>false</RetainVMGarbageCollection>
+    <PublishAot>true</PublishAot>
+    <!-- 
+    <PublishAot>true</PublishAot>
+    -->
   </PropertyGroup>
 </Project>

@@ -67,7 +67,7 @@ namespace GRAMM_2001
             Console.WriteLine("");
             Console.WriteLine("+------------------------------------------------------+");
             Console.WriteLine("|                                                      |");
-            string Info =     "+         > > G R A M M VERSION: 23.09 < <             +";
+            string Info =     "+         > > G R A M M VERSION: 23.11 < <             +";
             Console.WriteLine(Info);
             if (unix)
             {
