@@ -77,8 +77,10 @@ namespace GRAMM_2001
             Console.WriteLine("|                   .NET6 Version                      |");
 #elif NET7_0
             Console.WriteLine("|                   .NET7 Version                      |");
-#elif NET8_0_OR_GREATER
+#elif NET8_0
             Console.WriteLine("|                   .NET8 Version                      |");
+#elif NET10_0_OR_GREATER
+            Console.WriteLine("|                  .NET10 Version                      |");
 #else
             Console.WriteLine("|                 .Net Core Version                    |");
 #endif
