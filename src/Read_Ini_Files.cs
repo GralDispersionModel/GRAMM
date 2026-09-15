@@ -141,7 +141,6 @@ namespace GRAMM_2001
             AREAXYZ = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             AREAZX = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ2]));
             AREAZY = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ2]));
-            AHE = CreateArray<float[][]>(NX2, () => CreateArray<float[]>(NY2, () => new float[NZ2]));
             ZSP = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             
             AHImm   = new ImmutableArray<float>[NX1];
@@ -210,21 +209,12 @@ namespace GRAMM_2001
             PN = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             DP = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             Console.Write(".");
-            DDP1DX = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            DDP1DY = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            DDP1DZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            DDP2DX = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            DDP2DY = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            DDP2DZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             DPX = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             DPY = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             DPZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             TPDX = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             TPDY = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             TP = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            TPX = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            TPY = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
-            TPZ = CreateArray<double[][]>(NX1, () => CreateArray<double[]>(NY1, () => new double[NZ1]));
             SUX = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             SUY = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
             SUZ = CreateArray<float[][]>(NX1, () => CreateArray<float[]>(NY1, () => new float[NZ1]));
@@ -714,12 +704,6 @@ namespace GRAMM_2001
             ClearJaggedArray(DPX);
             ClearJaggedArray(DPY);
             ClearJaggedArray(DPZ);
-            ClearJaggedArray(DDP1DX);
-            ClearJaggedArray(DDP1DY);
-            ClearJaggedArray(DDP1DZ);
-            ClearJaggedArray(DDP2DX);
-            ClearJaggedArray(DDP2DY);
-            ClearJaggedArray(DDP2DZ);
             ClearJaggedArray(T);
             ClearJaggedArray(TN);
             ClearJaggedArray(TBZ);
