@@ -166,10 +166,6 @@ namespace GRAMM_2001
         ///</summary>
         public static ImmutableArray<float>[][] AREAZYImm;
         ///<summary>
-        /// Heights of the corner points of each grid cell
-        ///</summary>
-        public static float[][][] AHE = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
-        ///<summary>
         /// Height of the centre point of each grid cell
         ///</summary>
         public static float[][][] ZSP = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
@@ -419,30 +415,6 @@ namespace GRAMM_2001
         ///</summary>
         public static double[][][] DPZ = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
-        ///Pressure gradient used for the velocity correction in x-direction
-        ///</summary>
-        public static double[][][] DDP1DX = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Pressure gradient used for the velocity correction in y-direction
-        ///</summary>
-        public static double[][][] DDP1DY = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Pressure gradient used for the velocity correction in z-direction
-        ///</summary>
-        public static double[][][] DDP1DZ = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Pressure gradient used for the velocity correction in x-direction
-        ///</summary>
-        public static double[][][] DDP2DX = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Pressure gradient used for the velocity correction in y-direction
-        ///</summary>
-        public static double[][][] DDP2DY = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///Pressure gradient used for the velocity correction in z-directionNon-hydrostatic pressure in the cell-centre
-        ///</summary>
-        public static double[][][] DDP2DZ = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
         /// thermic pressure gradient in x-direction
         ///</summary>
         public static double[][][] TPDX = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
@@ -454,18 +426,6 @@ namespace GRAMM_2001
         ///thermal pressure
         ///</summary>
         public static double[][][] TP = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///thermal pressure in x-direction
-        ///</summary>
-        public static double[][][] TPX = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///thermal pressure in y-direction
-        ///</summary>
-        public static double[][][] TPY = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
-        ///<summary>
-        ///thermal pressure in z-direction
-        ///</summary>
-        public static double[][][] TPZ = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
         /// pressure at the top of the model domain
         ///</summary>
