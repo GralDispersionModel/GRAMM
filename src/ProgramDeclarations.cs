@@ -1142,10 +1142,6 @@ namespace GRAMM_2001
         ///</summary>
         public static Int32 ISTAT;
         ///<summary>
-        ///NON-STEADYSTATE/FORCING W. IFU-MM5 DATA YES=1 -> not yet implemented in this version
-        ///</summary>
-        public static Int32 MM5IFU;
-        ///<summary>
         ///GRAMM IN GRAMM NESTING YES=1 -> not yet implemented in this version
         ///</summary>
         public static Int32 NESTGRAMM;
