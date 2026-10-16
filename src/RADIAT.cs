@@ -553,14 +553,19 @@ namespace GRAMM_2001
             //terrestrial downward longwave radiation
             Cl_LStrich();
 
-            //Epsilon Above
+            //Epsilon Above: the reference atmospheric profile is shared by all columns.
             for (int k = 2; k <= NK; k++)
             {
+                double epsAp = 0, epsAm = 0, eab = 0, tab = 0;
+                Cl_EpsA(1, 1, k, ref epsAp, ref epsAm, ref eab, ref tab);
                 for (int i = 1; i <= NI; i++)
                 {
                     for (int j = 1; j <= NJ; j++)
                     {
-                        Cl_EpsA(i, j, k, ref EpsAp[i][j][k], ref EpsAm[i][j][k], ref Eab[i][j][k], ref Tab[i][j][k]);
+                        EpsAp[i][j][k] = epsAp;
+                        EpsAm[i][j][k] = epsAm;
+                        Eab[i][j][k] = eab;
+                        Tab[i][j][k] = tab;
                     }
                 }
             }
