@@ -566,14 +566,14 @@ namespace GRAMM_2001
             }
 
             //Terrestrial radiation
-            for (int i = 1; i <= NI; i++)
+            Parallel.For(1, NI + 1, Program.pOptions, i =>
             {
                 for (int j = 1; j <= NJ; j++)
                 {
                     Cl_RterrG(i, j);
                     Cl_dTdtterr(i, j);
                 }
-            }
+            });
 
             //border values          
             for (int k = 1; k <= NK; k++)
