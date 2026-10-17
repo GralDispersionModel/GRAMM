@@ -234,6 +234,12 @@ namespace GRAMM_2001
                                 Program.stabilityclass[i][j] = 3;
                             }
                         }
+
+                        // Avoid convective classes over water when Obukhov length is positive.
+                        if ((Program.FW[i][j] > 0.99) && (OL > 0) && (Program.stabilityclass[i][j] < 4))
+                        {
+                            Program.stabilityclass[i][j] = 4;
+                        }
                     }
                 }
             });
