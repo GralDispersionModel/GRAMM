@@ -684,6 +684,10 @@ namespace GRAMM_2001
         ///</summary>
         public static double[][][] C_PS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
         ///<summary>
+        /// Reciprocal TDMA pivots shared by temperature and humidity
+        ///</summary>
+        public static double[][][] H_PS = CreateArray<double[][]>(1, () => CreateArray<double[]>(1, () => new double[1]));
+        ///<summary>
         /// Temporary array used in the TDMA solver for passive scalars
         ///</summary>
         public static float[][][] AWEST_PS = CreateArray<float[][]>(1, () => CreateArray<float[]>(1, () => new float[1]));
