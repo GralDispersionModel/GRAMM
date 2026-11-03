@@ -125,6 +125,19 @@ namespace GRAMM_2001
                             AN_L[kn] = Program.AREAYImm[i][j + 1][k] * AREASUMY_LL * RHO_AIM;
                         }
                     }
+
+                    if (Program.ICPN)
+                    {
+                        // Reuse AP and AB for the pressure recurrence in all eight sweeps.
+                        double pNext = 0;
+                        for (int kn = 2 * (NK - 1); kn >= 1; --kn)
+                        {
+                            double termp = 1 / (AP_L[kn] - AT_L[kn] * pNext);
+                            pNext = AB_L[kn] * termp;
+                            AP_L[kn] = termp;
+                            AB_L[kn] = pNext;
+                        }
+                    }
                 }
             });
         }
