@@ -17,10 +17,6 @@ namespace GRAMM_2001
 {
     public class ProgramWriters
     {
-        private static int month_old = 0;
-        private static int day_old = 0;
-        private static int hour_old = 0;
-        private static int minute_old = 0;
 
 
         /// <summary>

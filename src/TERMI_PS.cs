@@ -158,6 +158,18 @@ namespace GRAMM_2001
                         A_PS_L[k] = B_PS_L[k] + C_PS_L[k] + AWEST_PS_L[k] + ASOUTH_PS_L[k]
                           + ANORTH_PS_L[k] + AEAST_PS_L[k] + AP0_PS_L[k];  // -SP;
                     }
+
+                    if (Program.ICT || Program.ICQU)
+                    {
+                        double[] H_PS_L = Program.H_PS[i][j];
+                        double pim = 0;
+                        for (int k = 1; k < NK; k++)
+                        {
+                            double help = k == 1 ? 1 / A_PS_L[k] : 1 / (A_PS_L[k] - C_PS_L[k] * pim);
+                            H_PS_L[k] = help;
+                            pim = B_PS_L[k] * help;
+                        }
+                    }
                 }
             });
         }

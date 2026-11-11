@@ -75,12 +75,6 @@ namespace GRAMM_2001
                             W1NRHO_L[k] = (float)(W1N_L[k] * RHO);
                             W2NRHO_L[k] = (float)(W2N_L[k] * RHO);
 
-                            /*
-                            Program.DPX[i][j][k] += Program.TPX[i][j][k];
-                            Program.DPY[i][j][k] += Program.TPY[i][j][k];
-                            Program.DPZ[i][j][k] += Program.TPZ[i][j][k];
-                            Program.DP[i][j][k] += Program.TP[i][j][k];
-                            */
                         }
                     }
                 }
@@ -226,12 +220,12 @@ namespace GRAMM_2001
                     double[] U2N_L = Program.U2N[i][j];
                     double[] V2N_L = Program.V2N[i][j];
                     double[] W2N_L = Program.W2N[i][j];
-                    double[] DDP1DX_L = Program.DDP1DX[i][j];
-                    double[] DDP2DX_L = Program.DDP2DX[i][j];
-                    double[] DDP1DY_L = Program.DDP1DY[i][j];
-                    double[] DDP2DY_L = Program.DDP2DY[i][j];
-                    double[] DDP1DZ_L = Program.DDP1DZ[i][j];
-                    double[] DDP2DZ_L = Program.DDP2DZ[i][j];
+                    double DDP1DX_L = 0;
+                    double DDP2DX_L = 0;
+                    double DDP1DY_L = 0;
+                    double DDP2DY_L = 0;
+                    double DDP1DZ_L = 0;
+                    double DDP2DZ_L = 0;
                     ReadOnlySpan<double> DPX_L = Program.DPX[i][j];
                     ReadOnlySpan<double> DPY_L = Program.DPY[i][j];
                     ReadOnlySpan<double> DPXiP_L = Program.DPX[i + 1][j];
@@ -256,12 +250,12 @@ namespace GRAMM_2001
                             f2 = (AREAY_L[k] + AREAZY_L[k]) * DP_LL;
 
                             //Pressure gradients
-                            DDP1DX_L[k] = (AREAX_L[k] * DPX_L[k] - f1 + AREAZX_L[k] * DPZ_LL);
-                            DDP2DX_L[k] = (-AREAXiP_L[k] * DPXiP_L[k] + f1 - AREAZX_L[k + 1] * DPZp_LL);
-                            DDP1DY_L[k] = (AREAY_L[k] * DPY_L[k] - f2 + AREAZY_L[k] * DPZ_LL);
-                            DDP2DY_L[k] = (-AREAYjP_L[k] * DPYjP_L[k] + f2 - AREAZY_L[k + 1] * DPZp_LL);
-                            DDP1DZ_L[k] = AREA_L[k] * (DPZ_LL - DP_LL);
-                            DDP2DZ_L[k] = AREA_L[k + 1] * (DP_LL - DPZp_LL);
+                            DDP1DX_L = (AREAX_L[k] * DPX_L[k] - f1 + AREAZX_L[k] * DPZ_LL);
+                            DDP2DX_L = (-AREAXiP_L[k] * DPXiP_L[k] + f1 - AREAZX_L[k + 1] * DPZp_LL);
+                            DDP1DY_L = (AREAY_L[k] * DPY_L[k] - f2 + AREAZY_L[k] * DPZ_LL);
+                            DDP2DY_L = (-AREAYjP_L[k] * DPYjP_L[k] + f2 - AREAZY_L[k + 1] * DPZp_LL);
+                            DDP1DZ_L = AREA_L[k] * (DPZ_LL - DP_LL);
+                            DDP2DZ_L = AREA_L[k + 1] * (DP_LL - DPZp_LL);
                         }
 
                         //Velocity corrections
@@ -269,17 +263,17 @@ namespace GRAMM_2001
                         {
                             m--;
                             float temp = 1 / AP0_L[k];
-                            U1N_L[k] += DDP1DX_L[k] * temp;
-                            V1N_L[k] += DDP1DY_L[k] * temp;
-                            W1N_L[k] += DDP1DZ_L[k] * temp;
+                            U1N_L[k] += DDP1DX_L * temp;
+                            V1N_L[k] += DDP1DY_L * temp;
+                            W1N_L[k] += DDP1DZ_L * temp;
                         }
                         else
                         {
                             m = 2;
                             float temp = 1 / AP0_L[k];
-                            U2N_L[k] += DDP2DX_L[k] * temp;
-                            V2N_L[k] += DDP2DY_L[k] * temp;
-                            W2N_L[k] += DDP2DZ_L[k] * temp;
+                            U2N_L[k] += DDP2DX_L * temp;
+                            V2N_L[k] += DDP2DY_L * temp;
+                            W2N_L[k] += DDP2DZ_L * temp;
 
                             //ACHTUNG
                             /*

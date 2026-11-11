@@ -823,7 +823,6 @@ namespace GRAMM_2001
                     {
                         if (Program.FW[i][j] > 0.99)
                         {
-                            int k = 1;
                             double DUMMY = 1;
                             for (int kb = 1; kb <= Program.NZB; kb++)
                             {

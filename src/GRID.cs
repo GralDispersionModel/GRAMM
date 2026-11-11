@@ -225,8 +225,6 @@ namespace GRAMM_2001
                             Program.Z[n] = Convert.ToSingle(Is_Binary[i].Replace(".", Program.decsep));
                         }
 
-                        int ix = 0;
-                        int iy = 1;
                         //obtain surface heights
                         n = 0;
                         Is_Binary = reader.ReadLine().Split(new char[] { ' ', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
