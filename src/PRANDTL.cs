@@ -27,7 +27,7 @@ namespace GRAMM_2001
         /// <param name="NK"></param>
         public static void Prandtl_calculate(int NI, int NJ, int NK)
         {
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 int NJ_P = NJ;
                 for (int i = range.Item1; i < range.Item2; i++)
@@ -245,7 +245,7 @@ namespace GRAMM_2001
             });
 
             //Richardson number
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 int NJ_P = NJ; int NK_P = NK;
 

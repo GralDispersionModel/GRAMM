@@ -31,7 +31,7 @@ namespace GRAMM_2001
         {
             //computation of the new specific humidity
             //Parallel.For(2, NI, Program.pOptions, i =>
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -138,7 +138,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NI, Program.pOptions, i1 =>
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -245,7 +245,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NJ, Program.pOptions, j =>
-            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -351,7 +351,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NJ, Program.pOptions, j1 =>
-            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -458,7 +458,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NI, Program.pOptions, i1 =>
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -565,7 +565,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NI, Program.pOptions, i =>
-            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+            Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -672,7 +672,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NJ, Program.pOptions, j =>
-            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];
@@ -771,7 +771,7 @@ namespace GRAMM_2001
             });
 
             //Parallel.For(2, NJ, Program.pOptions, j1 =>
-            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+            Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
             {
                 double DIM;
                 Span<double> PIM = stackalloc double[NK];

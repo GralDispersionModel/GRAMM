@@ -127,49 +127,49 @@ namespace GRAMM_2001
 
                 //Iterative solution using an implicit scheme and the TDMA or Thomas-Algorithm
                 //Parallel.For(2, NI, Program.pOptions, i =>
-                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, false, false, true);
                 });
                 //Parallel.For(2, NI, Program.pOptions, ih =>
-                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, true, true, true);
                 });
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
-                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, true, true, false);
                 });
                 //Parallel.For(2, NJ, Program.pOptions, j =>
-                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, false, false, false);
                 });
                 //Parallel.For(2, NI, Program.pOptions, ih =>
-                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, true, false, true);
                 });
                 //Parallel.For(2, NI, Program.pOptions, i =>
-                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NJ_P = NJ;
                     UIMPKernel(range, NJ_P, NK_P, false, true, true);
                 });
                 //Parallel.For(2, NJ, Program.pOptions, jh =>
-                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, true, false, false);
                 });
                 //Parallel.For(2, NJ, Program.pOptions, j =>
-                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                 {
                     int NK_P = NK; int NI_P = NI;
                     UIMPKernel(range, NI_P, NK_P, false, false, false);

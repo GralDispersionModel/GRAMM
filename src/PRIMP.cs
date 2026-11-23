@@ -38,7 +38,7 @@ namespace GRAMM_2001
                 if (iteration == 1)
                 {
                     //Parallel.For(2, NI, Program.pOptions, i =>
-                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK + 2];
@@ -262,7 +262,7 @@ namespace GRAMM_2001
                 else if (iteration == 2)
                 {
                     //Parallel.For(2, NI, Program.pOptions, i1 =>
-                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK + 2];
@@ -486,7 +486,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 3)
                 {
-                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -700,7 +700,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 4)
                 {
-                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -910,7 +910,7 @@ namespace GRAMM_2001
                 }
                 else if (iteration == 5)
                 {
-                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1131,7 +1131,7 @@ namespace GRAMM_2001
                 else if (iteration == 6)
                 {
                     //Parallel.For(2, NI, Program.pOptions, i =>
-                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], range =>
+                    Parallel.ForEach(PartitionerI[Program.StripeCounter++ % PartitionerI.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NJ_P = NJ;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1353,7 +1353,7 @@ namespace GRAMM_2001
                 else if (iteration == 7)
                 {
                     //Parallel.For(2, NJ, Program.pOptions, j1 =>
-                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
@@ -1565,7 +1565,7 @@ namespace GRAMM_2001
                 else if (iteration == 8)
                 {
                     //Parallel.For(2, NJ, Program.pOptions, j =>
-                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], range =>
+                    Parallel.ForEach(PartitionerJ[Program.StripeCounter++ % PartitionerJ.Count], SweepOptions, range =>
                     {
                         int NK_P = NK; int NI_P = NI;
                         Span<double> PIM = stackalloc double[2 * NK_P + 2];
