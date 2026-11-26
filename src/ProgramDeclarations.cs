@@ -28,6 +28,13 @@ namespace GRAMM_2001
         ///sets the maximum number of cores to be used in the parallelisation
         ///</summary>
         public static ParallelOptions pOptions = new ParallelOptions();
+
+        // A single-worker steady situation must run its in-place stripe sweeps in order.
+        private static readonly ParallelOptions DefaultSweepOptions = new ParallelOptions();
+        private static ParallelOptions SweepOptions =>
+            pOptions.MaxDegreeOfParallelism == 1 && ISTAT == 0 &&
+            string.Equals(METEO, "Y", StringComparison.OrdinalIgnoreCase)
+                ? pOptions : DefaultSweepOptions;
         ///<summary>
         ///global decimal separator of the system
         ///</summary>

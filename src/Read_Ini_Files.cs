@@ -677,6 +677,13 @@ namespace GRAMM_2001
             Program.IDIV = 0;
             Program.SUMG = 0;
 
+            // Independent steady weather situations start with zero vertical velocity and the same sweep order.
+            if (ISTAT == 0 && string.Equals(METEO, "Y", StringComparison.OrdinalIgnoreCase))
+            {
+                ClearJaggedArray(WN);
+                StripeCounter = 0;
+            }
+
             ClearJaggedArray(U);
             ClearJaggedArray(V);
             ClearJaggedArray(W);
